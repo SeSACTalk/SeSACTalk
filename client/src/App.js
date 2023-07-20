@@ -1,4 +1,5 @@
 import React from 'react';
+import RestAPI from './RestAPI';
 import logo from './logo.svg';
 import './App.css';
 
@@ -18,6 +19,7 @@ function App() {
         >
           Learn React
         </a>
+        <RestAPI></RestAPI>
       </header>
     </div>
   );
