@@ -134,8 +134,8 @@ logs
 **/*.backup.*
 **/*.back.*
 
-node_modules
-client/bower_components
+*/node_modules
+*/bower_components
 
 *.sublime*
 

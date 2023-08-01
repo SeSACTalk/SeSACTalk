@@ -1,6 +1,7 @@
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.contrib.auth import authenticate, login
 from django.http import Http404
 
 from .serializers import ReviewSerializer
@@ -44,5 +45,19 @@ class ReviewDetail(APIView):
         review = self.get_object(pk)
         review.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class LoginView(APIView):
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        user = authenticate(username=username, password=password)
+
+        if user:
+            login(request, user)
+            return Response({'message': 'Login Successful'})
+        else:
+            return Response({'error': 'Invalud credentials'}, status=400)
 
 # Create your views here.
