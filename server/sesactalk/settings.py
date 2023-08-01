@@ -38,9 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'debug_toolbar', # 디버그 툴바 추가
-    'application',
+    'corsheaders', # CORS 추가
     'rest_framework',
-    'corsheaders' # CORS 추가
+    'rest_framework.authtoken',
+    'application',
 ]
 
 MIDDLEWARE = [
@@ -55,7 +56,7 @@ MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware', # 디버그 툴바 추가
 ]
 
-INTERNAL_IPS = ['127.0.0.1'] # 디버깅할 ip 기재
+# INTERNAL_IPS = ['127.0.0.1'] # 디버깅할 ip 기재
 
 # CORS 추가
 CORS_ORIGIN_WHITELIST = (
@@ -137,9 +138,4 @@ STATIC_ROOT = BASE_DIR / 'static'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-    ],
-}
+LOGIN_REDIRECT_URL = '/'

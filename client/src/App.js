@@ -10,19 +10,18 @@ function App() {
   const [password, setPassword] = useState('')
 
   const handleLogin = async (e) => {
-    e.preventDeafault()
-    console.log(username) 
-    // try {
-    //   const response = await axios.post('http://127.0.0.1:8000/login', {username, password}, {withCredentials:true});
-    //   console.log('Login success!', response.data);
-    // } catch (error) {
-    //   console.error('Login failed', error.response.data)
-    // }
+    e.preventDefault()
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/login/', {username, password})
+      console.log('Login success!', response.data);
+    } catch (error) {
+      console.error('Login failed', error.response)
+    }
   }
 
   return (
     <div className="App">
-      <form method="post" onSubmit={handleLogin}>
+      <form onSubmit={handleLogin}>
         <div className='grid gap-6 mb-6 md:grid-cols-2'>
           <div>
             <label htmlFor='username' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>아이디</label>
