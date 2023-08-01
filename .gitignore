@@ -144,3 +144,5 @@ logs
 psd
 thumb
 sketch
+
+migrations/
