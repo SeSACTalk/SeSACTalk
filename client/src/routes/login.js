@@ -1,17 +1,16 @@
 import React, { useState } from 'react'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'
-import { setCookie } from '../modules/handle_cookie';
+import { setCookie } from '../modules/handle_cookie.js';
 
 function Login() {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const navigate = useNavigate()
-
     const handleLogin = async (e) => {
         e.preventDefault()
         try {
-            const response = await axios.post('http://127.0.0.1:8000/login/', { username, password })
+            const response = await axios.post('http://127.0.0.1:8000/accounts/login/', { username, password })
             // 세션에 저장
             const session_key = response.data.session_key
             setCookie('key', session_key, 60)
