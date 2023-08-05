@@ -53,18 +53,12 @@ class LoginView(APIView):
         # FE로부터 받은 아이디,비밀번호
         username = request.data.get('username')
         password = request.data.get('password')
-
+        
         # DB와 비교
         user = authenticate(username=username, password=password)
-
+        print(f'인증여부{user}')
         if user is not None: # 계정이 있을경우
-            login(request, user)
-
-            user_data = {
-                'id':user.id,
-                'username':user.username
-            }
-            return Response(user_data)
+            return Response({'session_key': request.session.session_key, 'message': 'Login successful'})
         else:
             return Response({'error': 'Invalud credentials'}, status=400)
 

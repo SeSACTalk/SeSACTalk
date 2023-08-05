@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'
+import { setCookie } from '../modules/handle_cookie';
 
 function Login() {
     const [username, setUsername] = useState('')
@@ -11,13 +12,13 @@ function Login() {
         e.preventDefault()
         try {
             const response = await axios.post('http://127.0.0.1:8000/login/', { username, password })
-            const user_username = response.data.username
             // 세션에 저장
-            sessionStorage.setItem('user_username', user_username);
+            const session_key = response.data.session_key
+            setCookie('key', session_key, 60)
             navigate('/')
 
         } catch (error) {
-            console.error('Login failed', error.response)
+            console.error('Login failed', error.response.data)
         }
     }
 
