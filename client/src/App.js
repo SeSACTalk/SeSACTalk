@@ -1,9 +1,9 @@
 /* eslint-disable */
 import React, { useState } from 'react';
 import RestAPI from './routes/RestAPI';
-import Login from './routes/login';
-import logo from './logo.svg';
+import Login from './routes/accounts/login';
 import './App.css';
+import './style.css'
 import { Routes, Route, Link, useNavigate, Outlet } from 'react-router-dom'
 
 

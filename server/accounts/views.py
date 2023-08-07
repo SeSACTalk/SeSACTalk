@@ -18,3 +18,8 @@ class LoginView(APIView):
         else:
             return Response({'error': 'Invalud credentials'}, status=400)
 
+class SignUpView(APIView):
+    def post(self, request):
+        print(request.data)
+        return Response({'data': 'hello'})
+

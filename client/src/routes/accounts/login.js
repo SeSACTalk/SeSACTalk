@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'
-import { setCookie } from '../modules/handle_cookie.js';
+import { setCookie } from '../../modules/handle_cookie.js';
 
-function Login() {
+const Login = function () {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const navigate = useNavigate()
@@ -22,7 +22,7 @@ function Login() {
     }
 
     return (
-        <form onSubmit={handleLogin}>
+        <form className='container mx-auto' onSubmit={handleLogin}>
             <div className='grid gap-6 mb-6 md:grid-cols-2'>
                 <div>
                     <label htmlFor='username' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>아이디</label>
