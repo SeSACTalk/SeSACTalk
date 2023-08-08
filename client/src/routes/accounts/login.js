@@ -1,16 +1,21 @@
 import React, { useState } from 'react'
 import axios from 'axios';
+import CryptoJS from 'crypto-js'
 import { useNavigate } from 'react-router-dom'
 import { setCookie } from '../../modules/handle_cookie.js';
 
 const Login = function () {
+    const navigate = useNavigate()
+
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
-    const navigate = useNavigate()
+
     const handleLogin = async (e) => {
         e.preventDefault()
+        const hashedPw = CryptoJS.SHA256(password).toString()
+        
         try {
-            const response = await axios.post('http://127.0.0.1:8000/accounts/login/', { username, password })
+            const response = await axios.post('http://127.0.0.1:8000/accounts/login/', { username, hashedPw })
             // 세션에 저장
             const session_key = response.data.session_key
             setCookie('key', session_key, 60)

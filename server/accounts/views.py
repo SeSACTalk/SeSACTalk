@@ -1,8 +1,10 @@
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+import hashlib
 
 class LoginView(APIView):
     def post(self, request):
@@ -20,6 +22,9 @@ class LoginView(APIView):
 
 class SignUpView(APIView):
     def post(self, request):
-        print(request.data)
-        return Response({'data': 'hello'})
+        user_info = request.data
+        hashedPw = hashlib.sha256(request.data['hashedPw'].encode('utf-8')).hexdigest()
+        print(user_info, hashedPw)
+        User.objects.create_user(user_info['username'], hashedPw)
+        return Response({'message': 'SignUp Success'})
 
