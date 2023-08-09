@@ -11,10 +11,17 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from environ import Env
+import mysql.connector.django
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = Env() # env 객체 생성
+env_path = BASE_DIR / '.env' # env파일 경로 설정
+if env_path.exists():
+    with env_path.open('rt', encoding='UTF8') as f:
+        env.read_env(f, overwrite = True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -91,8 +98,12 @@ WSGI_APPLICATION = 'sesactalk.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'sesac',
+        'USER': 'bibigo',
+        'PASSWORD': env.str('SQL_HOST_PASSWORD'),
+        'HOST': '127.0.0.1',
+        'PORT': '3306'
     }
 }
 
@@ -119,7 +130,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ko-KR'
 
 TIME_ZONE = 'Asia/Seoul'
 
