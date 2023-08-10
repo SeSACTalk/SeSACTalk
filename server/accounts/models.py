@@ -39,10 +39,10 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     id = models.BigAutoField(primary_key = True)
     username = models.CharField(max_length = 20, unique = True)
-    name = models.CharField(max_length = 20),
-    biㄱthdate = models.DateField(),
-    gender = models.CharField(max_length = 10),
-    phone_number = models.CharField(max_length = 15),
+    name = models.CharField(max_length = 20)
+    birthdate = models.DateField()
+    gender = models.CharField(max_length = 10)
+    phone_number = models.CharField(max_length = 15)
     email = models.EmailField(unique = True)
     signup_date = models.DateTimeField(auto_now_add = True)
     withdraw_date = models.DateTimeField(null = True)
