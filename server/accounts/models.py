@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 # 캠퍼스, 과정, 사용자
 class Campus(models.Model):
     name = models.CharField(max_length = 10)
-    address = models.CharField(max_length = 100)
+    address = models.CharField(max_length = 255)
 
 class Course(models.Model):
     name = models.CharField(max_length = 100)
@@ -53,9 +53,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     is_auth = models.IntegerField(default = 0)
     #! 0: 가입, 1: 승인, 2: 보류, 3: 거절
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False)
+    auth_approval_date = models.DateTimeField(null = True)
+    is_active = models.BooleanField(default = True)
+    is_staff = models.BooleanField(default = False)
+    is_superuser = models.BooleanField(default = False)
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']

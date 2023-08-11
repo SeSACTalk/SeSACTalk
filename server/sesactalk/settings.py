@@ -13,9 +13,14 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 from environ import Env
 import mysql.connector.django
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+MEDIA_URL = '/media/'
 
 env = Env() # env 객체 생성
 env_path = BASE_DIR / '.env' # env파일 경로 설정
@@ -50,6 +55,13 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'application',
     'accounts',
+    'user',
+    'post',
+    'chat',
+    'explore',
+    'reply',
+    'profiles',
+    'master'
 ]
 
 MIDDLEWARE = [
