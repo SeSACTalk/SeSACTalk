@@ -7,4 +7,4 @@ class profile(models.Model):
     link = models.URLField(null = True)
     date = models.DateTimeField(auto_now = True)
     course_status = models.BooleanField(default = True)
-    user_id = models.ForeignKey(User, on_delete = models.CASCADE)
+    user = models.ForeignKey(User, on_delete = models.CASCADE)

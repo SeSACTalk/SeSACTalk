@@ -10,24 +10,24 @@ class Post(models.Model):
     date = models.DateTimeField(auto_now_add = True)
     img_path = models.ImageField(upload_to = 'posts/', null = True)
     report_status = models.BooleanField(default = False)
-    user_id = models.ForeignKey(User, on_delete = models.CASCADE)
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
     tag_set = models.ManyToManyField('HashTag', blank = True)
 
 class Like(models.Model):
     date = models.DateTimeField(auto_now_add = True)
-    user_id = models.ForeignKey(User, on_delete = models.CASCADE)
-    post_id = models.ForeignKey(Post, on_delete = models.CASCADE)
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    post = models.ForeignKey(Post, on_delete = models.CASCADE)
 
 class View(models.Model):
     view_count = models.BigIntegerField()
-    post_id = models.OneToOneField(Post, on_delete = models.CASCADE)
+    post = models.OneToOneField(Post, on_delete = models.CASCADE)
 
 class Reply(models.Model):
     content = models.CharField(max_length = 200)
     date = models.DateTimeField(auto_now_add = True)
     report_status = models.BooleanField(default = False)
-    user_id = models.ForeignKey(User, on_delete = models.CASCADE)
-    post_id = models.ForeignKey(Post, on_delete = models.CASCADE)
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    post = models.ForeignKey(Post, on_delete = models.CASCADE)
     
 class HashTag(models.Model):
     name = models.CharField(max_length = 255, unique = True)
@@ -46,7 +46,7 @@ class Report(models.Model):
     content_type =  models.CharField(max_length = 20, choices = types.choices)
     category = models.CharField(max_length = 128)
     content_id = models.IntegerField()
-    reporter_id = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'reporter_id')
-    reported_id = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'reported_id')
+    reporter = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'reporter_id')
+    reported = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'reported_id')
 
 
