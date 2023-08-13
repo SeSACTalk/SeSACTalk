@@ -1,7 +1,9 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import { BACK_BASE_URL } from '../../global_variables';
+import { BACK_BASE_URL, ACCOUNTS_SIGNUP_BASE_URL } from '../../global_variables';
 import CryptoJS from 'crypto-js'
+import { useNavigate } from 'react-router-dom'
+
 
 const SignUp = function () {
     {/* 
@@ -12,7 +14,7 @@ const SignUp = function () {
     */}
 
     {/* variables */}
-    const ACCOUNTS_SIGNUP_BASE_URL = BACK_BASE_URL + "accounts/signup/";
+    let navigate = useNavigate()
     const [campusList, setCampusList] = useState([]);
     const [courseList, setCourseList] = useState({ first: [], second: [] });
 
@@ -118,9 +120,10 @@ const SignUp = function () {
         })
         .then(response => {
             console.log(response.data);
+            navigate('accounts/login');
         })
         .catch(error => {
-            console.error(error);
+            console.log(error.response.data);
         });
     }
 

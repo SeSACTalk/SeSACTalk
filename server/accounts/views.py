@@ -70,4 +70,3 @@ class IdCheckView(APIView):
             response = Response({'result': 'available'})
 
         return response
-

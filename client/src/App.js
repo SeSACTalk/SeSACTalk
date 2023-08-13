@@ -17,6 +17,7 @@ function App() {
       <Routes>
         <Route path='/accounts/login' element={<Login/>}/>
         <Route path='/accounts/signup' element={<SignUp/>}/>
+        <Route path='/accounts/find/user/password' element={<SignUp/>}/>
       </Routes>
       <RestAPI></RestAPI>
       <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Button</button>
