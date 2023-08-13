@@ -1,6 +1,17 @@
 from rest_framework import serializers
-from .models import User
+from .models import Campus, Course, User
 
+class CampusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Campus
+        fields = ('id', 'name', 'address')
+        
+
+class CourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ('id', 'name', 'campus')
+        
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -10,3 +21,4 @@ class UserSerializer(serializers.ModelSerializer):
                     'second_course', 'content', 'updated_at'\
                     'is_auth', 'auth_approval_date', 'is_active'\
                     'is_staff', 'is_superuser')
+        
