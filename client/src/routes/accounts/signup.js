@@ -26,9 +26,22 @@ const SignUp = function () {
                 console.error(error);
             });
     }, []);
-    function checkId() {
 
-    }
+    const checkId = () => {
+        const username = document.getElementById("username").value;
+        axios.get(ACCOUNTS_SIGNUP_BASE_URL, {
+            params: {
+                username: username
+            }
+        })
+        .then(response => {
+            console.log(response.data);
+        })
+        .catch(error => {
+            console.error(error);
+        });
+    };
+    
 
     const requestCoursesByCampus = (selectName, campusId) => {
         axios.get(ACCOUNTS_SIGNUP_BASE_URL, {
@@ -139,8 +152,8 @@ const SignUp = function () {
                 <tr>
                     {/* 아이디: 영문/숫자 포함 8~20자, 중복확인 */}
                     <td>아이디</td>
-                    <td><input type="text" name='username' placeholder='아이디를 입력하세요'/></td>
-                    <td colSpan={2}><button type='button' onClick={checkId()}>중복 확인</button></td>
+                    <td><input type="text" id = "username" name='username' placeholder='아이디를 입력하세요'/></td>
+                    <td colSpan={2}><button type='button' onClick={()=>{checkId()}}>중복 확인</button></td>
                 </tr>
                 <tr>
                     {/* 비밀번호: 영문/숫자/특수문자 포함 8~20자 - 이중 암호화(SHA-256) */}

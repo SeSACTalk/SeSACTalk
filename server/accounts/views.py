@@ -23,29 +23,43 @@ class LoginView(APIView):
         else:
             return Response({'error': 'Invalud credentials'}, status=400)
 
+
 class SignUpView(APIView):
     def get(self, request: HttpRequest) -> Response:
         campus_id = request.query_params.get('campus_id')
 
         campuses = Campus.objects.all()
-        courses_on_campus = Course.objects.filter(campus_id=campus_id)
-
-        campusSerializer = CampusSerializer(campuses, many = True)
-        courseSerializer = CourseSerializer(courses_on_campus, many = True)
+        campusSerializer = CampusSerializer(campuses, many=True)
 
         response_data = {
             'campus': campusSerializer.data,
         }
 
         if campus_id:
+            courses_on_campus = Course.objects.filter(campus_id=campus_id)
+            courseSerializer = CourseSerializer(courses_on_campus, many=True)
             response_data['course'] = courseSerializer.data
 
         return Response(response_data)
-    
+
     def post(self, request) -> Response:
         user_info = request.data
         hashedPw = hashlib.sha256(request.data['hashedPw'].encode('utf-8')).hexdigest()
         print(user_info, hashedPw)
         User.objects.create_user(user_info['username'], hashedPw)
         return Response({'message': 'SignUp Success'})
+
+
+class IdCheckView(APIView):
+    def post(self, request) -> Response:
+        username = request.query_params.get('username')
+        user = User.objects.filter(username=username)
+
+        response = None
+        if user :
+            response = Response({'result': 'unavailable'})
+        else :
+            response = Response({'result': 'available'})
+
+        return response
 
