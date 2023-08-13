@@ -20,6 +20,7 @@ const SignUp = function () {
     {/* form variables */}
     const [name, setName] = useState('');
     const [gender, setGender] = useState('');
+    const [birthdate, setBirthdate] = useState('');
     const [phonenumber, setPhonenumber] = useState('');
     const [email, setEmail] = useState('');
     const [firstCourse, setFirstCourse] = useState('');
@@ -41,7 +42,7 @@ const SignUp = function () {
     const checkId = () => { /* 아이디 중복 체크 */
         const username = document.getElementById("username").value;
         axios.post((BACK_BASE_URL + 'accounts/check/id/'), {
-            params: {
+            params : {
                 username: username
             }
         })
@@ -103,16 +104,17 @@ const SignUp = function () {
          /*checkId() 아이디 중복 체크 */
         
         const _ = await axios.post(ACCOUNTS_SIGNUP_BASE_URL, {
-            params: {
+            
                 name : name,
                 gender : gender,
+                birthdate : birthdate,
                 phone_number : phonenumber,
                 email : email,
-                first_course_id : firstCourse,
-                second_course_id : secondCourse,
+                first_course : firstCourse,
+                second_course : secondCourse,
                 username : username,
                 password : hashedPw,
-            }
+            
         })
         .then(response => {
             console.log(response.data);
@@ -126,7 +128,7 @@ const SignUp = function () {
         <div>
             <form onSubmit={signup}>
                 <tr>
-                    {/* 이름 : 5글자 미만 한글 */}
+                    {/* 이름 : 2-5글자 미만 한글 */}
                     <td colSpan={2}>이름</td>
                     <td colSpan={2}><input type="text" name='name' placeholder='이름을 입력하세요' value={name} onChange={(e) => setName(e.target.value)}/></td>
                 </tr>
@@ -139,6 +141,13 @@ const SignUp = function () {
                             <option value='female'>여성</option>
                             <option value='male'>남성</option>
                         </select>
+                    </td>
+                </tr>
+                <tr>
+                    {/* 생년월일 :  2000-01-01 형식 */}
+                    <td colSpan={2}>생년월일</td>
+                    <td colSpan={2}>
+                        <input type='date' name='birthdate' value={birthdate} onChange={(e) => setBirthdate(e.target.value)}/>
                     </td>
                 </tr>
                 <tr>
@@ -179,8 +188,9 @@ const SignUp = function () {
                 </tr>
                 <tr>
                     {/* 아이디: 영문/숫자 포함 8~20자, 중복확인 */}
-                    <td>아이디</td>
-                    <td><input type="text" id = "username" name='username' placeholder='아이디를 입력하세요' value={username} onChange={(e) => setUsername(e.target.value)}/></td>
+                    <td colSpan={2}>아이디</td>
+                    <td colSpan={2}><input type="text" id = "username" name='username' placeholder='아이디를 입력하세요' value={username} onChange={(e) => setUsername(e.target.value)}/></td>
+                    {/* <td colSpan={2}><button onClick={()=>{checkId()}}>중복확인</button></td> */}
                 </tr>
                 <tr>
                     {/* 비밀번호: 영문/숫자/특수문자 포함 8~20자 - 이중 암호화(SHA-256) */}

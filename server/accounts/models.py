@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
-# 캠퍼스, 과정, 사용자
+# 캠퍼스
 class Campus(models.Model):
     name = models.CharField(max_length = 10)
     address = models.CharField(max_length = 255)
@@ -10,6 +10,7 @@ class Course(models.Model):
     name = models.CharField(max_length = 100)
     campus = models.ForeignKey(Campus, on_delete = models.CASCADE)
 
+# 과정
 class UserManager(BaseUserManager):
     use_in_migrations = True    
 
@@ -35,14 +36,15 @@ class UserManager(BaseUserManager):
             raise ValueError('is_superuser=True일 필요가 있습니다.')
         
         return self._create_user(username, email, password, **extra_fields)
-    
+
+# 사용자
 class User(AbstractBaseUser, PermissionsMixin):
     id = models.BigAutoField(primary_key = True)
     username = models.CharField(max_length = 20, unique = True)
     name = models.CharField(max_length = 20)
     birthdate = models.DateField()
     gender = models.CharField(max_length = 10)
-    phone_number = models.CharField(max_length = 15)
+    phone_number = models.CharField(max_length = 13)
     email = models.EmailField(unique = True)
     signup_date = models.DateTimeField(auto_now_add = True)
     withdraw_date = models.DateTimeField(null = True)

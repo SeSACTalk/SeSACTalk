@@ -43,13 +43,19 @@ class SignUpView(APIView):
         return Response(response_data)
 
     def post(self, request) -> Response:
-        user = request.data
-        print(user)
-        # user_info = request.data
-        # hashedPw = hashlib.sha256(request.data['hashedPw'].encode('utf-8')).hexdigest()
-        # print(user_info, hashedPw)
-        # User.objects.create_user(user_info['username'], hashedPw)
-        return Response({'message': 'SignUp Success'})
+        # BE 암호화
+        request.data['password'] = hashlib.sha256(request.data['password'].encode('utf-8')).hexdigest()
+        
+        userSerializer = UserSerializer(data=request.data)
+
+        # 유효성 검사
+        if userSerializer.is_valid():
+            userSerializer.save()
+            return Response({'message': 'Signup Success'}, status=status.HTTP_201_CREATED)
+        else:
+            print(f'불일치 데이터 : {userSerializer.errors}')
+
+        return Response(userSerializer.errors, status.HTTP_400_BAD_REQUEST)
 
 
 class IdCheckView(APIView):
