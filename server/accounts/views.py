@@ -43,10 +43,12 @@ class SignUpView(APIView):
         return Response(response_data)
 
     def post(self, request) -> Response:
-        user_info = request.data
-        hashedPw = hashlib.sha256(request.data['hashedPw'].encode('utf-8')).hexdigest()
-        print(user_info, hashedPw)
-        User.objects.create_user(user_info['username'], hashedPw)
+        user = request.data
+        print(user)
+        # user_info = request.data
+        # hashedPw = hashlib.sha256(request.data['hashedPw'].encode('utf-8')).hexdigest()
+        # print(user_info, hashedPw)
+        # User.objects.create_user(user_info['username'], hashedPw)
         return Response({'message': 'SignUp Success'})
 
 
