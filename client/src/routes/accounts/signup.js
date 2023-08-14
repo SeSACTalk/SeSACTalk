@@ -1,6 +1,5 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import { BACK_BASE_URL, ACCOUNTS_SIGNUP_BASE_URL } from '../../global_variables';
 import CryptoJS from 'crypto-js'
 import { useNavigate } from 'react-router-dom'
 
@@ -15,6 +14,8 @@ const SignUp = function () {
 
     {/* variables */}
     let navigate = useNavigate()
+    const SERVER = process.env.REACT_APP_BACK_BASE_URL
+    const SERVER_ACCOUNTS_SIGNUP = SERVER + '/accounts/signup'
     const [campusList, setCampusList] = useState([]);
     const [courseList, setCourseList] = useState({ first: [], second: [] });
 
@@ -32,7 +33,7 @@ const SignUp = function () {
 
      {/* functions */}
     useEffect(() => { /* 캠퍼스 목록 바운딩 시 가져오기 */
-        axios.get(ACCOUNTS_SIGNUP_BASE_URL)
+        axios.get(SERVER_ACCOUNTS_SIGNUP)
             .then(response => {
                 setCampusList(response.data.campus);
             })
@@ -43,7 +44,7 @@ const SignUp = function () {
 
     const checkId = () => { /* 아이디 중복 체크 */
         const username = document.getElementById("username").value;
-        axios.post((BACK_BASE_URL + 'accounts/check/id/'), {
+        axios.post((SERVER + 'accounts/check/id/'), {
             params : {
                 username: username
             }
@@ -59,7 +60,7 @@ const SignUp = function () {
     
 
     const requestCoursesByCampus = (selectName, campusId) => { /* 캠퍼스에 해당하는 과정 가져오기 */
-        axios.get(ACCOUNTS_SIGNUP_BASE_URL, {
+        axios.get(SERVER_ACCOUNTS_SIGNUP, {
             params: {
                 campus_id: campusId
             }
@@ -105,7 +106,7 @@ const SignUp = function () {
         const hashedPw = CryptoJS.SHA256(password).toString();
          /*checkId() 아이디 중복 체크 */
         
-        const _ = await axios.post(ACCOUNTS_SIGNUP_BASE_URL, {
+        const _ = await axios.post(SERVER_ACCOUNTS_SIGNUP, {
             
                 name : name,
                 gender : gender,
