@@ -17,12 +17,12 @@ class CustomPhonenumberRegexValidator(RegexValidator):
     message = '(-)를 포함하여 입력해주세요.'
     code = 'invalid_phonenumber'
 class CustomMinLengthValidator(MinLengthValidator):
-    def __init__(self, type_, min_length, message=None, code='min_length'):
+    def __init__(self, type_, min_length, message = None, code = 'min_length'):
         if message is None:
             message = f'{type_}의 길이가 최소 {min_length} 이상이어야 합니다.'
         super().__init__(min_length, message)
 class CustomMaxLengthValidator(MaxLengthValidator):
-    def __init__(self, type_, max_length, message=None, code='max_length'):
+    def __init__(self, type_, max_length, message = None, code = 'max_length'):
         if message is None:
             message = f'{type_}의 길이는 최대 {max_length} 입니다.'
         super().__init__(max_length, message)
@@ -42,24 +42,24 @@ class CourseSerializer(serializers.ModelSerializer):
         
 class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
-        validators=[
+        validators = [
             CustomUsernameRegexValidator(),
-            CustomMinLengthValidator('아이디', min_length=8),
-            CustomMaxLengthValidator('아이디', max_length=20)
+            CustomMinLengthValidator('아이디', min_length = 8),
+            CustomMaxLengthValidator('아이디', max_length = 20)
         ]
     )
     name = serializers.CharField(
-        validators=[
+        validators = [
             CustomNameRegexValidator(),
-            CustomMinLengthValidator('이름', min_length=2),
-            CustomMaxLengthValidator('이름', max_length=5)
+            CustomMinLengthValidator('이름', min_length = 2),
+            CustomMaxLengthValidator('이름', max_length = 5)
         ]
     )
     phone_number = serializers.CharField(
-        validators=[
+        validators = [
             CustomPhonenumberRegexValidator(),
-            CustomMinLengthValidator('전화번호', min_length=13),
-            CustomMaxLengthValidator('전화번호', max_length=13)
+            CustomMinLengthValidator('전화번호', min_length = 13),
+            CustomMaxLengthValidator('전화번호', max_length = 13)
         ]
     )
 
