@@ -78,3 +78,12 @@ class FindIdView(APIView): # 아이디 찾기
             return Response({'message': '정상적인 요청입니다', 'username': username} , status = status.HTTP_200_OK)
         else:
             return Response({'message': '아이디가 존재하지 않습니다'}, status = status.HTTP_404_NOT_FOUND)
+
+class FindPasswordView(APIView): # 비밀번호 찾기
+    def post(self, request: HttpRequest) -> Response:
+        condition = User.objects.filter(username = request.data['username'], email = request.data['email']).exists()
+
+        if condition:
+            return Response({'message': '임시비밀번호를 이메일로 발송하였습니다.'}, status = status.HTTP_200_OK)
+        else:
+            return Response({'message': '비밀번호가 존재하지 않습니다'}, status = status.HTTP_404_NOT_FOUND)
