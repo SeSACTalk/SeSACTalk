@@ -18,7 +18,7 @@ class ReviewList(APIView): # 목록 보여줌
         if serializer.is_valid(): #유효성 검사
             serializer.save() # 저장 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 class ReviewDetail(APIView):
     def get_object(self, pk): #Review 객체 가져오기
