@@ -13,9 +13,9 @@ const Login = function () {
     const handleLogin = async (e) => {
         e.preventDefault()
         const hashedPw = CryptoJS.SHA256(password).toString()
-        
+
         try {
-            const response = await axios.post('http://127.0.0.1:8000/accounts/login/', { username, hashedPw })
+            const response = await axios.post(process.env.REACT_APP_BACK_BASE_URL + '/accounts/login/', { username, hashedPw })
             // 세션에 저장
             const session_key = response.data.session_key
             setCookie('key', session_key, 60)

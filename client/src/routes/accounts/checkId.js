@@ -8,7 +8,7 @@ const CheckId = function () {
     const findUser = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://127.0.0.1:8000/accounts/check/id/', { name, email })
+            const response = await axios.post(process.env.REACT_APP_BACK_BASE_URL + '/accounts/check/id/', { name, email })
             console.log(response.data)
         }
         catch (error) {

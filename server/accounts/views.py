@@ -14,7 +14,7 @@ class LoginView(APIView):
         password = request.data.get('password')
 
         # DB와 비교
-        user = authenticate(username=username, password=password)
+        user = authenticate(username = username, password = password)
         if user is not None: # 계정이 있을경우
             login(request, user)
             return Response({'session_key': request.session.session_key, 'message': 'Login successful'}, status = status.HTTP_200_OK)
@@ -28,6 +28,6 @@ class CheckIdView(APIView): # 아이디 찾기
         if condition:
             username = User.objects.filter(name = request.data['name'], email = request.data['email']).values('username')
 
-            return Response({'message':'정상적인 요청입니다', 'username':username} , status = status.HTTP_200_OK)
+            return Response({'message': '정상적인 요청입니다', 'username': username} , status = status.HTTP_200_OK)
         else:
-            return Response({'message':'아이디가 존재하지 않습니다'}, status = status.HTTP_404_NOT_FOUND)
+            return Response({'message': '아이디가 존재하지 않습니다'}, status = status.HTTP_404_NOT_FOUND)

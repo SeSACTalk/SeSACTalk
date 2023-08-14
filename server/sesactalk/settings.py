@@ -80,7 +80,7 @@ MIDDLEWARE = [
 
 # CORS 추가
 CORS_ORIGIN_WHITELIST = (
-    'http://127.0.0.1:8000', 'http://localhost:3000'
+    env.str('BACK_BASE_URL'), env.str('FRONT_BASE_URL')
 )
 COLS_ALLOW_CREDENTIALS = True
 
