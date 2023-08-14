@@ -146,3 +146,5 @@ thumb
 sketch
 
 migrations/
+*.idea/
+*/.idea/
