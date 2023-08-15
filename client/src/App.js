@@ -3,10 +3,12 @@ import './App.css';
 import './style.css'
 import React, { useState } from 'react';
 import RestAPI from './routes/RestAPI';
+import { Routes, Route, Link, useNavigate, Outlet } from 'react-router-dom'
+
+import './firebase-messaging-sw'
 import Login from './routes/accounts/Login';
 import SignUp from './routes/accounts/Signup';
 import FindId from './routes/accounts/FindId'
-import { Routes, Route, Link, useNavigate, Outlet } from 'react-router-dom'
 
 
 function App() {

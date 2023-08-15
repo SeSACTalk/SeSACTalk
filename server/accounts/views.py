@@ -5,6 +5,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from firebase_admin import messaging
 
 from accounts.serializers import CampusSerializer, CourseSerializer, UserSerializer
 from accounts.models import Campus, Course, User
@@ -56,7 +57,7 @@ class SignUpView(APIView):
 
 
 class IdCheckView(APIView):
-    def post(self, request) -> Response:
+    def post(self, request: HttpRequest) -> Response:
         username = request.query_params.get('username')
         user = User.objects.filter(username = username)
 
@@ -78,3 +79,27 @@ class FindIdView(APIView): # 아이디 찾기
             return Response({'message': '정상적인 요청입니다', 'username': username} , status = status.HTTP_200_OK)
         else:
             return Response({'message': '아이디가 존재하지 않습니다'}, status = status.HTTP_404_NOT_FOUND)
+        
+class NotificationView(APIView):
+    def post(self, request:HttpRequest) -> Response:
+        fcm_token = request.data['fcm_token']
+        if not fcm_token:
+            return Response({'message': 'FCM token is required'}, status = status.HTTP_400_BAD_REQUEST)
+        
+
+
+        # 푸시 알림 메시지 설정
+        message = messaging.Message(
+            token = fcm_token,
+            notification = messaging.Notification(
+                title = "New Notification",
+                body = "You've got a new message!"
+            )
+        )
+
+        # 푸시 알림 발송
+        try:
+            response = messaging.send(message)
+            return Response({'message': 'Push Notification sent'})
+        except Exception:
+            return Response({'message': str(Exception)}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
