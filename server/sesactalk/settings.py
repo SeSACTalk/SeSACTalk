@@ -156,8 +156,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'static'
-
+# STATIC_ROOT = BASE_DIR / 'static'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -172,3 +174,12 @@ SESSION_COOKIE_SECURE = True  # HTTPS 연결에서만 쿠키 사용 (보안 강�
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # 브라우저 종료 시 세션 만료 여부
 SESSION_COOKIE_HTTPONLY = True  # JavaScript에서 쿠키 접근 방지 (보안 강화를 위해)
 SESSION_COOKIE_SAMESITE = 'Lax'  # SameSite 설정 (CSRF 보호를 위해)
+
+# 이메일 관련 설정
+# smtp 설정
+EMAIL_HOST = env.str("EMAIL_HOST")
+EMAIL_PORT = env.int("EMAIL_PORT")
+EMAIL_USE_SSL = env.str("EMAIL_USE_SSL")
+EMAIL_HOST_USER = env.str("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = f"{EMAIL_HOST_USER}@naver.com"

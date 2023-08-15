@@ -2,9 +2,11 @@ from django.contrib.auth import login
 from django.contrib.sessions.models import Session
 from django.http import HttpRequest
 from django.contrib.auth.hashers import make_password, check_password
+from django.shortcuts import render
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.utils.crypto import get_random_string
 
 from accounts.serializers import CampusSerializer, CourseSerializer, UserSerializer
 from accounts.models import Campus, Course, User
@@ -84,6 +86,10 @@ class FindPasswordView(APIView): # 비밀번호 찾기
         condition = User.objects.filter(username = request.data['username'], email = request.data['email']).exists()
 
         if condition:
+            # temp_password = get_random_string(length=12)  # 12자리의 랜덤 문자열 생성
             return Response({'message': '임시비밀번호를 이메일로 발송하였습니다.'}, status = status.HTTP_200_OK)
         else:
             return Response({'message': '비밀번호가 존재하지 않습니다'}, status = status.HTTP_404_NOT_FOUND)
+
+def test_view_email_template(request):
+    return render(request, 'accounts/email_template.html')
