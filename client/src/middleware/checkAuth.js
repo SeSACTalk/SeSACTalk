@@ -5,7 +5,7 @@ const checkAuthMiddleware = async () => {
     const SERVER = process.env.REACT_APP_BACK_BASE_URL
     const SERVER_ACCOUNTS_VERIFY = SERVER + '/accounts/verify/session/'
 
-    const session_key = getCookie('key');
+    const session_key = getCookie('session_key');
 
     if (session_key) {
         try {
