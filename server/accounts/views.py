@@ -33,8 +33,7 @@ class LoginView(APIView):
         user = User.objects.get(username = request.data['username'])
         if check_password(request.data['hashedPw'], user.password): # 비밀번호 확인
             login(request, user)
-            print(request.session.session_key)
-            return Response({'session_key': request.session.session_key, 'message': 'Login successful'}, status = status.HTTP_200_OK)
+            return Response({'session_key': request.session.session_key, 'id': user.id,'username': user.username, 'message': 'Login successful'}, status = status.HTTP_200_OK)
         else:
             return Response({'error': 'Invalud credentials'}, status = status.HTTP_400_BAD_REQUEST)
 
