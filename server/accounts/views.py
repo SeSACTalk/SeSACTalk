@@ -5,10 +5,27 @@ from django.contrib.auth.hashers import make_password, check_password
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import BasePermission
+from rest_framework.exceptions import PermissionDenied
 
 from accounts.serializers import CampusSerializer, CourseSerializer, UserSerializer
 from accounts.models import Campus, Course, User
 
+class CheckSessionPermission(BasePermission):
+    def has_permission(self, request, view):
+        frontend_session_key = request.META.get('HTTP_AUTHORIZATION', '').replace('Session ', '')
+
+        if Session.objects.filter(session_key=frontend_session_key).exists():
+            return True
+        else:
+            # 인증되지 않은 사용자에게 403 Forbidden 응답을 반환
+            raise PermissionDenied('You are not authenticated.')
+
+class VerifyUserView(APIView):
+    permission_classes = [CheckSessionPermission]
+
+    def get(self, request: HttpRequest) -> Response:
+        return Response({'message': 'Verified Session key'}, status=status.HTTP_200_OK)
 
 class LoginView(APIView):
     def post(self, request: HttpRequest) -> Response:
@@ -16,9 +33,10 @@ class LoginView(APIView):
         user = User.objects.get(username = request.data['username'])
         if check_password(request.data['hashedPw'], user.password): # 비밀번호 확인
             login(request, user)
+            print(request.session.session_key)
             return Response({'session_key': request.session.session_key, 'message': 'Login successful'}, status = status.HTTP_200_OK)
         else:
-            return Response({'error': 'Invalud credentials'}, status= status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Invalud credentials'}, status = status.HTTP_400_BAD_REQUEST)
 
 
 class SignUpView(APIView):

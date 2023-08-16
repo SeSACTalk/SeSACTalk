@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import axios from 'axios';
 import CryptoJS from 'crypto-js'
 import { useNavigate } from 'react-router-dom'
-import { setCookie } from '../../modules/handle_cookie.js';
+import { setCookie } from '../../modules/handle_cookie';
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
 const SERVER_ACCOUNTS_LOGIN = SERVER + '/accounts/login/'
@@ -23,7 +23,6 @@ const Login = function () {
             const session_key = response.data.session_key
             setCookie('key', session_key, 60)
             navigate('/')
-
         } catch (error) {
             console.error('Login failed', error.response.data)
         }
