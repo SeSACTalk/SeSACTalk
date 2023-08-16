@@ -2,6 +2,8 @@ import axios from 'axios'
 import { initializeApp } from "firebase/app";
 import { getToken, getMessaging, onMessage } from 'firebase/messaging';
 
+import { getCookie } from './modules/handle_cookie';
+
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
   authDomain: process.env.REACT_APP_AUTH_DOMAIN,
@@ -33,7 +35,8 @@ async function requestPermission() {
   if (token) {
     try {
       console.log(token)
-      // const response = await axios.post(SERVER, { token: token })
+      const username = getCookie('username')
+      const response = await axios.post(`${SERVER}/user/${username}/notify`, { token: token })
     }
     catch (error) {
       // console.error('Fail', error.response.data)
