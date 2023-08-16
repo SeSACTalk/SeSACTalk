@@ -1,10 +1,10 @@
 from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
-from .views import ReviewList, ReviewDetail
+
+from user.views import NotificationView
 
 urlpatterns = [
-    path('review/', ReviewList.as_view()),
-    path('review/<int:pk>/', ReviewDetail.as_view()),
+    path('<int:pk>/notify', NotificationView.as_view(), name = 'push notification')
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

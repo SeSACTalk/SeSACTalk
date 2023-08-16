@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     'corsheaders', # CORS 추가
     'rest_framework',
     'rest_framework.authtoken',
-    'application',
     'accounts',
     'user',
     'post',
