@@ -223,4 +223,4 @@ function CourseOptions({ courseList }) {
     );
 }
 
-export default SignUp;
+export default Signup;
