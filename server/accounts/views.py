@@ -18,6 +18,7 @@ from django.utils.crypto import get_random_string
 from accounts.serializers import CampusSerializer, CourseSerializer, UserSerializer
 from accounts.models import Campus, Course, User
 
+from datetime import datetime
 
 class LoginView(APIView):
     def post(self, request: HttpRequest) -> Response:
@@ -88,14 +89,14 @@ class FindIdView(APIView): # 아이디 찾기
         else:
             return Response({'message': '아이디가 존재하지 않습니다'}, status = status.HTTP_404_NOT_FOUND)
 
-def send_email_to_send_temporary_password(username, receiver):
-    # subject = render_to_string("accounts/send_temporary_password_subject.txt", {'username' : username})
-    subject = render_to_string("accounts/send_temporary_password_subject.txt", {'username': 'username'})
-    content = render_to_string("accounts/email_template.html")
+def send_email_to_send_temporary_password(username : str, receiver : str, temp_password : str) -> None :
+    current_time = datetime.now().strftime("%Y년 %m월 %d일 %H:%M:%S")
+    subject = render_to_string("accounts/send_temporary_password_subject.txt", {'username' : username})
+    content = render_to_string("accounts/email_template.html", {'current_time' : current_time, 'temp_password' : temp_password})
     sender_email = settings.DEFAULT_FROM_EMAIL
 
     try: # 메일의 유효성을 검사
-        validate_email('xpsxm225@naver.com')
+        validate_email(receiver)
     except ValidationError as e:
         print(e.message)
 
@@ -103,21 +104,23 @@ def send_email_to_send_temporary_password(username, receiver):
         subject,
         content,
         sender_email,
-        # [receiver],
-        ['xpsxm225@naver.com'],
+        [receiver],
         fail_silently=False,
         html_message = content
     )
+
 class FindPasswordView(APIView): # 비밀번호 찾기
     def post(self, request: HttpRequest) -> Response:
-        condition = User.objects.filter(username = request.data['username'], email = request.data['email']).exists()
+        username = request.data['username']
+        email = request.data['email']
+        user = User.objects.filter(username=username, email=email).first()
 
-        if condition:
-            # temp_password = get_random_string(length=12)  # 12자리의 랜덤 문자열 생성
-            send_email_to_send_temporary_password('', '')
+        if user:
+            temp_password = get_random_string(length=12)
+            user.password = make_password(temp_password)
+            user.save()
+
+            send_email_to_send_temporary_password(username, email, temp_password)
             return Response({'message': '임시비밀번호를 이메일로 발송하였습니다.'}, status = status.HTTP_200_OK)
         else:
-            return Response({'message': '비밀번호가 존재하지 않습니다'}, status = status.HTTP_404_NOT_FOUND)
-
-def test_view_email_template(request):
-    return render(request, 'accounts/email_template.html')
+            return Response({'message': '회원 정보가 존재하지 않습니다'}, status = status.HTTP_404_NOT_FOUND)
