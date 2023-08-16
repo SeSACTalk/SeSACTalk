@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
 const SERVER_ACCOUNTS_SIGNUP = SERVER + '/accounts/signup/'
 
-const SignUp = function () {
+const Signup = function () {
     {/* 
         TODO: 프론트 전달 사항
         - 프론트의 유효성 검사 필요 (first_course를 선택하지 않았는데, second_course만 한다던지..)

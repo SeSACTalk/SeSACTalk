@@ -75,11 +75,10 @@ class SignUpView(APIView):
 
 class IdCheckView(APIView):
     def post(self, request) -> Response:
-        username = request.query_params.get('username')
-        user = User.objects.filter(username = username)
+        condition = User.objects.filter(username = request.data['username']).exists()
 
         response = None
-        if user :
+        if condition :
             response = Response({'result': 'unavailable'})
         else :
             response = Response({'result': 'available'})
