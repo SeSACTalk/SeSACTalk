@@ -19,6 +19,7 @@ from accounts.serializers import CampusSerializer, CourseSerializer, UserSeriali
 from accounts.models import Campus, Course, User
 
 from datetime import datetime
+import hashlib
 
 class LoginView(APIView):
     def post(self, request: HttpRequest) -> Response:
@@ -117,7 +118,7 @@ class FindPasswordView(APIView): # 비밀번호 찾기
 
         if user:
             temp_password = get_random_string(length=12)
-            user.password = make_password(temp_password)
+            user.password = make_password(hashlib.sha256(temp_password.encode()).hexdigest())
             user.save()
 
             send_email_to_send_temporary_password(username, email, temp_password)
