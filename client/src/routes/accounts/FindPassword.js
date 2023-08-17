@@ -27,7 +27,6 @@ const FindPassword = function () {
                         email : email
                 })
                 console.log(response.data);
-                navigate('accounts/login');
             } catch (error) {
                 console.error(error.response.data);
             }
