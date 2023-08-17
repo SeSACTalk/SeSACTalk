@@ -14,6 +14,8 @@ from pathlib import Path
 from environ import Env
 import mysql.connector.django
 import os
+import firebase_admin
+from firebase_admin import credentials
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,6 +29,22 @@ env_path = BASE_DIR / '.env' # env파일 경로 설정
 if env_path.exists():
     with env_path.open('rt', encoding='UTF8') as f:
         env.read_env(f, overwrite = True)
+
+service_account_key = {
+    "type": env("TYPE"),
+    "project_id": env("PROJECT_ID"),
+    "private_key_id": env("PRIVATE_KEY_ID"),
+    "private_key": env("PRIVATE_KEY").replace(r'\n', '\n'),
+    "client_email": env("CLIENT_EMAIL"),
+    "client_id": env("CLIENT_ID"),
+    "auth_uri": env("AUTH_URI"),
+    "token_uri": env("TOKEN_URI"),
+    "auth_provider_x509_cert_url": env("AUTH_PROVIDER_X509_CERT_URL"),
+    "client_x509_cert_url": env("CLIENT_X509_CERT_URL"),
+}
+
+cred = credentials.Certificate(service_account_key) 
+firebase_admin.initialize_app(cred)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -54,7 +72,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'accounts',
-    'user',
+    'user.apps.UserConfig',
     'post',
     'chat',
     'explore',

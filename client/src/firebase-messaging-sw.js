@@ -32,14 +32,15 @@ async function requestPermission() {
   const token = await getToken(messaging, {
     vapidKey: process.env.REACT_APP_VAPID_KEY,
   });
-  if (token) {
-    try {
-      console.log(token)
-      const username = getCookie('username')
-      const response = await axios.post(`${SERVER}/user/${username}/notify`, { token: token })
-    }
-    catch (error) {
-      // console.error('Fail', error.response.data)
+  const username = getCookie('username')
+  if (username) {
+    if (token) {
+      try {
+        const response = await axios.post(`${SERVER}/user/${username}/notify`, { token: token })
+      }
+      catch (error) {
+        console.error('Fail', error.response.data)
+      }
     }
   }
 
