@@ -19,9 +19,7 @@ const Login = function () {
 
         try {
             const response = await axios.post(SERVER_ACCOUNTS_LOGIN, { username, hashedPw })
-            // 세션에 저장
             setCookie('session_key', response.data.session_key, 60)
-            setCookie('user_id', response.data.id, 60)
             setCookie('username', response.data.username, 60)
             navigate('/')
         } catch (error) {

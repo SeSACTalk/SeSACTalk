@@ -53,7 +53,7 @@ class LoginView(APIView):
         if user:
             login(request, user)
             data = {
-                'session_key': request.session.session_key, 'id': user.id,
+                'session_key': request.session.session_key,
                 'username': user.username
             }
             return Response(data, status = status.HTTP_200_OK)
@@ -63,9 +63,9 @@ class LoginView(APIView):
 
 class SignUpView(APIView):
     def get(self, request: HttpRequest) -> Response:
-        campus_id = request.query_params.get('campus_id')
-
         campuses = Campus.objects.all()
+
+        campus_id = request.query_params.get('campus_id')
         campusSerializer = CampusSerializer(campuses, many = True)
 
         response_data = {

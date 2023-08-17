@@ -1,8 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'
-import checkAuthMiddleware from '../../middleware/checkAuth';
-import checkInfoMiddleware from '../../middleware/checkInfo';
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
 const SERVER_ACCOUNTS_FIND_PASSWORD = SERVER + '/accounts/find/user/password/'
@@ -15,23 +13,6 @@ const FindPassword = function () {
 
     {/* variables */ }
     let navigate = useNavigate()
-
-
-    useEffect(() => {
-        checkAuthMiddleware()
-            .then(() => {
-                checkInfoMiddleware()
-                    .then(() => {
-                        navigate('/')
-                    })
-                    .catch(() => {
-                        navigate('/accounts/signup')
-                    })
-            })
-            .catch(() => {
-                navigate('/accounts/login');
-            })
-    }, [])
 
     {/* form variables */ }
     const [username, setUsername] = useState('');

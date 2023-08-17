@@ -1,4 +1,5 @@
 from firebase_admin import messaging
+
 def send_fcm_notification(token, title, body, data = None):
     message = messaging.Message(
         token = token,

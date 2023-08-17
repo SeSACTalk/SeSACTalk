@@ -11,7 +11,7 @@ class RegistreFCMTokenView(APIView):
             return Response({'message': 'Username is required'}, status = status.HTTP_400_BAD_REQUEST)
 
         try:
-            user = User.objects.get(username=username)
+            user = User.objects.get(username = username)
         except User.DoesNotExist:
             return Response({'message': 'User not found'}, status = status.HTTP_404_NOT_FOUND)
 

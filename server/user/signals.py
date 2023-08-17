@@ -43,7 +43,7 @@ def send_fcm_on_new_follow(sender, instance, created, **kwargs):
     if created:
         follower = instance.user_follower.name
 
-        post_author_token = instance.user_follow.fcm_token
+        user_token = instance.user_follow.fcm_token
 
         message_title = "새 알림"
         message_body = f"{follower}님이 회원님을 팔로우합니다."
@@ -51,26 +51,27 @@ def send_fcm_on_new_follow(sender, instance, created, **kwargs):
             'follow_id': instance.id,
         }
 
-        send_fcm_notification(post_author_token, message_title, message_body, data_message)
+        send_fcm_notification(user_token, message_title, message_body, data_message)
 
+# TODO : 채팅 수정하기
 @receiver(post_save, sender = Chat) # 채팅 알림
 def send_fcm_on_new_chat(sender, instance, created, **kwargs):
     if created:
-        follower = instance.user_follower.name
+        sender = instance.sender.name
 
-        post_author_token = instance.user_follow.fcm_token
+        receiver_token = instance.reciever.fcm_token
 
         message_title = "새 메시지"
-        message_body = f"{follower}님이 회원님을 팔로우합니다."
+        message_body = f"{sender}님이 회원님에게 메시지를 보냈습니다.."
         data_message = {
-            'follow_id': instance.id,
+            'sender_id': instance.id,
         }
 
-        send_fcm_notification(post_author_token, message_title, message_body, data_message)
+        send_fcm_notification(receiver_token, message_title, message_body, data_message)
 
 @receiver(post_delete, sender = Report) # 신고 알림
 def send_fcm_on_new_report(sender, instance, **kwargs):
-    post_author_token = instance.reported.fcm_token
+    reported_token = instance.reported.fcm_token
 
     message_title = "새 알림"
     message_body = f"회원님의 게시글이 운영정책 위반으로 삭제되었습니다."
@@ -79,4 +80,4 @@ def send_fcm_on_new_report(sender, instance, **kwargs):
         'report_date': instance.date,
     }
 
-    send_fcm_notification(post_author_token, message_title, message_body, data_message)
+    send_fcm_notification(reported_token_token, message_title, message_body, data_message)
