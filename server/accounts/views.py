@@ -1,12 +1,22 @@
+from django.conf import settings
 from django.contrib.auth import login
 from django.contrib.sessions.models import Session
+from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
+from django.core.validators import validate_email
 from django.http import HttpRequest
 from django.contrib.auth.hashers import make_password, check_password
+from django.shortcuts import render
+from django.template.loader import render_to_string
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import BasePermission
 from rest_framework.exceptions import PermissionDenied
+from django.utils.crypto import get_random_string
+
+from datetime import datetime
+import hashlib
 
 from accounts.serializers import CampusSerializer, CourseSerializer, UserSerializer
 from accounts.models import Campus, Course, User
@@ -94,3 +104,39 @@ class FindIdView(APIView): # 아이디 찾기
             return Response({'message': '정상적인 요청입니다', 'username': username} , status = status.HTTP_200_OK)
         else:
             return Response({'message': '아이디가 존재하지 않습니다'}, status = status.HTTP_404_NOT_FOUND)
+
+def send_email_to_send_temporary_password(username : str, receiver : str, temp_password : str) -> None :
+    current_time = datetime.now().strftime("%Y년 %m월 %d일 %H:%M:%S")
+    subject = render_to_string("accounts/send_temporary_password_subject.txt", {'username' : username})
+    content = render_to_string("accounts/email_template.html", {'current_time' : current_time, 'temp_password' : temp_password})
+    sender_email = settings.DEFAULT_FROM_EMAIL
+
+    try: # 메일의 유효성을 검사
+        validate_email(receiver)
+    except ValidationError as e:
+        print(e.message)
+
+    send_mail(
+        subject,
+        content,
+        sender_email,
+        [receiver],
+        fail_silently=False,
+        html_message = content
+    )
+
+class FindPasswordView(APIView): # 비밀번호 찾기
+    def post(self, request: HttpRequest) -> Response:
+        username = request.data['username']
+        email = request.data['email']
+        user = User.objects.filter(username=username, email=email).first()
+
+        if user:
+            temp_password = get_random_string(length=12)
+            user.password = make_password(hashlib.sha256(temp_password.encode()).hexdigest())
+            user.save()
+
+            send_email_to_send_temporary_password(username, email, temp_password)
+            return Response({'message': '임시비밀번호를 이메일로 발송하였습니다.'}, status = status.HTTP_200_OK)
+        else:
+            return Response({'message': '회원 정보가 존재하지 않습니다'}, status = status.HTTP_404_NOT_FOUND)
