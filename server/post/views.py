@@ -6,11 +6,15 @@ from rest_framework.response import Response
 from post.models import Post, Like, View, Reply, HashTag, Report
 from post.serializers import PostSerializer, LikeSerializer, ViewSerializer, ReplySerializer, HashTagSerializer, ReportSerializer
 
+class Posts(APIView):
+    def get(self, request: HttpRequest) -> Response:
+        pass
+
 class Post(APIView):
     def get(self, request: HttpRequest) -> Response:
         pass
 
-    def post(self, request) -> Response:
+    def post(self, request: HttpRequest) -> Response:
         pass
 
 class PostDetail(APIView):
