@@ -1,13 +1,15 @@
 /* eslint-disable */
+import React from 'react';
+import { Routes, Route, Link, useNavigate, Outlet } from 'react-router-dom';
+
 import './App.css';
 import './style.css'
-import React from 'react';
-import RestAPI from './routes/RestAPI';
 import Login from './routes/accounts/Login';
 import SignUp from './routes/accounts/Signup';
-import FindId from './routes/accounts/FindId'
+import FindId from './routes/accounts/FindId';
 import FindPassword from './routes/accounts/FindPassword';
-import { Routes, Route, Link, useNavigate, Outlet } from 'react-router-dom';
+import './firebase-messaging-sw'
+
 
 
 function App() {
@@ -23,7 +25,6 @@ function App() {
         <Route path='/accounts/find/user/id/' element={<FindId/>}/>
         <Route path='/accounts/find/user/password' element={<FindPassword/>}/>
       </Routes>
-      <RestAPI></RestAPI>
       <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Button</button>
     </div>
   );
