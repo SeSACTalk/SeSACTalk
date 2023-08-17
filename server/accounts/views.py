@@ -1,12 +1,11 @@
 from django.conf import settings
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
 from django.contrib.sessions.models import Session
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.core.validators import validate_email
 from django.http import HttpRequest
-from django.contrib.auth.hashers import make_password, check_password
-from django.shortcuts import render
+from django.contrib.auth.hashers import make_password
 from django.template.loader import render_to_string
 from rest_framework import status
 from rest_framework.views import APIView
@@ -25,7 +24,7 @@ class CheckSessionPermission(BasePermission):
     def has_permission(self, request, view):
         frontend_session_key = request.META.get('HTTP_AUTHORIZATION', '').replace('Session ', '')
 
-        if Session.objects.filter(session_key=frontend_session_key).exists():
+        if Session.objects.filter(session_key = frontend_session_key).exists():
             return True
         else:
             # 인증되지 않은 사용자에게 403 Forbidden 응답을 반환
@@ -35,15 +34,29 @@ class VerifyUserView(APIView):
     permission_classes = [CheckSessionPermission]
 
     def get(self, request: HttpRequest) -> Response:
-        return Response({'message': 'Verified Session key'}, status=status.HTTP_200_OK)
+        return Response({'message': 'Verified Session key'}, status = status.HTTP_200_OK)
+
+class UserInfoView(APIView):
+    def post(self, request: HttpRequest) -> Response:
+        session = Session.objects.get(session_key = request.data['session_key'])
+        user_id = session.get_decoded().get('_auth_user_id')
+        
+        user = User.objects.get(id = user_id)
+        if user.is_staff:
+            return Response(status = status.HTTP_200_OK)
+        return Response(status = status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
     def post(self, request: HttpRequest) -> Response:
         # DB와 비교
-        user = User.objects.get(username = request.data['username'])
-        if check_password(request.data['hashedPw'], user.password): # 비밀번호 확인
+        user = authenticate(request, username = request.data['username'], password = request.data['hashedPw'])
+        if user:
             login(request, user)
-            return Response({'session_key': request.session.session_key, 'id': user.id,'username': user.username, 'message': 'Login successful'}, status = status.HTTP_200_OK)
+            data = {
+                'session_key': request.session.session_key, 'id': user.id,
+                'username': user.username
+            }
+            return Response(data, status = status.HTTP_200_OK)
         else:
             return Response({'error': 'Invalud credentials'}, status = status.HTTP_400_BAD_REQUEST)
 
