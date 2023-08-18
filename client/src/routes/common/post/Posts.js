@@ -58,6 +58,9 @@ const Posts = function () {
 };
 
 const Post =  function ({ post }) {
+  /* variables */
+  const SERVER_PROFILE_DETAIL = `${SERVER}/profile/${post.user}/`;
+
   {/* TODO: user객체를 가져와, profile만들기 */}
   /*
     <properties>

@@ -11,9 +11,16 @@ from post.serializers import PostSerializer, LikeSerializer, ViewSerializer, Rep
 
 class Posts(APIView):
     def get(self, request: HttpRequest, username) -> Response:
-        #TODO: follow기반으로 수정
-        posts = PostModel.objects.all()
+        # TODO: follow기반으로 수정
+        # select_related()함수로, for post in posts 루프 안에서 post.user 문장으로 인한 N+1 쿼리문제를 해결할 수 있음
+        # select_related는 Forien key로 연결된 객체 데이터를 미리 가져오는 역할.
+        posts = PostModel.objects.select_related('user').all()
+
         postSerializer = PostSerializer(posts, many=True)
+
+        for i, post in enumerate(posts):
+            user = post.user
+            postSerializer.data[i]['username'] = user.username
 
         return Response(postSerializer.data)
 
