@@ -24,7 +24,12 @@ class CheckSessionPermission(BasePermission):
     def has_permission(self, request, view):
         frontend_session_key = request.META.get('HTTP_AUTHORIZATION', '').replace('Session ', '')
 
-        if Session.objects.filter(session_key = frontend_session_key).exists():
+        # 세션키로 사용자 인증여부 조회하기
+        session = Session.objects.get(session_key = frontend_session_key)
+        user_id = session.get_decoded().get('_auth_user_id')
+        is_auth = User.objects.get(id = user_id).is_auth
+        
+        if Session.objects.filter(session_key = frontend_session_key).exists() and is_auth == 1:
             return True
         else:
             # 인증되지 않은 사용자에게 403 Forbidden 응답을 반환
