@@ -23,7 +23,7 @@ function General() {
     let username = getCookie('username')
     return (
         <div className="General">
-            <Link to={`/post/${username}`}>전체 게시물 보기</Link>{/* &nbsp;|&nbsp; */}
+            <Link to={`/post/${username}`}>Post</Link>{/* &nbsp;|&nbsp; */}
         </div>
     );
 }

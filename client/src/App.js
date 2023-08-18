@@ -14,6 +14,7 @@ import Admin from './routes/admin/Admin';
 import General from './routes/general/General'
 
 import Posts from './routes/common/post/Posts';
+import WritePost from './routes/common/post/WritePost';
 
 import { Routes, Route, Link, useNavigate, Outlet } from 'react-router-dom';
 
@@ -40,6 +41,7 @@ function App() {
         {/* /routes/common/ */}
         {/* /post/ */}
         <Route path='/post/:username' element={<Posts/>}/>
+        <Route path='/post/:username/write' element={<WritePost/>}/>
       </Routes>
       <RestAPI></RestAPI>
       <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Button</button>
