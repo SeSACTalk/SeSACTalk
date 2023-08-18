@@ -59,9 +59,11 @@ const Posts = function () {
 
 const Post =  function ({ post }) {
   /* variables */
-  const SERVER_PROFILE_DETAIL = `${SERVER}/profile/${post.user}/`;
+  const CLIENT_PROFILE_DETAIL = `/profile/${post.username}/`;
+  const CLIENT_POST_DETAIL = `/post/${post.username}/${post.uuid}`;
+  const SERVER_PROFILE_DETAIL = `${SERVER}/profile/${post.username}`;
 
-  {/* TODO: user객체를 가져와, profile만들기 */}
+  {/* TODO: profile객체를 가져와 profile img_path로 프로필 사진 가져오기 */}
   /*
     <properties>
     id
@@ -71,11 +73,15 @@ const Post =  function ({ post }) {
     user
     tag_set
     report_status
-    uuid
+    uuid,
+    username
   */
   return (
     <div style={{ 'margin' : '4px auto', 'width' : '70%', 'border' : '1px solid black' }}>
       {/* date */}
+      <p style={{ 'fontWeight' : '800', 'fontSize' : '1.2em' }}>
+        <a href={CLIENT_PROFILE_DETAIL} style={{ 'color' : '#187B46', }}>{ post.username }</a> | <a href={CLIENT_POST_DETAIL} style={{ 'color' : 'blue', }}>글 상세보기</a>
+      </p>
       <p style={{ 'color' : 'red' }}>
         { post.date }
       </p>
