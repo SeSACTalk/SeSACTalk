@@ -27,6 +27,10 @@ const Posts = function () {
     <div className="Posts">
       <Link to={`/post/${username}/write`} style={{'backgroundColor' : 'blueviolet', 'color' : 'white', 'borderRadius' : '10px'}}>글쓰기</Link>
       <hr style={{'margin' : '10px'}}/>
+      <div className="post_content" style={{'margin' : '20px 0', 'width' : '70%'}}>
+        post내용
+      </div>
+      <hr style={{'margin' : '10px'}}/>
     </div>
   );
 };

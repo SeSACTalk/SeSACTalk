@@ -3,6 +3,8 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { getCookie } from "../../../modules/handle_cookie";
+
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
 
 const WritePost = function () {
@@ -10,6 +12,7 @@ const WritePost = function () {
   let navigate = useNavigate()
   let { username } = useParams();
   const SERVER_POST_POSTS = `${SERVER}/post/${username}/write/`;
+  const session_key = getCookie('session_key')
 
   const [content, setContent] = useState([]);
   const [imgPath, setImgPath] = useState(null);
@@ -25,7 +28,10 @@ const WritePost = function () {
         method: "post",
         url: SERVER_POST_POSTS,
         data: formData,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { 
+          'Content-Type': "multipart/form-data",
+          'Authorization': `${session_key}`
+         },
       });
       console.log(response.data);
       navigate(`/post/${username}`)

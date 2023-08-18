@@ -1,3 +1,4 @@
+from django.contrib.sessions.models import Session
 from django.http import HttpRequest
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
@@ -21,17 +22,28 @@ class Post(APIView):
         pass
 
     def post(self, request: HttpRequest, username) -> Response:
-        content = request.data['content']
-        img_path = request.FILES['img_path']
+        # session_key로 user_id get
+        frontend_session_key = request.META.get('HTTP_AUTHORIZATION')
+        session = Session.objects.get(session_key=frontend_session_key)
+        user_id = session.get_decoded().get('_auth_user_id')
 
-        if content and len(content) <= 500: # content의 길이 제한(500자 이하)
-            user = User.objects.get(id=14) #TODO: test용 user이므로, 테스트 이후 수정 필요
-            post = PostModel.objects.create(content = content, img_path = img_path, user = user)
-            post.save()
-        else:
-            print('content의 길이가 500자를 초과')
-            return Response({'data' : 'content의 길이가 500자를 초과하였습니다.'}, status.HTTP_400_BAD_REQUEST)
-        return Response({'message': 'Post Upload Success'}, status = status.HTTP_201_CREATED)
+        user = User.objects.get(id=user_id)
+
+        # user_id와 username 값 비교하여 작성 주체 파악
+        if (username == user.username):
+            content = request.data['content']
+            img_path = request.FILES['img_path']
+            if content and len(content) <= 500: # content의 길이 제한(500자 이하)
+                post = PostModel.objects.create(content = content, img_path = img_path, user = user)
+                post.save()
+                return Response({'message': 'Post Upload Success'}, status=status.HTTP_201_CREATED)
+            else:
+                print('content의 길이가 500자를 초과')
+                return Response({'error' : 'content의 길이가 500자를 초과하였습니다.'}, status.HTTP_400_BAD_REQUEST)
+
+        # 요청이 서버에 도달했지만, 사용자의 경로 조작으로 서버가 해당 요청을 거부
+        return Response({'error' : '잘못된 접근입니다.'}, status.HTTP_403_FORBIDDEN)
+
 
 class PostDetail(APIView):
     def post(self, request: HttpRequest) -> Response:
