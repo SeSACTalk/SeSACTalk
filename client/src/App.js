@@ -8,11 +8,14 @@ import Login from './routes/accounts/Login';
 import SignUp from './routes/accounts/Signup';
 import FindId from './routes/accounts/FindId';
 import FindPassword from './routes/accounts/FindPassword';
+import Profile from './routes/profiles/Profile'
 import './firebase-messaging-sw'
 
-
+import { getCookie } from './modules/handle_cookie';
 
 function App() {
+  const username = getCookie("username");
+
   return (
     <div className="App">
       <Link to='/accounts/login'>로그인</Link>
@@ -24,8 +27,12 @@ function App() {
         <Route path='/accounts/signup' element={<SignUp/>}/>
         <Route path='/accounts/find/user/id/' element={<FindId/>}/>
         <Route path='/accounts/find/user/password' element={<FindPassword/>}/>
+
+        <Route path='/profile/:username' element={<Profile/>}/>
       </Routes>
       <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Button</button>
+
+      <Link to={`/profile/${username}`}>프로필 조회</Link>
     </div>
   );
 }
