@@ -7,8 +7,9 @@ const SERVER = process.env.REACT_APP_BACK_BASE_URL;
 
 const WritePost = function () {
   /* variables */
+  let navigate = useNavigate()
   let { username } = useParams();
-  const SERVER_POST_POSTS = `${SERVER}/post/${username}/write`;
+  const SERVER_POST_POSTS = `${SERVER}/post/${username}/write/`;
 
   const [content, setContent] = useState([]);
   const [imgPath, setImgPath] = useState(null);
@@ -22,11 +23,12 @@ const WritePost = function () {
     try {
       const response = await axios({
         method: "post",
-        url: SERVER_POST_POSTS + "write/",
+        url: SERVER_POST_POSTS,
         data: formData,
         headers: { "Content-Type": "multipart/form-data" },
       });
       console.log(response.data);
+      navigate(`/post/${username}`)
     } catch (error) {
       console.log(error.response.data);
     }
