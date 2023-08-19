@@ -6,22 +6,6 @@ from accounts.serializers import CourseSerializer
 class UserAuthSerializer(serializers.ModelSerializer):
     first_course = CourseSerializer(read_only = True)
     second_course = CourseSerializer(read_only = True)
-    # is_auth = serializers.SerializerMethodField()
-
-    # def get_is_auth(self, obj):
-    #     auth_status = ''
-    #     if obj.is_auth == 0:
-    #         auth_status = '가입'
-    #     elif obj.is_auth == 1:
-    #         auth_status = '승인'
-    #     elif obj.is_auth == 2:
-    #         auth_status = '보류'
-    #     elif obj.is_auth == 3:
-    #         auth_status = '거절'
-    #     else:
-    #         raise ValueError
-
-    #     return auth_status
     
     def validate(self, data):
         is_auth = data.get('is_auth')
