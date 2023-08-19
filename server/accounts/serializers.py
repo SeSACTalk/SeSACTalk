@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.core.validators import MinLengthValidator, MaxLengthValidator, RegexValidator
 
-from .models import Campus, Course, User
+from accounts.models import Campus, Course, User
 
 # 유효성
 class CustomUsernameRegexValidator(RegexValidator):
@@ -36,6 +36,7 @@ class CampusSerializer(serializers.ModelSerializer):
         
 
 class CourseSerializer(serializers.ModelSerializer):
+    campus = CampusSerializer(read_only = True)
     class Meta:
         model = Course
         fields = ('id', 'name', 'campus')

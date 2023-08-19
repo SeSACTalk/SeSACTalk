@@ -105,7 +105,6 @@ const Signup = function () {
 
         const hashedPw = CryptoJS.SHA256(password).toString();
         /* checkId() 아이디 중복 체크 */
-        console.log(SERVER_ACCOUNTS_SIGNUP)
         const _ = await axios.post(SERVER_ACCOUNTS_SIGNUP, {
 
             name: name,
