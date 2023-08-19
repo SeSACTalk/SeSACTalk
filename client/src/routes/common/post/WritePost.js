@@ -11,7 +11,7 @@ const WritePost = function () {
   /* variables */
   let navigate = useNavigate()
   let { username } = useParams();
-  const SERVER_POST_POST = `${SERVER}/post/${username}/write/`;
+  const SERVER_POST_WRITE = `${SERVER}/post/${username}/`;
   const session_key = getCookie('session_key')
 
   const [content, setContent] = useState([]);
@@ -26,7 +26,7 @@ const WritePost = function () {
     try {
       const response = await axios({
         method: "post",
-        url: SERVER_POST_POST,
+        url: SERVER_POST_WRITE,
         data: formData,
         headers: { 
           'Content-Type': "multipart/form-data",
