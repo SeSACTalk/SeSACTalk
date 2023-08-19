@@ -1,5 +1,6 @@
 from django.contrib.sessions.models import Session
 from django.http import HttpRequest
+from django.utils.datastructures import MultiValueDictKeyError
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
@@ -9,9 +10,9 @@ from accounts.models import User
 from post.models import Post as PostModel, Like, View, Reply, HashTag, Report
 from post.serializers import PostSerializer, LikeSerializer, ViewSerializer, ReplySerializer, HashTagSerializer, ReportSerializer
 
-class Posts(APIView):
+class Post(APIView):
     def get(self, request: HttpRequest, username) -> Response:
-        # TODO: follow기반으로 수정
+        # TODO: follow기반으로 수정(+내 글도 보여야 함), 경로 조작 시 403 에러내도록 검증 로직 필요(upgrade로직==Mixin class 만들기), 수정하면서 try except문 작성하기(QuerySet결과가 None일 때)
         # select_related()함수로, for post in posts 루프 안에서 post.user 문장으로 인한 N+1 쿼리문제를 해결할 수 있음
         # select_related는 Forien key로 연결된 객체 데이터를 미리 가져오는 역할.
         posts = PostModel.objects.select_related('user').all()
@@ -24,10 +25,6 @@ class Posts(APIView):
 
         return Response(postSerializer.data)
 
-class Post(APIView):
-    def get(self, request: HttpRequest) -> Response:
-        pass
-
     def post(self, request: HttpRequest, username) -> Response:
         # session_key로 user_id get
         frontend_session_key = request.META.get('HTTP_AUTHORIZATION')
@@ -39,9 +36,14 @@ class Post(APIView):
         # user_id와 username 값 비교하여 작성 주체 파악
         if (username == user.username):
             content = request.data['content']
-            img_path = request.FILES['img_path']
+            try : # 이미지 파일이 없을 경우 예외 처리
+                img_path = request.FILES['img_path']
+                post = PostModel.objects.create(content=content, img_path=img_path, user=user)
+            except MultiValueDictKeyError as exception:
+                print(exception)
+                post = PostModel.objects.create(content=content, user=user)
+
             if content and len(content) <= 500: # content의 길이 제한(500자 이하)
-                post = PostModel.objects.create(content = content, img_path = img_path, user = user)
                 post.save()
                 return Response({'message': 'Post Upload Success'}, status=status.HTTP_201_CREATED)
             else:

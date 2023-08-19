@@ -61,11 +61,36 @@ const Post =  function ({ post }) {
   /* variables */
   const CLIENT_PROFILE_DETAIL = `/profile/${post.username}/`;
   const SERVER_PROFILE_DETAIL = `${SERVER}/profile/${post.username}`;
+  const SERVER_POST_POST = `${SERVER}/post/${post.username}/${post.uuid}/`
 
   const [postClickStatus, setPostClickStatus] = useState(false)
   const [postDetailOptionText, setPostDetailOptionText] = useState('글 상세 보기')
+  const [isPostMine, setIsPostMine] = useState(false);
 
   const img_path = `${SERVER}${post.img_path}`;
+  
+  /* functions */
+  useEffect(() => { /* 포스트 정보 바인딩 시 가져오기 */
+    const getPost = async () => {
+          try {
+            const response = await axios({
+              method: "get",
+              url: SERVER_POST_POST,
+              headers: { 
+                'Authorization': `${session_key}`
+              },
+            });
+            console.log(response.data)
+            if (response.data == ''){
+              setIsPostMine(true)
+            } 
+          } catch (error) {
+            console.log(error.response.data);
+          }
+        }
+      getPost();
+  }, []);
+
 
   {/* TODO: profile객체를 가져와 profile img_path로 프로필 사진 가져오기 */}
   /*
@@ -83,47 +108,50 @@ const Post =  function ({ post }) {
   return (
     <>
       <div className="Post" style={{ 'margin' : '4px auto', 'width' : '80%', 'border' : '1px solid black' }}>
-          <table style={{ 'width' : '100%', 'margin' : '10px 0' }}>
-            <tbody>
-              <tr style={{ 'color' : '#187B46','textAlign' : 'left', 'fontWeight' : '800', 'fontSize' : '1.2em' }}>
-                <td colSpan={2}>
-                  {/* 프로필 영역 */}
-                  <a href={CLIENT_PROFILE_DETAIL}>{ post.username }</a>
-                </td>
-              </tr>
-              <tr style={{ 'color' : 'blue','textAlign' : 'right', }}>
-                {/* 글 상세 보기 영역 */}
-                <td colSpan={2} onClick={() => {
-                    setPostClickStatus(!postClickStatus);
-                    postClickStatus ? setPostDetailOptionText('글 상세 보기') : setPostDetailOptionText('글 상세 보기 닫기')
-                  }}>{postDetailOptionText}
-                </td>
-              </tr>
-              <tr>
-                {/* border */}
-                <td colSpan={2} style={{'margin-top': '10px', 'margin-bottom':'50px', 'border-top': '3px solid #A7A7A7'}}></td>
-              </tr>
-              <tr>
-                {/* img_path */}
-                <td style={{ 'width' : '40%' }}>
-                  <img src={img_path} alt={`${post.img_path}`} style={{ 'width' : '190px', 'margin' : '0 auto'  }}/>
-                </td>
-                {/* content */}
-                <td style={{ 'width' : '60%' }}>
-                  <div style={{ 'border' : '3px solid #187B46', 'margin' : '0 15px', 'height' : '190px', 'overflow' : 'scroll'  }}>
-                    { post.content  }
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                {/* border */}
-                <td colSpan={2} style={{'margin-top': '10px', 'margin-bottom':'50px', 'border-top': '3px solid #A7A7A7'}}></td>
-              </tr>
-              <tr>
-                {/* 좋아요, 댓글 영역 */}
-              </tr>
-            </tbody>
-          </table>    
+        {/* 더보기 영역 */}
+        <div style={{ 'textAlign' : 'right' }}>더보기</div>
+        <hr style={{ 'margin' : '5px' }}/>
+        <table style={{ 'width' : '100%', 'margin' : '10px 0' }}>
+          <tbody>
+            <tr style={{ 'color' : '#187B46','textAlign' : 'left', 'fontWeight' : '800', 'fontSize' : '1.2em' }}>
+              <td colSpan={2}>
+                {/* 프로필 영역 */}
+                <a href={CLIENT_PROFILE_DETAIL}>{ post.username }</a>
+              </td>
+            </tr>
+            <tr style={{ 'color' : 'blue','textAlign' : 'right', }}>
+              {/* 글 상세 보기 영역 */}
+              <td colSpan={2} onClick={() => {
+                  setPostClickStatus(!postClickStatus);
+                  postClickStatus ? setPostDetailOptionText('글 상세 보기') : setPostDetailOptionText('글 상세 보기 닫기')
+                }}>{postDetailOptionText}
+              </td>
+            </tr>
+            <tr>
+              {/* border */}
+              <td colSpan={2} style={{'margin-top': '10px', 'margin-bottom':'50px', 'border-top': '3px solid #A7A7A7'}}></td>
+            </tr>
+            <tr>
+              {/* img_path */}
+              {
+                (post.img_path == null) ? null : <td style={{ 'width' : '40%' }}><img src={img_path} alt={`${post.img_path}`} style={{ 'width' : '190px', 'margin' : '0 auto'  }}/></td>
+              }
+              {/* content */}
+              <td style={{ 'width' : '60%' }}>
+                <div style={{ 'border' : '3px solid #187B46', 'margin' : '0 15px', 'height' : '190px', 'overflow' : 'scroll'  }}>
+                  { post.content  }
+                </div>
+              </td>
+            </tr>
+            <tr>
+              {/* border */}
+              <td colSpan={2} style={{'margin-top': '10px', 'margin-bottom':'50px', 'border-top': '3px solid #A7A7A7'}}></td>
+            </tr>
+            <tr>
+              {/* 좋아요, 댓글 영역 */}
+            </tr>
+          </tbody>
+        </table>    
       </div>
       {/* post detail 영역 */}
       {
@@ -157,36 +185,33 @@ const PostDetail = function ({post, img_path, CLIENT_PROFILE_DETAIL, SERVER_PROF
   }, []);
 
   return (
-    <div className="PostDetail" style={{ 'margin' : '4px auto', 'width' : '80%', 'border' : '1px solid blue' }}>
-      {/* 1. 더보기 영역 */}
-      <div style={{ 'textAlign' : 'right' }}>더보기</div>
-      <hr style={{ 'margin' : '5px' }}/>
-      <div style={{ 'display' : 'flex'}}>
-        {/* 2. 게시물 영역 */}
-        <div style={{ 'height' : '400px', 'width' : '52%', 'padding' : '5px' }}>
-          {/* 2-1. 사진 영역 */}
-          <div style={{ 'height' : '44%', }} >
-            <img src={img_path} alt={`${post.img_path}`}  style={{ 'display' : 'block', 'height' : '100%', 'margin' : '5px auto'  }} />
-          </div>
-          {/* 2-2. 글 영역 */}
-          <div style={{ 'display' : 'block', 'border' : '3px solid #187B46', 'margin' : '5px 15px', 'height' : '44%', 'overflow' : 'scroll'  }}>
-            { post.content  }
-          </div>
-          {/* 2-3. 댓글, 좋아요 영역 */}
-          <div style={{ 'display' : 'block', 'height' : '7%', 'border' : '2px solid #187B46', }}>
-            
-          </div>
+    <div className="PostDetail" style={{ 'margin' : '10px auto', 'width' : '80%', 'border' : '1px solid blue', 'display' : 'flex' }}>
+      {/* 1. 게시물 영역 */}
+      <div style={{ 'height' : '400px', 'width' : '52%', 'padding' : '5px' }}>
+        {/* 2-1. 사진 영역 */}
+        {
+          (post.img_path == null) ? null : (<div style={{ 'height' : '44%', }} >
+          <img src={img_path} alt={`${post.img_path}`}  style={{ 'display' : 'block', 'height' : '100%', 'margin' : '5px auto'  }} />
+        </div>)
+        }        
+        {/* 1-2. 글 영역 */}
+        <div style={{ 'display' : 'block', 'border' : '3px solid #187B46', 'margin' : '5px 15px', 'height' : '44%', 'overflow' : 'scroll'  }}>
+          { post.content  }
         </div>
-        {/* 3. 댓글 영역 */}
-        <div style={{ 'border' : '1px solid black', 'width' : '48%'  }}>
-          {/* 3-1. 남긴 댓글 영역 */}
-          <div style={{ 'display' : 'block', 'margin' : '10px 5px', 'height' : '83%', 'border' : '2px solid #187B46',   }}>
+        {/* 1-3. 댓글, 좋아요 영역 */}
+        <div style={{ 'display' : 'block', 'height' : '7%', 'border' : '2px solid #187B46', }}>
           
-          </div>    
-          {/* 3. 댓글 달기 영역 */}
-          <div style={{ 'display' : 'block', 'margin' : '10px 5px', 'height' : '8%', 'border' : '2px solid #187B46',    }}>
-          
-          </div>
+        </div>
+      </div>
+      {/* 2. 댓글 영역 */}
+      <div style={{ 'border' : '1px solid black', 'width' : '48%'  }}>
+        {/* 2-1. 남긴 댓글 영역 */}
+        <div style={{ 'display' : 'block', 'margin' : '10px 5px', 'height' : '83%', 'border' : '2px solid #187B46',   }}>
+        
+        </div>    
+        {/* 2-2. 댓글 달기 영역 */}
+        <div style={{ 'display' : 'block', 'margin' : '10px 5px', 'height' : '8%', 'border' : '2px solid #187B46',    }}>
+        
         </div>
       </div>
     </div> 
