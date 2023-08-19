@@ -13,7 +13,7 @@ const Posts = function () {
   let { username } = useParams();
   const SERVER_POST_POSTS = `${SERVER}/post/${username}/`;
 
-  const [postList, setPostList] = useState([]);
+  const [postList, setPostList] = useState([]);  
 
   /* functions */
   useEffect(() => { /* 포스트 목록 바운딩 시 가져오기 */
@@ -61,17 +61,19 @@ const Post =  function ({ post }) {
   /* variables */
   const CLIENT_PROFILE_DETAIL = `/profile/${post.username}/`;
   const SERVER_PROFILE_DETAIL = `${SERVER}/profile/${post.username}`;
-  const SERVER_POST_POST = `${SERVER}/post/${post.username}/${post.uuid}/`
+  const SERVER_POST_POST = `${SERVER}/post/${post.username}/${post.id}/`
 
   const [postClickStatus, setPostClickStatus] = useState(false)
   const [postDetailOptionText, setPostDetailOptionText] = useState('글 상세 보기')
-  const [isPostMine, setIsPostMine] = useState(false);
+  const [isPostMine, setIsPostMine] = useState(false)
 
   const img_path = `${SERVER}${post.img_path}`;
-  
+
+
   /* functions */
-  useEffect(() => { /* 포스트 정보 바인딩 시 가져오기 */
-    const getPost = async () => {
+  useEffect(() => { 
+    /* 더보기 옵션을 위해 내 게시글인지 비교 */
+    const getPostDetail = async () => {
           try {
             const response = await axios({
               method: "get",
@@ -80,15 +82,12 @@ const Post =  function ({ post }) {
                 'Authorization': `${session_key}`
               },
             });
-            console.log(response.data)
-            if (response.data == ''){
-              setIsPostMine(true)
-            } 
+            setIsPostMine(response.data.isPostMine);
           } catch (error) {
             console.log(error.response.data);
           }
         }
-      getPost();
+        getPostDetail();
   }, []);
 
 
@@ -109,7 +108,9 @@ const Post =  function ({ post }) {
     <>
       <div className="Post" style={{ 'margin' : '4px auto', 'width' : '80%', 'border' : '1px solid black' }}>
         {/* 더보기 영역 */}
-        <div style={{ 'textAlign' : 'right' }}>더보기</div>
+        <div style={{ 'textAlign' : 'right' }}>{
+          isPostMine ? <GetMoreBtnForPostWhenPostIsMine setPostClickStatus = {setPostClickStatus}/> : <GetMoreBtnForPostWhenPostIsNotMine setPostClickStatus = {setPostClickStatus}/>
+        }</div>
         <hr style={{ 'margin' : '5px' }}/>
         <table style={{ 'width' : '100%', 'margin' : '10px 0' }}>
           <tbody>
@@ -155,44 +156,24 @@ const Post =  function ({ post }) {
       </div>
       {/* post detail 영역 */}
       {
-        postClickStatus ? <PostDetail post = {post} img_path = {img_path} CLIENT_PROFILE_DETAIL = {CLIENT_PROFILE_DETAIL} SERVER_PROFILE_DETAIL = {SERVER_PROFILE_DETAIL}/> : null
+        postClickStatus ? <PostDetail post = {post} img_path = {img_path} isPostMine = {isPostMine} CLIENT_PROFILE_DETAIL = {CLIENT_PROFILE_DETAIL} SERVER_PROFILE_DETAIL = {SERVER_PROFILE_DETAIL}/> : null
       }
     </>
   )
 }
 
-const PostDetail = function ({post, img_path, CLIENT_PROFILE_DETAIL, SERVER_PROFILE_DETAIL}) {
-  /* variables */
-  const SERVER_POST_POST = `${SERVER}/post/${post.uuid}/`;
-
-  /* functions */
-  useEffect(() => { /* 포스트 디테일 바운딩 시 가져오기 */
-    const getPostDetail = async () => {
-          try {
-            const response = await axios({
-              method: "get",
-              url: SERVER_POST_POST,
-              headers: { 
-                'Authorization': `${session_key}` 
-              },
-            });
-            console.log(response.data)
-          } catch (error) {
-            console.log(error.response.data);
-          }
-        }
-    getPostDetail();
-  }, []);
-
+const PostDetail = function ({post, img_path, isPostMine, CLIENT_PROFILE_DETAIL, SERVER_PROFILE_DETAIL}) {
   return (
     <div className="PostDetail" style={{ 'margin' : '10px auto', 'width' : '80%', 'border' : '1px solid blue', 'display' : 'flex' }}>
       {/* 1. 게시물 영역 */}
       <div style={{ 'height' : '400px', 'width' : '52%', 'padding' : '5px' }}>
         {/* 2-1. 사진 영역 */}
         {
-          (post.img_path == null) ? null : (<div style={{ 'height' : '44%', }} >
-          <img src={img_path} alt={`${post.img_path}`}  style={{ 'display' : 'block', 'height' : '100%', 'margin' : '5px auto'  }} />
-        </div>)
+          (post.img_path == null) ? null : (
+          <div style={{ 'height' : '44%', }} >
+            <img src={img_path} alt={`${post.img_path}`}  style={{ 'display' : 'block', 'height' : '100%', 'margin' : '5px auto'  }} />
+          </div>
+        )
         }        
         {/* 1-2. 글 영역 */}
         <div style={{ 'display' : 'block', 'border' : '3px solid #187B46', 'margin' : '5px 15px', 'height' : '44%', 'overflow' : 'scroll'  }}>
@@ -218,4 +199,41 @@ const PostDetail = function ({post, img_path, CLIENT_PROFILE_DETAIL, SERVER_PROF
   );
 };
 
+  /* 더보기 버튼 옵션 - 내 것 */
+  const GetMoreBtnForPostWhenPostIsMine = function ({setPostClickStatus}) {
+    return (
+      <p>
+        <span colSpan={2} onClick={() => {
+            setPostClickStatus(true);
+          }}>상세보기
+        </span>&nbsp;|&nbsp; 
+        <span colSpan={2} onClick={() => {
+            // 수정하기 컴포넌트로 라우트
+          }}>수정하기</span>&nbsp;|&nbsp; 
+        <span colSpan={2} onClick={() => {
+            // axios로 삭제 요청하고 글 전체 보기로 라우트
+          }}>삭제하기</span>&nbsp;|&nbsp; 
+        <span colSpan={2} onClick={() => {
+          setPostClickStatus(false);
+        }}>취소하기</span>
+      </p>
+    )
+  };
+    /* 더보기 버튼 옵션 - 남의 것 */
+  const GetMoreBtnForPostWhenPostIsNotMine = function ({setPostClickStatus}) {
+    return (
+      <p>
+        <span colSpan={2} onClick={() => {
+            setPostClickStatus(true);
+          }}>상세보기
+        </span>&nbsp;|&nbsp; 
+        <span colSpan={2} onClick={() => {
+            // 신고하기 기능 살리기
+          }}>신고하기</span>&nbsp;|&nbsp;
+        <span colSpan={2} onClick={() => {
+          setPostClickStatus(false);
+        }}>취소하기</span>
+      </p>
+    )
+  }
 export default Posts;

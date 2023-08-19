@@ -23,7 +23,7 @@ class Post(APIView):
             user = post.user
             postSerializer.data[i]['username'] = user.username
 
-        return Response(postSerializer.data)
+        return Response(postSerializer.data, status=status.HTTP_200_OK)
 
     def post(self, request: HttpRequest, username) -> Response:
         # session_key로 user_id get
@@ -36,7 +36,7 @@ class Post(APIView):
         # user_id와 username 값 비교하여 작성 주체 파악
         if (username == user.username):
             content = request.data['content']
-            try : # 이미지 파일이 없을 경우 예외 처리
+            try:  # 이미지 파일이 없을 경우 예외 처리
                 img_path = request.FILES['img_path']
                 post = PostModel.objects.create(content=content, img_path=img_path, user=user)
             except MultiValueDictKeyError as exception:
@@ -55,11 +55,28 @@ class Post(APIView):
 
 
 class PostDetail(APIView):
-    def post(self, request: HttpRequest) -> Response:
+    def get(self, request: HttpRequest, **kwargs) -> Response:
+        # session_key로 user_id get
+        frontend_session_key = request.META.get('HTTP_AUTHORIZATION')
+        session = Session.objects.get(session_key=frontend_session_key)
+        user_id = session.get_decoded().get('_auth_user_id')
+
+        user = User.objects.get(id=user_id)
+
+        # 내가 작성한 글인지
+        response_data = { 
+            'isPostMine' : False
+        }
+        if (kwargs['username'] == user.username):
+            response_data['isPostMine'] = True
+
+        return Response(response_data, status.HTTP_200_OK)
+
+    def post(self, request: HttpRequest, **kwargs) -> Response:
         pass
 
-    def put(self, request) -> Response:
+    def put(self, request, **kwargs) -> Response:
         pass
 
-    def delete(self, request) -> Response:
+    def delete(self, request, **kwargs) -> Response:
         pass
