@@ -60,7 +60,7 @@ class Post(APIView, OwnerPermissionMixin):
 
 
 
-    # TODO: 파일 유형 검증, 파일 크기 제한, 보안적 검증 등에 대한 오류 처리 및 로깅하기
+    # TODO: 파일 크기 제한, 보안적 검증 등에 대한 오류 처리 및 로깅하기
     def post(self, request: HttpRequest, username) -> Response:
         # 권한 확인
         user_who_accessed_post, condition_posting_user_is_same_as_login_user = self.check_post_owner(\
@@ -76,10 +76,14 @@ class Post(APIView, OwnerPermissionMixin):
             if not (content and len(content) <= 500):
                 raise ValueError("Content length less than 0 or exceeded: 500")
             img_path = request.FILES['img_path']
+            if img_path.content_type not in ['image/png', 'image/jpeg']:
+                raise TypeError("file유형 맞지 않음")
             post = PostModel.objects.create(content=content, img_path=img_path, user=user_who_accessed_post)
         except ValueError as ve:
             print(ve)
             return Response({'error': ResponseMessages.CONTENT_LENGTH_EXCEEDED}, status.HTTP_400_BAD_REQUEST)
+        except TypeError as te:
+            return Response({'error': ResponseMessages.IMG_TYPE_DOES_NOT_MATCH}, status=status.HTTP_400_BAD_REQUEST)
         except MultiValueDictKeyError as exception:
             print(exception, '\nNo image attachments')
             post = PostModel.objects.create(content=content, user=user_who_accessed_post)

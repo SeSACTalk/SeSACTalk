@@ -1,6 +1,7 @@
 class ResponseMessages():
     FORBIDDEN_ACCESS = 'ERROR(forbidden): 잘못된 접근입니다.'
     CONTENT_LENGTH_EXCEEDED = 'ERROR(Content length exceeded): content의 길이가 500자를 초과하였습니다.'
+    IMG_TYPE_DOES_NOT_MATCH = 'ERROR(Image type does not match): img/png, img/jpeng, img/jpg 타입의 이미지 파일만 업로드 가능합니다.'
 
     CREATE_SUCCESS = 'CREATE SUCCESS: 게시물 업로드에 성공했습니다.'
     DELETE_SUCCESS = 'DELETE SUCCESS: 게시물 삭제에 성공했습니다.'
