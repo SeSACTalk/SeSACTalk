@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.http import HttpRequest
 from django.utils.datastructures import MultiValueDictKeyError
 from rest_framework import status
@@ -7,17 +8,31 @@ from rest_framework.response import Response
 from post.models import Post as PostModel, Like, View, Reply, HashTag, Report
 from post.serializers import PostSerializer, LikeSerializer, ViewSerializer, ReplySerializer, HashTagSerializer, ReportSerializer
 from post.mixins import PostOwnerPermissionMixin
+from user.models import UserRealtionship
 
 class Post(APIView, PostOwnerPermissionMixin):
     def get(self, request: HttpRequest, username) -> Response:
-        # TODO: follow기반으로 수정(+내 글도 보여야 함), 경로 조작 시 403 에러내도록 검증 로직 필요(upgrade로직==Mixin class 만들기), 수정하면서 try except문 작성하기(QuerySet결과가 None일 때)
-        # select_related()함수로, for post in posts 루프 안에서 post.user 문장으로 인한 N+1 쿼리문제를 해결할 수 있음
-        # select_related는 Forien key로 연결된 객체 데이터를 미리 가져오는 역할.
-        posts = PostModel.objects.select_related('user').all()
+        # TODO: try except문 작성하기(QuerySet결과가 None일 때)
+        user_who_accessed_post, condition_read_user_is_same_as_login_user = self.check_post_owner\
+                                                                            (request.META.get('HTTP_AUTHORIZATION'),\
+                                                                             username,\
+                                                                             'get_owner')
 
-        postSerializer = PostSerializer(posts, many=True)
+        if not condition_read_user_is_same_as_login_user:
+            return Response({'error': '잘못된 접근입니다.'}, status.HTTP_403_FORBIDDEN)
 
-        for i, post in enumerate(posts):
+        """ select_related()함수는 N+1쿼리문제를 해결하기 위해 사용(cf. prefetch_related())
+        Forien key로 연결된 객체 데이터를 미리 가져오는 역할. """
+        user_s_follows = UserRealtionship.objects.filter(user_follower=user_who_accessed_post.id)
+
+        # 팔로우한 사용자들의 포스트를 가져오는 쿼리 / - 기호는 역순을 의미
+        posts_by_followed_user = PostModel.objects.filter(
+            Q(user=user_who_accessed_post.id) | Q(user__in=user_s_follows.values('user_follow'))
+        ).select_related('user').order_by('-date')
+
+        postSerializer = PostSerializer(posts_by_followed_user, many=True)
+
+        for i, post in enumerate(posts_by_followed_user):
             user = post.user
             postSerializer.data[i]['username'] = user.username
 
