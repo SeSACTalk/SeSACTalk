@@ -28,7 +28,9 @@ const Posts = function () {
               },
             });
             console.log(response.data)
-            setPostList(response.data);
+            if (typeof response.data.message === 'undefined' ){
+              setPostList(response.data);
+            }
           } catch (error) {
             console.log(error.response.data);
           }
@@ -42,15 +44,16 @@ const Posts = function () {
       <hr style={{'margin' : '10px'}}/>
       <div className="post_content" style={{'margin' : '20px 0'}}>
         {
-          postList.map((post, i) => (
-              <div style={{ 'margin' : '0 auto', 'width' : '70%' }}>
-                <Post post = {post}/>
-                {
-                  ( postList.length == (i+1) ) ? null : <hr/>
-                }
-              </div>
+          (postList.length == undefined | postList.length == 0) ? <p>게시글 없음</p> :
+            postList.map((post, i) => (
+                <div key = {i} style={{ 'margin' : '0 auto', 'width' : '70%' }}>
+                  <Post post = {post}/>
+                  {
+                    ( postList.length == (i+1) ) ? null : <hr/>
+                  }
+                </div>
+              )
             )
-          )
         }
       </div>
       <hr style={{'margin' : '10px'}}/>
@@ -123,7 +126,7 @@ const Post =  function ({ post }) {
             </tr>
             <tr>
               {/* border */}
-              <td colSpan={2} style={{'margin-top': '10px', 'margin-bottom':'50px', 'border-top': '3px solid #A7A7A7'}}></td>
+              <td colSpan={2} style={{'marginTop': '10px', 'marginBottom':'50px', 'borderTop': '3px solid #A7A7A7'}}></td>
             </tr>
             <tr>
               {/* img_path */}
@@ -139,7 +142,7 @@ const Post =  function ({ post }) {
             </tr>
             <tr>
               {/* border */}
-              <td colSpan={2} style={{'margin-top': '10px', 'margin-bottom':'50px', 'border-top': '3px solid #A7A7A7'}}></td>
+              <td colSpan={2} style={{'marginTop': '10px', 'marginBottom':'50px', 'borderTop': '3px solid #A7A7A7'}}></td>
             </tr>
             <tr>
               {/* 좋아요, 댓글 영역 */}

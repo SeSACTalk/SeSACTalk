@@ -30,13 +30,16 @@ class Post(APIView, PostOwnerPermissionMixin):
             Q(user=user_who_accessed_post.id) | Q(user__in=user_s_follows.values('user_follow'))
         ).select_related('user').order_by('-date')
 
-        postSerializer = PostSerializer(posts_by_followed_user, many=True)
+        if bool(posts_by_followed_user):
+            postSerializer = PostSerializer(posts_by_followed_user, many=True)
 
-        for i, post in enumerate(posts_by_followed_user):
-            user = post.user
-            postSerializer.data[i]['username'] = user.username
+            for i, post in enumerate(posts_by_followed_user):
+                user = post.user
+                postSerializer.data[i]['username'] = user.username
 
-        return Response(postSerializer.data, status=status.HTTP_200_OK)
+            return Response(postSerializer.data, status=status.HTTP_200_OK)
+
+        return Response({'message' : 'THERE ARE NO POSTS TO DISPLAY'}, status=status.HTTP_200_OK)
 
     def post(self, request: HttpRequest, username) -> Response:
         # TODO: 파일 유형 검증, 파일 크기 제한, 보안적 검증 등에 대한 오류 처리 및 로깅하기
