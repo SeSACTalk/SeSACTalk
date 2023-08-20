@@ -1,9 +1,11 @@
+from enum import Enum
+
 from django.contrib.sessions.models import Session
 from typing import Union
 
 from accounts.models import User
 
-class PostOwnerPermissionMixin:
+class OwnerPermissionMixin:
     """
         POST에 접근 하는 주체를 검사 하는 Mixin 클래스
         R을 제외한 C, U, D의 시도를 차단 하려는 목적에서 생성.
