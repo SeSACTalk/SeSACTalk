@@ -74,11 +74,27 @@ class PostDetail(APIView):
 
         return Response(response_data, status.HTTP_200_OK)
 
-    def post(self, request: HttpRequest, **kwargs) -> Response:
-        pass
-
     def put(self, request, **kwargs) -> Response:
-        pass
+        frontend_session_key = request.META.get('HTTP_AUTHORIZATION')
+        session = Session.objects.get(session_key=frontend_session_key)
+        user_id = session.get_decoded().get('_auth_user_id')
+
+        # condition 정의
+        condition_same_from_previous_data = request.data['original_content'] == request.data['update_content']
+        condition_edit_user_is_same_as_login_user = kwargs['username'] == User.objects.get(id=user_id).username # TODO: user가 찾아지지 않을 때 예외 처리하기
+
+        if condition_edit_user_is_same_as_login_user:
+            if condition_same_from_previous_data:
+                # update 데이터가 전과 다르지 않아서, update하지 않았음을 응답
+                return Response({'message': ''}, status.HTTP_304_NOT_MODIFIED)
+
+            # update
+            post = PostModel.objects.get(id = kwargs['pk'], user=user_id)
+            post.content = request.data['update_content']
+            post.save()
+            return Response({'message': 'UPDATE SUCCESS'}, status.HTTP_200_OK)
+
+        return Response({'error': '잘못된 접근입니다.'}, status.HTTP_403_FORBIDDEN)
 
     def delete(self, request, **kwargs) -> Response:
         frontend_session_key = request.META.get('HTTP_AUTHORIZATION')
@@ -88,7 +104,7 @@ class PostDetail(APIView):
         user = User.objects.get(id=user_id)
 
         if (kwargs['username'] == user.username):
-            post = PostModel.objects.get(id = request.data['id'], user=user_id)
+            post = PostModel.objects.get(id = kwargs['pk'], user=user_id)
             post.delete()
             return Response({'message' : 'DELETE SUCCESS'}, status.HTTP_204_NO_CONTENT)
 

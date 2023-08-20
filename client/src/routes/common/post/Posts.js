@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 
 import { getCookie } from "../../../modules/handle_cookie";
 
+/* global variables */
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
 const session_key = getCookie('session_key')
 
@@ -212,7 +213,6 @@ const PostDetail = function ({post, img_path, isPostMine, CLIENT_PROFILE_DETAIL,
               const response = await axios({
                 method: "delete",
                 url: SERVER_POST_POST,
-                data: { "id" : post.id },
                 headers: { 
                   'Authorization': `${session_key}`
                   },
@@ -246,12 +246,71 @@ const PostDetail = function ({post, img_path, isPostMine, CLIENT_PROFILE_DETAIL,
       </p>
     )
   }
-const PostUpdate = function ({post, img_path, SERVER_POST_POST, setPostUpdateClickStatus}) {
-  return (
-      <div className="PostUpdate" style={{'width' : '50%', 'margin' : '20px auto'}}>
-        
+  const PostUpdate = function ({post, img_path, SERVER_POST_POST, setPostUpdateClickStatus}) {  
+    {/* 
+        TODO: 프론트 전달 사항
+        - back에서 기존 content랑 수정 content랑 내용이 같으면 처리를 안하는 걸로 했음. 
+        - front에선 origin_content == update_content가 같으면 수정버튼 비활성화되는 걸로 처리해주세용!!~
+    */}
+
+    /* variables */
+    const [content, setContent] = useState(post.content);
+    
+    /* functions */
+    const updatePost = async (event) => {
+      /* 포스팅 처리 */
+      event.preventDefault();
+      try {
+        const response = await axios({
+          method: "put",
+          url: SERVER_POST_POST,
+          data: {
+            'original_content' : post.content,
+            'update_content' : content,
+          },
+          headers: { 
+            'Content-Type': "multipart/form-data",
+            'Authorization': `${session_key}`
+           },
+        });
+        console.log(response.data);
+        window.location.reload();
+      } catch (error) {
+        console.log(error.response.data);
+      }
+    };
+    return (
+        <div className="PostUpdate" style={{ 'margin' : '4px auto', 'width' : '80%', 'border' : '1px solid black' }}>
+          <form onSubmit={updatePost}>   
+            <table style={{ 'width' : '100%', 'margin' : '10px 0' }}>
+              <tbody>
+                <tr>
+                  {/* img_path */}
+                  {
+                    (post.img_path == null) ? null : <td style={{ 'width' : '40%' }}><img src={img_path} alt={`${post.img_path}`} style={{ 'width' : '190px', 'margin' : '0 auto'  }}/></td>
+                  }
+                  {/* content */}
+                  <td style={{ 'width' : '60%' }}>
+                    <div style={{ 'border' : '3px solid #187B46', 'margin' : '0 15px', 'height' : '190px', 'overflow' : 'scroll'  }}>
+                    <textarea
+                      style={{'width' : '100%', 'height' : '100%'}}
+                      name="content"
+                      value={content}
+                      onChange={(e) => setContent(e.target.value)}
+                    ></textarea>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>  
+            <br/>
+            <input type="submit" value="수정하기"  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" />&nbsp;
+            <input type="submit" value="취소하기"  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={()=>{
+              setPostUpdateClickStatus(false);
+            }}/>
+        </form>
       </div>
-    );
-}
+      );
+  }
 
 export default Posts;
