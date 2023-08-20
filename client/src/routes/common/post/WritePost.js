@@ -55,7 +55,7 @@ const WritePost = function () {
                   placeholder="500자 이내 입력"
                   name="content"
                   value={content}
-                  onChange={(e) => setContent(e.target.value)}
+                  onChange={(e) => setContent(e.target.value.trim())}
                 ></textarea>
               </td>
             </tr>

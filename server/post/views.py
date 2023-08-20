@@ -1,20 +1,15 @@
-from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db.models import Q
 from django.http import HttpRequest
-from django.utils.datastructures import MultiValueDictKeyError
 
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from PIL import Image
-import io
-
 from post.models import Post as PostModel, Like, View, Reply, HashTag, Report
+from user.models import UserRealtionship
 from post.serializers import PostSerializer, LikeSerializer, ViewSerializer, ReplySerializer, HashTagSerializer, ReportSerializer
 from post.mixins import OwnerPermissionMixin
 from post.constants import ResponseMessages
-from user.models import UserRealtionship
 
 """ >> 전달사항
     Clas Post View
@@ -75,63 +70,17 @@ class Post(APIView, OwnerPermissionMixin):
         if not condition_posting_user_is_same_as_login_user:
             return Response({'error': ResponseMessages.FORBIDDEN_ACCESS}, status.HTTP_403_FORBIDDEN)
 
-        # 이미지 파일이 없을 때, 컨텐츠의 길이가 500자를 넘을 때 예외처리
-        try:
-            max_img_size = 3 * 1024 * 1024
-            content = request.data['content'].strip()
-            if not (content and len(content) <= 500):
-                raise ValueError("Content length less than 0 or exceeded: 500")
-            img_path = request.FILES['img_path']
-            if img_path.content_type not in ['image/png', 'image/jpeg']:
-                raise TypeError("file유형 맞지 않음")
-            if img_path.size > max_img_size:
-                img_path = self.compress_image(img_path, img_path.content_type.split('/')[1].upper(), max_img_size)
-            post = PostModel.objects.create(content=content, img_path=img_path, user=user_who_accessed_post)
-        except ValueError as ve:
-            print(ve)
-            return Response({'error': ResponseMessages.CONTENT_LENGTH_EXCEEDED}, status.HTTP_400_BAD_REQUEST)
-        except TypeError as te:
-            return Response({'error': ResponseMessages.IMG_TYPE_DOES_NOT_MATCH}, status=status.HTTP_400_BAD_REQUEST)
-        except MultiValueDictKeyError as exception:
-            print(exception, '\nNo image attachments')
-            post = PostModel.objects.create(content=content, user=user_who_accessed_post)
-        post.save()
+        postSerializer = PostSerializer(data=request.data)
+        postSerializer.user = user_who_accessed_post.id
+
+        # 유효성 검사
+        if postSerializer.is_valid():
+            postSerializer.save()
+        else:
+            print(f'<<CHECK INVALID DATA>>\n{postSerializer.errors}')
+            return Response({'error': ResponseMessages.INVALID_DATA}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'message': ResponseMessages.CREATE_SUCCESS}, status=status.HTTP_201_CREATED)
-
-    def compress_image(self, input_image, output_format, max_size):
-        img = Image.open(input_image)
-
-        # 이미지의 exif 메타데이터가 있는지 확인하고 회전 정보를 가져옴
-        exif = dict(img.getexif().items())
-        orientation = exif.get(0x0112, 1)
-
-        # 이미지를 회전시키는데 필요한 회전 정보
-        rotate_mapping = {
-            3: Image.ROTATE_180,
-            6: Image.ROTATE_270,
-            8: Image.ROTATE_90
-        }
-
-        # 이미지 회전
-        if orientation in rotate_mapping:
-            img = img.transpose(rotate_mapping[orientation])
-
-        img_io = io.BytesIO()
-
-        # 이미지 크기 조절 및 압축
-        img.save(img_io, format=output_format, optimize=True, quality=85)
-
-        # 파일 크기 체크
-        img_size = img_io.tell()
-
-        # 지정한 최대 크기보다 크다면 반복적으로 압축
-        while img_size > max_size:
-            img_io = io.BytesIO()
-            img.save(img_io, format=output_format, optimize=True, quality=85)
-            img_size = img_io.tell()
-
-        return InMemoryUploadedFile(img_io, None, input_image.name, input_image.content_type, img_size, None)
 
 class PostDetail(APIView, OwnerPermissionMixin):
     def get(self, request: HttpRequest, **kwargs) -> Response:
@@ -151,7 +100,7 @@ class PostDetail(APIView, OwnerPermissionMixin):
             return Response({'error': ResponseMessages.FORBIDDEN_ACCESS}, status.HTTP_403_FORBIDDEN)
 
         # update 데이터가 전과 다르지 않아서, update하지 않음
-        if (request.data['original_content'].strip() == request.data['update_content'].strip()):
+        if request.data['original_content'].strip() == request.data['update_content'].strip():
             return Response({'message': ResponseMessages.NOT_UPDATE}, status.HTTP_304_NOT_MODIFIED)
 
         # update

@@ -1,5 +1,3 @@
-from enum import Enum
-
 from django.contrib.sessions.models import Session
 from typing import Union
 
@@ -26,7 +24,7 @@ class OwnerPermissionMixin:
         # check : owner == 경로 username
         condition = (username == user_post_owner.username)
 
-        if option:
+        if option == 'get_owner':
             # user_post_owner condition 둘 다 반환
             return user_post_owner, condition
 
