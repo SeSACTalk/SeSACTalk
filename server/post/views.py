@@ -26,11 +26,13 @@ class Post(APIView):
         return Response(postSerializer.data, status=status.HTTP_200_OK)
 
     def post(self, request: HttpRequest, username) -> Response:
+        # TODO: 파일 유형 검증, 파일 크기 제한, 보안적 검증 등에 대한 오류 처리 및 로깅하기
         # session_key로 user_id get
         frontend_session_key = request.META.get('HTTP_AUTHORIZATION')
         session = Session.objects.get(session_key=frontend_session_key)
         user_id = session.get_decoded().get('_auth_user_id')
 
+        # TODO: user가 찾아지지 않을 때 예외 처리하기
         user = User.objects.get(id=user_id)
 
         # user_id와 username 값 비교하여 작성 주체 파악
@@ -56,11 +58,11 @@ class Post(APIView):
 
 class PostDetail(APIView):
     def get(self, request: HttpRequest, **kwargs) -> Response:
-        # session_key로 user_id get
         frontend_session_key = request.META.get('HTTP_AUTHORIZATION')
         session = Session.objects.get(session_key=frontend_session_key)
         user_id = session.get_decoded().get('_auth_user_id')
 
+        # TODO: user가 찾아지지 않을 때 예외 처리하기
         user = User.objects.get(id=user_id)
 
         # 내가 작성한 글인지
@@ -79,4 +81,15 @@ class PostDetail(APIView):
         pass
 
     def delete(self, request, **kwargs) -> Response:
-        pass
+        frontend_session_key = request.META.get('HTTP_AUTHORIZATION')
+        session = Session.objects.get(session_key=frontend_session_key)
+        user_id = session.get_decoded().get('_auth_user_id')
+
+        user = User.objects.get(id=user_id)
+
+        if (kwargs['username'] == user.username):
+            post = PostModel.objects.get(id = request.data['id'], user=user_id)
+            post.delete()
+            return Response({'message' : 'DELETE SUCCESS'}, status.HTTP_204_NO_CONTENT)
+
+        return Response({'error' : '잘못된 접근입니다.'}, status.HTTP_403_FORBIDDEN)
