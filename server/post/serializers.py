@@ -7,7 +7,7 @@ import io
 
 from post.models import Post, Like, View, Reply, HashTag, Report
 
-class PostContentLenthValidator:
+class PostContentLengthValidator:
     """
         content의 길이 0 < content <= 500 의 유효성을 검사
     """
@@ -33,7 +33,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     content = serializers.CharField(
         validators=[
-            PostContentLenthValidator()
+            PostContentLengthValidator()
         ]
     )
 

@@ -1,7 +1,7 @@
 from django.db import models
 from accounts.models import User
 
-class profile(models.Model):
+class Profile(models.Model):
     img_path = models.ImageField(upload_to = 'profile/', null = True)
     content = models.CharField(max_length = 255, null = True)
     link = models.URLField(null = True)
