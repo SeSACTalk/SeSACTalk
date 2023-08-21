@@ -41,15 +41,20 @@ class VerifyUserView(APIView):
     def get(self, request: HttpRequest) -> Response:
         return Response({'message': 'Verified Session key'}, status = status.HTTP_200_OK)
 
+
 class UserInfoView(APIView):
     def post(self, request: HttpRequest) -> Response:
-        session = Session.objects.get(session_key = request.data['session_key'])
+        session = Session.objects.get(session_key=request.data['session_key'])
         user_id = session.get_decoded().get('_auth_user_id')
-        
-        user = User.objects.get(id = user_id)
-        if user.is_staff:
-            return Response(status = status.HTTP_200_OK)
-        return Response(status = status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.get(id=user_id)
+        try:
+            if user.is_staff:
+                return Response({'message': 'True'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'message': 'False'}, status=status.HTTP_200_OK)
+        except:
+            return Response({'message': 'False'}, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
     def post(self, request: HttpRequest) -> Response:

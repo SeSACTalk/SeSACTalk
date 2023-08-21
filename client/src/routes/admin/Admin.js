@@ -16,7 +16,8 @@ function Admin() {
                     navigate('/admin')
                 })
                 .catch(()=>{
-                    navigate('/')
+                    console.log('어드민 페이지이므로 접근이 불가합니다.\n/general로 이동')
+                    navigate('/general')
                 })
             })
             .catch(() => {

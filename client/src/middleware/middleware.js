@@ -41,12 +41,15 @@ const checkInfoMiddleware = async () => {
         const response = await axios.post(SERVER_ACCOUNTS_INFO, {
             session_key
         });
-        if (response.status === 200) {
+        if (response.status === 200 && response.data.message == 'True') {
             console.log('관리자입니다.')
             return Promise.resolve();
+        } else {
+            console.log('일반사용자입니다.')
+            return Promise.reject();
         }
     } catch (error) {
-        console.error('일반사용자입니다.', error)
+        console.error('인증되지 않은 사용자입니다.', error)
         return Promise.reject();
     }
 }
