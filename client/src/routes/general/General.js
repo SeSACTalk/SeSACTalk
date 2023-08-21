@@ -16,7 +16,7 @@ function General() {
                     navigate('/admin')
                 })
                 .catch(()=>{
-                    navigate('/')
+                    navigate('/general')
                 })
             })
             .catch(() => {

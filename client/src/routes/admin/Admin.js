@@ -27,7 +27,7 @@ function Admin() {
     let username = getCookie('username')
     return (
         <div className="Common">
-            <Link to={`/post/${username}`}>Post</Link>{/* &nbsp;|&nbsp; */}
+            <Link to={`/post/${username}`}>Post</Link>&nbsp;|&nbsp;
         </div>
     );
 }
