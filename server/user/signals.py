@@ -80,4 +80,4 @@ def send_fcm_on_new_report(sender, instance, **kwargs):
         'report_date': instance.date,
     }
 
-    send_fcm_notification(reported_token_token, message_title, message_body, data_message)
+    send_fcm_notification(reported_token, message_title, message_body, data_message)
