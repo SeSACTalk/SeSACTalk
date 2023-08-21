@@ -22,7 +22,7 @@ from accounts.models import Campus, Course, User
 
 class CheckSessionPermission(BasePermission):
     def has_permission(self, request, view):
-        frontend_session_key = request.META.get('HTTP_AUTHORIZATION', '').replace('Session ', '')
+        frontend_session_key = request.META.get('HTTP_AUTHORIZATION', '')
 
         # 세션키로 사용자 인증여부 조회하기
         session = Session.objects.get(session_key = frontend_session_key)

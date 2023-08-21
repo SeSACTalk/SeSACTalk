@@ -11,6 +11,7 @@ import FindId from './routes/accounts/FindId';
 import FindPassword from './routes/accounts/FindPassword';
 import Admin from './routes/admin/admin';
 import AdminUserInfo from './routes/admin/UserInfo';
+import Chat from './routes/common/Chat'
 
 
 
@@ -22,6 +23,7 @@ function App() {
       <Link to='/accounts/find/user/id/'>아이디 찾기</Link>
       <Link to='/accounts/find/user/password/'>비밀번호 찾기</Link>
       <Link to='/admin/'>관리자</Link>
+      <Link to='/chat/'>채팅</Link>
       <Routes>
         <Route path='/accounts/login' element={<Login />} />
         <Route path='/accounts/signup' element={<SignUp />} />
@@ -30,6 +32,7 @@ function App() {
         <Route path='/admin' element={<Admin />}>
           <Route path='auth/user' element={<AdminUserInfo />}></Route>
         </Route>
+        <Route path='/chat' element={<Chat />}></Route>
       </Routes>
     </div>
   );
