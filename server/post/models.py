@@ -31,10 +31,6 @@ class Reply(models.Model):
     
 class HashTag(models.Model):
     name = models.CharField(max_length = 255, unique = True)
-    
-# class PostHashTag(models.Model):
-#     post_id = models.ForeignKey(Post, on_delete = models.CASCADE)
-#     hashtag_id = models.ForeignKey(HashTag, on_delete = models.CASCADE)
 
 class Report(models.Model):
     class types(models.TextChoices):

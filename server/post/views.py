@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from post.models import Post as PostModel, Like, View, Reply, HashTag, Report
-from user.models import UserRealtionship
+from user.models import UserRelationship
 from post.serializers import PostSerializer, LikeSerializer, ViewSerializer, ReplySerializer, HashTagSerializer, ReportSerializer
 from post.mixins import OwnerPermissionMixin
 from post.constants import ResponseMessages
@@ -43,7 +43,7 @@ class Post(APIView, OwnerPermissionMixin):
             return Response({'error': ResponseMessages.FORBIDDEN_ACCESS}, status.HTTP_403_FORBIDDEN)
 
         # 팔로우 기반 또는 자신의 게시물 포스트를 가져오는 쿼리문 수행, order by의 - 기호는 역순을 의미
-        user_s_follows = UserRealtionship.objects.filter(user_follower=user_who_accessed_post.id)
+        user_s_follows = UserRelationship.objects.filter(user_follower=user_who_accessed_post.id)
         posts_by_followed_user_or_own = PostModel.objects.filter(
             Q(user=user_who_accessed_post.id) | Q(user__in=user_s_follows.values('user_follow'))
         ).select_related('user').order_by('-date')
@@ -58,9 +58,6 @@ class Post(APIView, OwnerPermissionMixin):
 
         return Response(postSerializer.data, status=status.HTTP_200_OK)
 
-
-
-    # TODO: 보안적 검증 등에 대한 오류 처리 및 로깅하기
     def post(self, request: HttpRequest, username) -> Response:
         # 권한 확인
         user_who_accessed_post, condition_posting_user_is_same_as_login_user = self.check_post_owner(\
