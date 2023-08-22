@@ -1,6 +1,4 @@
 from rest_framework import serializers
-
-from chat.models import Chat, User
   
 class ChatSerializer(serializers.Serializer):
     sender__name = serializers.CharField()
