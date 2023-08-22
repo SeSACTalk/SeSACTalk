@@ -9,11 +9,14 @@ class OwnerPermissionMixin:
         R을 제외한 C, U, D의 시도를 차단 하려는 목적에서 생성.
     """
 
-    def get_post_owner(self, frontend_session_key: str)-> User:
+    def get_post_owner_id(self, frontend_session_key: str) -> int:
         session = Session.objects.get(session_key=frontend_session_key)
         user_id = session.get_decoded().get('_auth_user_id')
 
-        user = User.objects.get(id = user_id)
+        return user_id
+
+    def get_post_owner(self, frontend_session_key: str)-> User:
+        user = User.objects.get(id = self.get_post_owner_id(frontend_session_key))
 
         return user
 

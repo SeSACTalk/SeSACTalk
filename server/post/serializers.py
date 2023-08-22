@@ -145,6 +145,26 @@ class HashTagSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ReportSerializer(serializers.ModelSerializer):
+    content_id = None
+    reported = None
+    reporter = None
+    def __init__(self, *args, **kwargs)-> None:
+        self.content_id = ''
+        self.reported =  ''
+        self.reporter =  ''
+        super().__init__(*args, **kwargs)
+
     class Meta:
         model = Report
         fields = '__all__'
+    def to_internal_value(self, data):
+        copy_querydict = QueryDict(mutable=True)
+
+        for key, value in data.items():
+            copy_querydict[key] = value
+
+        copy_querydict['content_id'] = self.content_id
+        copy_querydict['reported'] = self.reported
+        copy_querydict['reporter'] = self.reporter
+
+        return super().to_internal_value(copy_querydict)

@@ -69,6 +69,7 @@ const Post =  function ({ post }) {
 
   const [postDetailClickStatus, setPostDetailClickStatus] = useState(false)
   const [postUpdateClickStatus, setPostUpdateClickStatus] = useState(false)
+  const [reportPostClickStatus, setReportPostClickStatus] = useState(false)
   const [isPostMine, setIsPostMine] = useState(false)
 
   const img_path = `${SERVER}${post.img_path}`;
@@ -113,7 +114,7 @@ const Post =  function ({ post }) {
       <div className="Post" style={{ 'margin' : '4px auto', 'width' : '80%', 'border' : '1px solid black' }}>
         {/* 더보기 영역 */}
         <div style={{ 'textAlign' : 'right' }}>{
-          isPostMine ? <GetMoreBtnForPostWhenPostIsMine setPostDetailClickStatus = {setPostDetailClickStatus} SERVER_POST_POST = {SERVER_POST_POST} post = {post} setPostUpdateClickStatus = {setPostUpdateClickStatus} /> : <GetMoreBtnForPostWhenPostIsNotMine setPostDetailClickStatus = {setPostDetailClickStatus} SERVER_POST_POST = {SERVER_POST_POST} post = {post}  setPostUpdateClickStatus = {setPostUpdateClickStatus}/>
+          isPostMine ? <GetMoreBtnForPostWhenPostIsMine setPostDetailClickStatus = {setPostDetailClickStatus} SERVER_POST_POST = {SERVER_POST_POST} setPostUpdateClickStatus = {setPostUpdateClickStatus} /> : <GetMoreBtnForPostWhenPostIsNotMine setPostDetailClickStatus = {setPostDetailClickStatus} setReportPostClickStatus = {setReportPostClickStatus}/>
         }</div>
         <hr style={{ 'margin' : '5px' }}/>
         <table style={{ 'width' : '100%', 'margin' : '10px 0' }}>
@@ -158,6 +159,10 @@ const Post =  function ({ post }) {
       {
         postUpdateClickStatus ? <PostUpdate post = {post} img_path = {img_path} setPostUpdateClickStatus = {setPostUpdateClickStatus} SERVER_POST_POST = {SERVER_POST_POST}  /> : null
       }
+      {/* report post 영역 */}
+      {
+        reportPostClickStatus ? <ReportPost post = {post} setReportPostClickStatus = {setReportPostClickStatus} /> : null
+      }
     </>
   )
 }
@@ -199,8 +204,64 @@ const PostDetail = function ({post, img_path, isPostMine, CLIENT_PROFILE_DETAIL,
   );
 };
 
+const ReportPost = function ({post, setReportPostClickStatus}) {
+  /* variables */
+  const SERVER_REPORT_POST = `${SERVER}/post/${post.id}/report/`;
+  var contentType = 'post'
+
+  const [category, setCategory] = useState('사행성');
+
+  /* functions */
+  const reportPost = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await axios({
+        method: "post",
+        url: SERVER_REPORT_POST,
+        headers: { 
+          'Authorization': `${session_key}`
+          },
+        data : {
+          'content_type' : contentType,
+          'category' : category
+        },
+      });
+      console.log(response.data);
+      window.location.reload();
+    } catch (error) {
+      console.log(error.response.data);
+    };
+  };
+  return (
+    <div className="PostDetail" style={{ 'margin' : '10px auto', 'width' : '80%', 'border' : '1px solid blue', 'display' : 'flex' }}>
+      <form onSubmit={reportPost}>
+        <table>
+          <tbody>
+            <tr>
+              {/* 신고 유형 */}
+              <td colSpan={2}>
+                <select onChange={(e) => setCategory(e.target.value)}>
+                  <option value="사행성">사행성</option>
+                  <option value="스팸">스팸</option>
+                  <option value="나체 또는 성적행위 이미지">나체 또는 성적행위 이미지</option>
+                  <option value="혐오 발언 또는 상징">혐오 발언 또는 상징</option>
+                  <option value="거짓 정보">거짓 정보</option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <input type="submit" value="신고하기"  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" />
+        <input type="submit" value="취소하기"  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={()=>{
+          setReportPostClickStatus(false);
+        }}/>
+      </form>
+    </div> 
+  );
+};
+
   /* 더보기 버튼 옵션 - 내 것 */
-  const GetMoreBtnForPostWhenPostIsMine = function ({setPostDetailClickStatus, setPostUpdateClickStatus, SERVER_POST_POST, post}) {
+  const GetMoreBtnForPostWhenPostIsMine = function ({setPostDetailClickStatus, setPostUpdateClickStatus, SERVER_POST_POST}) {
     return (
       <p>
         <span colSpan={2} onClick={() => {
@@ -233,16 +294,16 @@ const PostDetail = function ({post, img_path, isPostMine, CLIENT_PROFILE_DETAIL,
     )
   };
     /* 더보기 버튼 옵션 - 남의 것 */
-  const GetMoreBtnForPostWhenPostIsNotMine = function ({setPostDetailClickStatus, setPostUpdateClickStatus, SERVER_POST_POST, post}) {
+  const GetMoreBtnForPostWhenPostIsNotMine = function ({setPostDetailClickStatus, setReportPostClickStatus}) {
     return (
       <p>
         <span colSpan={2} onClick={() => {
             setPostDetailClickStatus(true);
           }}>상세보기
         </span>&nbsp;|&nbsp; 
-        <span colSpan={2} onClick={() => {
-            // 신고하기 기능 추가할 것
-          }}>신고하기</span>&nbsp;|&nbsp;
+        <span colSpan={2} onClick={ () =>{
+          setReportPostClickStatus(true);
+        }}>신고하기</span>&nbsp;|&nbsp;
         <span colSpan={2} onClick={() => {
           setPostDetailClickStatus(false);
         }}>취소하기</span>

@@ -26,7 +26,7 @@ class Post(APIView, OwnerPermissionMixin):
 
         # QuerySet이 비어있을 경우
         if not bool(posts):
-            return Response({'message': ResponseMessages.NO_POSTS_TO_DISPLAY}, status=status.HTTP_200_OK)
+            return Response({'message': ResponseMessages.POST_NO_POSTS_TO_DISPLAY}, status=status.HTTP_200_OK)
         
         # 반환할 게시물이 있는 경우
         postSerializer = PostSerializer(posts, many=True)
@@ -40,7 +40,7 @@ class Post(APIView, OwnerPermissionMixin):
         if not condition:
             return Response({'error': ResponseMessages.FORBIDDEN_ACCESS}, status.HTTP_403_FORBIDDEN)
 
-        postSerializer = PostSerializer(data=request.data)
+        postSerializer = PostSerializer(data = request.data)
         postSerializer.user = access_user.id
 
         # 유효성 검사
@@ -50,7 +50,7 @@ class Post(APIView, OwnerPermissionMixin):
             print(f'<<CHECK INVALID DATA>>\n{postSerializer.errors}')
             return Response({'error': ResponseMessages.INVALID_DATA}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({'message': ResponseMessages.CREATE_SUCCESS}, status=status.HTTP_201_CREATED)
+        return Response({'message': ResponseMessages.POST_CREATE_SUCCESS}, status=status.HTTP_201_CREATED)
 
 class PostDetail(APIView, OwnerPermissionMixin):
     def get(self, request: HttpRequest, **kwargs) -> Response:
@@ -67,7 +67,7 @@ class PostDetail(APIView, OwnerPermissionMixin):
 
         # update 데이터가 전과 다르지 않아서, update하지 않음
         if request.data['original_content'].strip() == request.data['update_content'].strip():
-            return Response({'message': ResponseMessages.NOT_UPDATE}, status.HTTP_304_NOT_MODIFIED)
+            return Response({'message': ResponseMessages.POST_NOT_UPDATE}, status.HTTP_304_NOT_MODIFIED)
 
         # update
         post = PostModel.objects.get(id = kwargs['pk'], user=access_user.id)
@@ -86,4 +86,20 @@ class PostDetail(APIView, OwnerPermissionMixin):
         # delete
         post = PostModel.objects.get(id = kwargs['pk'], user = access_user.id)
         post.delete()
-        return Response({'message' : ResponseMessages.DELETE_SUCCESS}, status.HTTP_204_NO_CONTENT)
+        return Response({'message' : ResponseMessages.POST_DELETE_SUCCESS}, status.HTTP_204_NO_CONTENT)
+
+class ReportPost(OwnerPermissionMixin, APIView):
+    def post(self, request, pk:int) -> Response:
+        reportSerializer = ReportSerializer(data = request.data)
+        reportSerializer.content_id = pk
+        reportSerializer.reported = PostModel.objects.get(id = pk).user_id # 효율적일까?
+        reportSerializer.reporter = self.get_post_owner_id(request.META.get('HTTP_AUTHORIZATION'))
+
+        if not reportSerializer.is_valid():
+            print(f'<<CHECK INVALID DATA>>\n{reportSerializer.errors}')
+            return Response({'error': ResponseMessages.INVALID_DATA}, status=status.HTTP_400_BAD_REQUEST)
+
+        reportSerializer.save()
+
+        # 한 사람이 같은 게시물을 연속적으로 신고 가능?
+        return Response({'message': ResponseMessages.REPORT_CREATE_SUCCESS}, status=status.HTTP_201_CREATED)
