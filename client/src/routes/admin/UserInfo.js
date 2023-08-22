@@ -42,7 +42,6 @@ const AdminUserInfo = function () {
                 id: user_id,
                 is_auth: auth
             })
-            console.log(response.data)
         }
         catch (error) {
             console.error('Please Try Again', error.response.data)

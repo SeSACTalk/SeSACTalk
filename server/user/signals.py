@@ -3,7 +3,7 @@ from django.dispatch import receiver
 
 from user.utils import send_fcm_notification
 from chat.models import Chat
-from user.models import UserRealtionship
+from user.models import UserRelationship
 from post.models import Reply, Like, Report
 
 @receiver(post_save, sender = Reply) # 댓글 생성알림
@@ -38,7 +38,7 @@ def send_fcm_on_new_like(sender, instance, created, **kwargs):
 
         send_fcm_notification(post_author_token, message_title, message_body, data_message)
 
-@receiver(post_save, sender = UserRealtionship) # 팔로우 알림
+@receiver(post_save, sender = UserRelationship) # 팔로우 알림
 def send_fcm_on_new_follow(sender, instance, created, **kwargs):
     if created:
         follower = instance.user_follower.name
@@ -53,7 +53,6 @@ def send_fcm_on_new_follow(sender, instance, created, **kwargs):
 
         send_fcm_notification(user_token, message_title, message_body, data_message)
 
-# TODO : 채팅 수정하기
 @receiver(post_save, sender = Chat) # 채팅 알림
 def send_fcm_on_new_chat(sender, instance, created, **kwargs):
     if created:
@@ -80,4 +79,4 @@ def send_fcm_on_new_report(sender, instance, **kwargs):
         'report_date': instance.date,
     }
 
-    send_fcm_notification(reported_token_token, message_title, message_body, data_message)
+    send_fcm_notification(reported_token, message_title, message_body, data_message)

@@ -11,7 +11,7 @@ const checkAuthMiddleware = async () => {
         try {
             const response = await axios.get(SERVER_ACCOUNTS_VERIFY, {
                 headers: {
-                    'Authorization': `Session ${session_key}`
+                    'Authorization': session_key
                 }
             });
             if (response.status === 200) {
@@ -36,17 +36,19 @@ const checkInfoMiddleware = async () => {
     const SERVER_ACCOUNTS_INFO = SERVER + '/accounts/user/info/'
 
     const session_key = getCookie('session_key');
-    
+
     try {
         const response = await axios.post(SERVER_ACCOUNTS_INFO, {
             session_key
         });
-        if (response.status === 200) {
+        if (response.status === 200 && response.data.message == 'True') { // 관리자
             console.log('관리자입니다.')
             return Promise.resolve();
+        } else { // 일반 사용자
+            console.log('일반 사용자입니다.')
+            return Promise.reject();
         }
-    } catch (error) {
-        console.error('일반사용자입니다.', error)
+    } catch (error) { // 비회원
         return Promise.reject();
     }
 }

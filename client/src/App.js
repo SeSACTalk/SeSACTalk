@@ -11,7 +11,8 @@ import FindId from './routes/accounts/FindId';
 import FindPassword from './routes/accounts/FindPassword';
 import Admin from './routes/admin/admin';
 import AdminUserInfo from './routes/admin/UserInfo';
-import Chat from './routes/common/Chat'
+import Chat from './routes/common/chat/Chat'
+import ChatDetail from './routes/common/chat/ChatDetail';
 
 
 
@@ -32,7 +33,9 @@ function App() {
         <Route path='/admin' element={<Admin />}>
           <Route path='auth/user' element={<AdminUserInfo />}></Route>
         </Route>
-        <Route path='/chat' element={<Chat />}></Route>
+        <Route path='/chat' element={<Chat />}>
+          <Route path=':username' element={<ChatDetail />}></Route>
+        </Route>
       </Routes>
     </div>
   );

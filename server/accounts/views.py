@@ -47,9 +47,13 @@ class UserInfoView(APIView):
         user_id = session.get_decoded().get('_auth_user_id')
         
         user = User.objects.get(id = user_id)
-        if user.is_staff:
-            return Response(status = status.HTTP_200_OK)
-        return Response(status = status.HTTP_400_BAD_REQUEST)
+        try:
+            if user.is_staff:
+                return Response({'message': 'True'}, status = status.HTTP_200_OK)
+            else:
+                return Response({'message': 'False'}, status = status.HTTP_200_OK)
+        except:
+            return Response({'message': 'False'} ,status = status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
     def post(self, request: HttpRequest) -> Response:
@@ -58,8 +62,7 @@ class LoginView(APIView):
         if user:
             login(request, user)
             data = {
-                'session_key': request.session.session_key,
-                'username': user.username
+                'session_key': request.session.session_key
             }
             return Response(data, status = status.HTTP_200_OK)
         else:
