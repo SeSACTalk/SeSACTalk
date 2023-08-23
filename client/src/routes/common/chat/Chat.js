@@ -11,6 +11,7 @@ const Chat = function () {
 
     const session_key = getCookie('session_key')
     const [senders, setSender] = useState([])
+    let [user, setUser] = useState('')
 
     useEffect(() => {
         axios.get(SERVER_CHAT_LIST, {
@@ -20,7 +21,8 @@ const Chat = function () {
         })
             .then(
                 response => {
-                    let copy = [...response.data]
+                    setUser(response.data.id)
+                    let copy = [...response.data.users]
                     setSender(copy)
                 }
             )
@@ -40,7 +42,7 @@ const Chat = function () {
                     )
                 })
             }
-            <Outlet></Outlet>
+            <Outlet context={{ user }}></Outlet>
         </div>
     )
 

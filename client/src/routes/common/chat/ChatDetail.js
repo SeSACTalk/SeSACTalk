@@ -1,18 +1,20 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from 'react-router-dom';
+import { useParams, useOutletContext } from 'react-router-dom';
 import { getCookie } from "../../../modules/handle_cookie";
 
 
 const ChatDetail = function () {
     // 서버 주소
     const { username } = useParams()
+    const userProps = useOutletContext()
+
     const SERVER = process.env.REACT_APP_BACK_BASE_URL
     const SERVER_CHAT_DETAIL = `${SERVER}/chat/${username}/`
 
     // 웹 소켓 주소
     const SERVER_WEB_SOCKET = process.env.REACT_APP_BACK_SOCKET_URL
-    const SERVER_CHAT = `${SERVER_WEB_SOCKET}/ws/chat/${username}`
+    const SERVER_CHAT = `${SERVER_WEB_SOCKET}/ws/chat/${userProps.user}/${username}`
 
     // 세션키
     const session_key = getCookie('session_key')
@@ -34,7 +36,7 @@ const ChatDetail = function () {
         })
             .then(
                 response => {
-                    let copy = [...response.data]
+                    let copy = [...response.data];
                     setItems(copy)
                 }
             )

@@ -29,7 +29,7 @@ class CheckSessionPermission(BasePermission):
         user_id = session.get_decoded().get('_auth_user_id')
         is_auth = User.objects.get(id = user_id).is_auth
         
-        if Session.objects.filter(session_key = frontend_session_key).exists() and is_auth == 1:
+        if Session.objects.filter(session_key = frontend_session_key).exists() and is_auth == 10:
             return True
         else:
             # 인증되지 않은 사용자에게 403 Forbidden 응답을 반환

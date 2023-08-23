@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from chat.models import Chat
-from chat.serializers import ChatUserSerializer, ChatSerializer
+from chat.serializers import ChatUserSerializer, ChatInfoSerializer
 
 class ChatListView(APIView):
     def get(self, request: HttpRequest) -> Response:
@@ -17,18 +17,24 @@ class ChatListView(APIView):
         
         chat_users = Chat.objects.filter(receiver = user_id).values('sender', 'sender__name').distinct().all()
         serializer = ChatUserSerializer(chat_users, many = True)
-
-        return Response(serializer.data, status = status.HTTP_200_OK)
+        data = {
+            'id': user_id,
+            'users': serializer.data
+        }
+        return Response(data, status = status.HTTP_200_OK)
     
 class ChatDetailView(APIView):
     def get(self, request: HttpRequest, **kwargs) -> Response:
         frontend_session_key = request.META.get('HTTP_AUTHORIZATION', '')
         session = Session.objects.get(session_key = frontend_session_key)
-        receiver_id = session.get_decoded().get('_auth_user_id')
 
-        sender_id = kwargs['id']
+        my_user_id = session.get_decoded().get('_auth_user_id')
+        specific_user_id = kwargs['id']
 
-        chats_with_sender = Chat.objects.filter(Q(receiver = receiver_id) & Q(sender = sender_id)).values('sender__name', 'receiver__name', 'content', 'date').order_by('-date').all()
-        serializer = ChatSerializer(chats_with_sender, many = True)
+        messages = Chat.objects.filter(
+            (Q(receiver = my_user_id) & Q(sender = specific_user_id)) |
+            (Q(sender = my_user_id) & Q(receiver = specific_user_id))
+        ).values('sender__name', 'receiver__name', 'content', 'date').order_by('date').all()
 
-        return Response(serializer.data ,status = status.HTTP_200_OK)
+        serializer = ChatInfoSerializer(messages, many = True)
+        return Response(serializer.data, status = status.HTTP_200_OK)

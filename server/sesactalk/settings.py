@@ -110,6 +110,9 @@ CORS_ORIGIN_WHITELIST = (
 )
 COLS_ALLOW_CREDENTIALS = True
 
+# 비동기 함수에서도 장고 orm 조회를 가능하게 하는 방법
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = 'true'
+
 ROOT_URLCONF = 'sesactalk.urls'
 
 TEMPLATES = [

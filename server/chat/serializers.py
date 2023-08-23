@@ -1,6 +1,8 @@
 from rest_framework import serializers
+
+from chat.models import Chat
   
-class ChatSerializer(serializers.Serializer):
+class ChatInfoSerializer(serializers.Serializer):
     sender__name = serializers.CharField()
     receiver__name = serializers.CharField()
     content = serializers.CharField()
@@ -16,3 +18,8 @@ class ChatUserSerializer(serializers.Serializer):
 
     class Meta:
         fields = ('sender', 'sender__name')
+
+class ChatSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Chat
+        exclude = ('read_status', 'date')

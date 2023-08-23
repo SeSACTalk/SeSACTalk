@@ -1,13 +1,19 @@
-import json
 from channels.generic.websocket import AsyncWebsocketConsumer
+from django.contrib.sessions.models import Session
+
+import json
 
 from chat.models import Chat
+from chat.serializers import ChatSerializers
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.room_name = self.scope['url_route']['kwargs']['user_id']
-        self.room_group_name = f"chat_{self.room_name}"
+        self.sender_id = str(self.scope['url_route']['kwargs']['sender_id'])
+        self.receiver_id = str(self.scope['url_route']['kwargs']['receiver_id'])
+        
+        #! 채팅그룹명을 어떻게 지어야 효율적일까?
+        self.room_group_name = f"chat_{self.sender_id}{self.receiver_id}"
 
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -22,15 +28,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
-    # TODO: 현재 접속중인 사용자의 id를 추출 -> DB저장용
-    # TODO: 메시지의 내용 + 날짜찍히게 하기(가공해서)
     async def receive(self, text_data):
         data = json.loads(text_data)
         content = data['content']
 
-        sender_pk = self.scope['url_route']['kwargs']['user_id']
-
-
+        sender_id = self.scope['url_route']['kwargs']['sender_id']
+        receiver_id = self.scope['url_route']['kwargs']['receiver_id']
+        
+        data = {
+            'sender': sender_id,
+            'receiver': receiver_id,
+            'content': content
+        }
+        # DB에 저장
+        serializer = ChatSerializers(data = data)
+        if serializer.is_valid():
+            serializer.save()
         await self.channel_layer.group_send(
             self.room_group_name,
             {
