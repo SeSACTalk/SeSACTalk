@@ -22,12 +22,18 @@ function General() {
             .catch(() => {
                 navigate('/accounts/login');   
             });
-        }, []);
+        }
+        , []);
     let username = getCookie('username')
     return (
-        <div className="General">
-            <Link to={`/post/${username}`}>Post</Link>{/* &nbsp;|&nbsp; */}
-        </div>
+        <>
+            <div className="Main">
+                <Link to={'/'}>Main</Link>{/* &nbsp;|&nbsp; */}
+            </div>
+            <div className="General">
+                <Link to={`/post/${username}`}>Post</Link>{/* &nbsp;|&nbsp; */}
+            </div>
+        </>
     );
 }
 

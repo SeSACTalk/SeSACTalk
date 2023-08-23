@@ -1,8 +1,10 @@
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from post.views import Main
 
 urlpatterns = [
+    path('/', Main.as_view(), name = 'Main'),
     path('admin/', include('master.urls')),
     path('accounts/', include('accounts.urls')),
     path('user/', include('user.urls')),

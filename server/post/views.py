@@ -11,6 +11,8 @@ from post.serializers import PostSerializer, LikeSerializer, ViewSerializer, Rep
 from post.mixins import OwnerPermissionMixin
 from post.constants import ResponseMessages
 
+class Main(APIView):
+    pass
 class Post(APIView, OwnerPermissionMixin):
     def get(self, request: HttpRequest, username) -> Response:
         # 권한 확인

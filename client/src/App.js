@@ -15,6 +15,7 @@ import AdminUserInfo from './routes/admin/UserInfo';
 
 import Accounts from './routes/accounts/Accounts';
 import General from './routes/general/General'
+import Main from './routes/general/Main'
 import Admin from './routes/admin/Admin.js';
 
 import Posts from './routes/common/post/Posts';
@@ -32,6 +33,9 @@ function App() {
         <Route path='/accounts' element={<Accounts/>}/>
         <Route path='/admin' element={<Admin/>}/>
         <Route path='/general' element={<General/>}/>
+
+        {/* / : General Main routes */}
+        <Route path='/general' element={<Main/>}/>
         
         {/* /routes/accounts/ */}
         <Route path='/accounts/login' element={<Login />} />
