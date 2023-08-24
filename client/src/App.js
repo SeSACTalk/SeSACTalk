@@ -35,7 +35,7 @@ function App() {
         <Route path='/general' element={<General/>}/>
 
         {/* / : General Main routes */}
-        <Route path='/general' element={<Main/>}/>
+        <Route path='/' element={<Main/>}/>
         
         {/* /routes/accounts/ */}
         <Route path='/accounts/login' element={<Login />} />
