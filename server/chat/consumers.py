@@ -12,7 +12,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.sender_id = self.scope['url_route']['kwargs']['sender_id']
         self.receiver_id = self.scope['url_route']['kwargs']['receiver_id']
         
-        #! 채팅그룹명을 어떻게 지어야 효율적일까?
         self.room_group_name = f"chat_{self.sender_id}{self.receiver_id}"
 
         await self.channel_layer.group_add(
