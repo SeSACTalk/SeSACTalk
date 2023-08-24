@@ -89,7 +89,7 @@ def send_fcm_on_new_report(sender, instance, **kwargs):
     message_title = "새 알림"
     message_body = f"회원님의 게시글이 운영정책 위반으로 삭제되었습니다."
     data_message = {
-        'report_id': instance.id,
+        'report_id': str(instance.id),
         'report_date': str(instance.date),
     }
 
