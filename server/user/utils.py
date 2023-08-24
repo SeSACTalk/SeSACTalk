@@ -12,4 +12,4 @@ def send_fcm_notification(token, title, body, data = None):
         )
         messaging.send(message)
     else:
-        return False
+        return
