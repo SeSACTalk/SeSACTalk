@@ -8,7 +8,7 @@ class Campus(models.Model):
 
 class Course(models.Model):
     name = models.CharField(max_length = 100)
-    campus = models.ForeignKey(Campus, on_delete=models.PROTECT)
+    campus = models.ForeignKey(Campus, on_delete = models.PROTECT)
 
 # 과정
 class UserManager(BaseUserManager):
@@ -50,16 +50,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     withdraw_date = models.DateTimeField(null = True)
     first_course = models.ForeignKey(Course, on_delete = models.PROTECT, related_name = 'first_course')
     second_course = models.ForeignKey(Course, on_delete = models.PROTECT, null = True, related_name = 'second_course')
-
-    objects = UserManager()
-
     is_auth = models.IntegerField(default = 0)
-    #! 0: 가입, 1: 승인, 2: 보류, 3: 거절
+    #! 0: 가입, 10: 승인, 11: 임시비밀번호 발급, 20: 보류 21: 임시비밀번호 1회 사용, 30: 거절
     auth_approval_date = models.DateTimeField(null = True)
     is_active = models.BooleanField(default = True)
     is_staff = models.BooleanField(default = False)
     is_superuser = models.BooleanField(default = False)
 
+    objects = UserManager()
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
 

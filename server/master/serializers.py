@@ -9,7 +9,7 @@ class UserAuthSerializer(serializers.ModelSerializer):
     
     def validate(self, data):
         is_auth = data.get('is_auth')
-        if is_auth is not None and (is_auth < 0 or is_auth > 3):
+        if is_auth is not None and (is_auth < 0 or is_auth > 40):
             raise serializers.ValidationError('is auth 값은 0에서 3 사이어야 합니다')
         return data
     

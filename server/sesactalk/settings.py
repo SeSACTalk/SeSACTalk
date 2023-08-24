@@ -61,6 +61,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -78,8 +79,16 @@ INSTALLED_APPS = [
     'explore',
     'reply',
     'profiles',
-    'master'
+    'master',
 ]
+
+ASGI_APPLICATION = 'sesactalk.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware', # CORS 추가
@@ -93,13 +102,16 @@ MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware', # 디버그 툴바 추가
 ]
 
-# INTERNAL_IPS = ['127.0.0.1'] # 디버깅할 ip 기재
+INTERNAL_IPS = ['127.0.0.1'] # 디버깅할 ip 기재
 
 # CORS 추가
 CORS_ORIGIN_WHITELIST = (
     env.str('BACK_BASE_URL'), env.str('FRONT_BASE_URL')
 )
 COLS_ALLOW_CREDENTIALS = True
+
+# 비동기 함수에서도 장고 orm 조회를 가능하게 하는 방법
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = 'true'
 
 ROOT_URLCONF = 'sesactalk.urls'
 

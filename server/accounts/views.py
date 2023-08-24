@@ -19,14 +19,14 @@ from accounts.constants import ResponseMessages
 
 class CheckSessionPermission(BasePermission):
     def has_permission(self, request, view):
-        frontend_session_key = request.META.get('HTTP_AUTHORIZATION', '').replace('Session ', '')
+        frontend_session_key = request.META.get('HTTP_AUTHORIZATION', '')
 
         # 세션키로 사용자 인증여부 조회하기
         session = Session.objects.get(session_key = frontend_session_key)
         user_id = session.get_decoded().get('_auth_user_id')
         is_auth = User.objects.get(id = user_id).is_auth
         
-        if Session.objects.filter(session_key = frontend_session_key).exists() and is_auth == 1:
+        if Session.objects.filter(session_key = frontend_session_key).exists() and is_auth == 10 and is_auth == 11:
             return True
         else:
             # 인증되지 않은 사용자에게 403 Forbidden 응답을 반환
@@ -43,15 +43,11 @@ class UserInfoView(APIView):
     def post(self, request: HttpRequest) -> Response:
         session = Session.objects.get(session_key=request.data['session_key'])
         user_id = session.get_decoded().get('_auth_user_id')
-
-        user = User.objects.get(id=user_id)
-        try:
-            if user.is_staff:
-                return Response({'message': 'True'}, status=status.HTTP_200_OK)
-            else:
-                return Response({'message': 'False'}, status=status.HTTP_200_OK)
-        except:
-            return Response({'message': 'False'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = User.objects.get(id = user_id)
+        if user.is_staff:
+            return Response(status = status.HTTP_200_OK)
+        return Response(status = status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
     def post(self, request: HttpRequest) -> Response:
@@ -60,8 +56,7 @@ class LoginView(APIView):
         if user:
             login(request, user)
             data = {
-                'session_key': request.session.session_key,
-                'username': user.username
+                'session_key': request.session.session_key
             }
             return Response(data, status = status.HTTP_200_OK)
         else:
