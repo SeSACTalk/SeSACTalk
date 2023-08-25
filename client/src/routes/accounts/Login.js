@@ -20,7 +20,6 @@ const Login = function () {
         try {
             const response = await axios.post(SERVER_ACCOUNTS_LOGIN, { username, hashedPw })
             setCookie('session_key', response.data.session_key, 60)
-            setCookie('username', response.data.username, 60)
             navigate('/')
         } catch (error) {
             console.error('Login failed', error.response.data)

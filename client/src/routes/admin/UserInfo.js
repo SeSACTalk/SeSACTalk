@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react"
 import axios from "axios"
-import { useParams } from "react-router-dom"
 
 const AdminUserInfo = function () {
     const SERVER = process.env.REACT_APP_BACK_BASE_URL
@@ -12,24 +11,26 @@ const AdminUserInfo = function () {
 
     useEffect(() => {
         axios.get(SERVER_AUTH_REQUEST)
-            .then(response => {
-                let copy = [...response.data]
-                copy.forEach((a, i) => {
-                    if (a.is_auth == 0) {
-                        a.is_auth = auth_status[0]
-                    } else if (a.is_auth == 1) {
-                        a.is_auth = auth_status[1]
-                    } else if (a.is_auth == 2) {
-                        a.is_auth = auth_status[2]
-                    } else {
-                        a.is_auth = auth_status[3]
-                    }
+            .then(
+                response => {
+                    let copy = [...response.data]
+                    copy.forEach((a, i) => {
+                        if (a.is_auth == 0) {
+                            a.is_auth = auth_status[0]
+                        } else if (a.is_auth == 1) {
+                            a.is_auth = auth_status[1]
+                        } else if (a.is_auth == 2) {
+                            a.is_auth = auth_status[2]
+                        } else {
+                            a.is_auth = auth_status[3]
+                        }
+                    })
+                    setUsers(copy)
                 })
-                setUsers(copy)
-            })
-            .catch(error => {
-                console.error(error)
-            })
+            .catch(
+                error => {
+                    console.error(error)
+                })
     }, [])
 
     const handleUserAuth = async (e) => {
@@ -40,7 +41,6 @@ const AdminUserInfo = function () {
                 id: user_id,
                 is_auth: auth
             })
-            console.log(response.data)
         }
         catch (error) {
             console.error('Please Try Again', error.response.data)
