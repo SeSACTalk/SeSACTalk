@@ -65,11 +65,10 @@ class LoginView(APIView):
 class LogoutView(APIView):
     def post(self, request: HttpRequest) -> Response:
         frontend_session_key = request.data['session_key']
-        
-        session = Session.objects.get(session_key = frontend_session_key)
-        user_id = session.get_decoded().get('_auth_user_id')
-        print(user_id)    
-        return Response(status = status.HTTP_200_OK)
+        if (frontend_session_key):
+            Session.objects.filter(session_key = frontend_session_key).delete()
+            return Response(status = status.HTTP_200_OK)
+        return Response(status = status.HTTP_400_BAD_REQUEST)
 
 class SignUpView(APIView):
     def get(self, request: HttpRequest) -> Response:
