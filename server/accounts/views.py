@@ -16,25 +16,15 @@ from accounts.models import Campus, Course, User
 from profiles.models import Profile
 from accounts.utils import send_email_to_send_temporary_password
 from accounts.constants import ResponseMessages
+from sesactalk.mixins import SessionDecoderMixin
 
-class CheckSessionPermission(BasePermission):
+class CheckSessionPermission(BasePermission, SessionDecoderMixin):
     def has_permission(self, request, view):
-        frontend_session_key = request.META.get('HTTP_AUTHORIZATION', '')
-
-        # 세션키로 사용자 인증여부 조회하기
-        session = Session.objects.get(session_key = frontend_session_key)
-        user_id = session.get_decoded().get('_auth_user_id')
-        user = User.objects.get(id = user_id)
+        user = self.get_user_by_pk(request.META.get('HTTP_AUTHORIZATION'))
         is_auth = user.is_auth
 
         # 0=가입, [10=승인, 11=임시비밀번호발급], [20=보류, 21=임시비밀번호사용], 30=거절
-        if Session.objects.filter(session_key = frontend_session_key).exists() and (is_auth == 10 or is_auth == 11):
-            # if is_auth == 11:
-            #     # TODO: 프로필 페이지가 완성되면, 비밀번호 변경 페이지로 이동시키기
-            #     #! 문제점 - 로그인에는 문제가 발생하지 않지만 각 페이지를 방문할 때 21은 접근 권한이 없는 사용자라서 권한 X
-            #     #! 로그아웃 시 db업데이트하는 것으로 수정해야할 듯!
-            #     user.is_auth = 21
-            #     user.save()
+        if user and (is_auth == 10 or is_auth == 11):
             return True
         else:
             # 인증되지 않은 사용자에게 403 Forbidden 응답을 반환
@@ -46,12 +36,9 @@ class VerifyUserView(APIView):
     def get(self, request: HttpRequest) -> Response:
         return Response({'message': ResponseMessages.VERIFIED_SESSION_KEY}, status = status.HTTP_200_OK)
 
-class UserInfoView(APIView):
+class UserInfoView(APIView, SessionDecoderMixin):
     def post(self, request: HttpRequest) -> Response:
-        session = Session.objects.get(session_key=request.data['session_key'])
-        user_id = session.get_decoded().get('_auth_user_id')
-        
-        user = User.objects.get(id = user_id)
+        user = self.get_user_by_pk(request.META.get('HTTP_AUTHORIZATION'))
         if user.is_staff:
             return Response(status = status.HTTP_200_OK)
         return Response(status = status.HTTP_400_BAD_REQUEST)
@@ -69,11 +56,17 @@ class LoginView(APIView):
         else:
             return Response({'error': ResponseMessages.INVALID_CREDENTIALS}, status = status.HTTP_400_BAD_REQUEST)
 
-class LogoutView(APIView):
+class LogoutView(APIView, SessionDecoderMixin):
     def post(self, request: HttpRequest) -> Response:
         frontend_session_key = request.data['session_key']
-        if (frontend_session_key):
-            Session.objects.filter(session_key = frontend_session_key).delete()
+        
+        if frontend_session_key:
+            user = self.get_user_by_pk(frontend_session_key)
+            # 임시비밀번호 사용 중인 사용자의 is_auth를 보류로 변경
+            if user.is_auth == 11:
+                user.is_auth = 21
+                user.save()
+            Session.objects.filter(session_key=frontend_session_key).delete()
             return Response(status = status.HTTP_200_OK)
         return Response(status = status.HTTP_400_BAD_REQUEST)
 

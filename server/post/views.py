@@ -123,7 +123,7 @@ class ReportPost(OwnerPermissionMixin, APIView):
         reportSerializer = ReportSerializer(data = request.data)
         reportSerializer.content_id = pk
         reportSerializer.reported = PostModel.objects.get(id = pk).user_id # 효율적일까?
-        reportSerializer.reporter = self.get_post_owner_id(request.META.get('HTTP_AUTHORIZATION'))
+        reportSerializer.reporter = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION'))
 
         if not reportSerializer.is_valid():
             print(f'<<CHECK INVALID DATA>>\n{reportSerializer.errors}')
