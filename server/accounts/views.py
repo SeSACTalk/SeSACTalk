@@ -24,9 +24,17 @@ class CheckSessionPermission(BasePermission):
         # 세션키로 사용자 인증여부 조회하기
         session = Session.objects.get(session_key = frontend_session_key)
         user_id = session.get_decoded().get('_auth_user_id')
-        is_auth = User.objects.get(id = user_id).is_auth
-        
-        if Session.objects.filter(session_key = frontend_session_key).exists() and is_auth == 1:
+        user = User.objects.get(id = user_id)
+        is_auth = user.is_auth
+
+        # 0=가입, [10=승인, 11=임시비밀번호발급], [20=보류, 21=임시비밀번호사용], 30=거절
+        if Session.objects.filter(session_key = frontend_session_key).exists() and (is_auth == 10 or is_auth == 11):
+            # if is_auth == 11:
+            #     # TODO: 프로필 페이지가 완성되면, 비밀번호 변경 페이지로 이동시키기
+            #     #! 문제점 - 로그인에는 문제가 발생하지 않지만 각 페이지를 방문할 때 21은 접근 권한이 없는 사용자라서 권한 X
+            #     #! 로그아웃 시 db업데이트하는 것으로 수정해야할 듯!
+            #     user.is_auth = 21
+            #     user.save()
             return True
         else:
             # 인증되지 않은 사용자에게 403 Forbidden 응답을 반환
@@ -131,6 +139,8 @@ class FindPasswordView(APIView): # 비밀번호 찾기
 
         temp_password = get_random_string(length=12)
         user.password = make_password(hashlib.sha256(temp_password.encode()).hexdigest())
+        # 0=가입, [10=승인, 11=임시비밀번호발급], [20=보류, 21=임시비밀번호사용], 30=거절
+        user.is_auth = 11
         user.save()
 
         send_email_to_send_temporary_password(username, email, temp_password)

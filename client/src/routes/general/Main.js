@@ -9,6 +9,7 @@ const SERVER_GENERAL_MAIN = `${SERVER}`
 const Main = function () {
 
     {/* variables */ }
+    let navigate = useNavigate()
     const [managerProfileList, setManagerProfileList] = useState([]);
 
     {/* functions */ }
@@ -23,6 +24,7 @@ const Main = function () {
                 // },
                 });
                 console.log(response.data)
+                setManagerProfileList(response.data)
             } catch (error) {
                 console.log(error.response.data);
             }
@@ -31,7 +33,22 @@ const Main = function () {
     }, []);
     return (
         <div>
-            메인페이지
+            {
+                managerProfileList.map((mp)=>{  
+                    return (  
+                        // 아직 route정의한 게 없어서 오류 : 나중에 주석 풀면 됩니다.
+                        // <div onClick={
+                        //     navigate(`/profile/${mp.manager_username}`)
+                        // }>  
+                        <div>  
+                            <img src = {`${SERVER_GENERAL_MAIN}${mp.profile_img_path}`}/>
+                            <div>
+                                    {mp.campus}
+                            </div> 
+                        </div>
+                    )
+                })
+            }
         </div>
     );
 };

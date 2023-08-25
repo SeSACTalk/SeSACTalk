@@ -1,3 +1,6 @@
+import json
+from pytz import unicode
+
 from django.db.models import Q
 from django.http import HttpRequest
 
@@ -6,13 +9,38 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from post.models import Post as PostModel, Like, View, Reply, HashTag, Report
+from accounts.models import User
 from user.models import UserRelationship
+from profiles.models import Profile
+
 from post.serializers import PostSerializer, LikeSerializer, ViewSerializer, ReplySerializer, HashTagSerializer, ReportSerializer
-from post.mixins import OwnerPermissionMixin
+from post.mixins import OwnerPermissionMixin, get_profile_img_mixin
 from post.constants import ResponseMessages
 
 class Main(APIView):
-    pass
+    def get(self, request: HttpRequest) -> Response:
+        # 캠퍼스 매니저의 pk를 가져오기
+        manager_users = User.objects.filter(
+            Q(is_staff = True) & Q(is_superuser = False)
+        ).select_related('first_course').all()
+
+        # QuerySet이 비어있을 경우
+        if not bool(manager_users):
+            return Response({'message': ResponseMessages.MANAGERS_NO_POSTS_TO_DISPLAY}, status=status.HTTP_200_OK)
+
+        # pk리스트
+        managers_serializers = [
+           {
+                'campus' : manager_user.first_course.campus.name,
+                'manager_id' : manager_user.pk,
+                'manager_username' : manager_user.username,
+                                    # ImageFieldFile를 serialize
+                'profile_img_path' : get_profile_img_mixin(json.dumps(unicode(Profile.objects.get(user = manager_user.pk).img_path))),
+           } for manager_user in manager_users
+        ]
+        return Response(managers_serializers, status=status.HTTP_200_OK)
+
+
 class Post(APIView, OwnerPermissionMixin):
     def get(self, request: HttpRequest, username) -> Response:
         # 권한 확인
@@ -29,7 +57,7 @@ class Post(APIView, OwnerPermissionMixin):
         # QuerySet이 비어있을 경우
         if not bool(posts):
             return Response({'message': ResponseMessages.POST_NO_POSTS_TO_DISPLAY}, status=status.HTTP_200_OK)
-        
+
         # 반환할 게시물이 있는 경우
         postSerializer = PostSerializer(posts, many=True)
         for i, post in enumerate(posts): postSerializer.data[i]['username'] = post.user.username
