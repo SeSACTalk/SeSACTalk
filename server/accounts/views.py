@@ -46,7 +46,6 @@ class VerifyUserView(APIView):
     def get(self, request: HttpRequest) -> Response:
         return Response({'message': ResponseMessages.VERIFIED_SESSION_KEY}, status = status.HTTP_200_OK)
 
-
 class UserInfoView(APIView):
     def post(self, request: HttpRequest) -> Response:
         session = Session.objects.get(session_key=request.data['session_key'])
@@ -70,6 +69,13 @@ class LoginView(APIView):
         else:
             return Response({'error': ResponseMessages.INVALID_CREDENTIALS}, status = status.HTTP_400_BAD_REQUEST)
 
+class LogoutView(APIView):
+    def post(self, request: HttpRequest) -> Response:
+        frontend_session_key = request.data['session_key']
+        if (frontend_session_key):
+            Session.objects.filter(session_key = frontend_session_key).delete()
+            return Response(status = status.HTTP_200_OK)
+        return Response(status = status.HTTP_400_BAD_REQUEST)
 
 class SignUpView(APIView):
     def get(self, request: HttpRequest) -> Response:

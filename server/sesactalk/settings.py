@@ -198,7 +198,7 @@ LOGIN_REDIRECT_URL = '/'
 
 # 세션 관련 설정
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # DB 기반 세션
-SESSION_COOKIE_NAME = 'my_session_cookie'  # 세션에 사용할 쿠키 이름
+SESSION_COOKIE_NAME = 'session_key'  # 세션에 사용할 쿠키 이름
 SESSION_COOKIE_SECURE = False  # HTTPS 연결에서만 쿠키 사용 (보안 강화를 위해)
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # 브라우저 종료 시 세션 만료 여부
 SESSION_COOKIE_HTTPONLY = True  # JavaScript에서 쿠키 접근 방지 (보안 강화를 위해)
