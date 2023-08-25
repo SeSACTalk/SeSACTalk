@@ -3,6 +3,13 @@ from rest_framework import serializers
 from accounts.models import User
 from accounts.serializers import CourseSerializer
 
+class UserSerializer(serializers.ModelSerializer):
+    first_course = CourseSerializer(read_only = True)
+    second_course = CourseSerializer(read_only = True)
+    class Meta:
+        model = User
+        exclude = ('password',)
+
 class UserAuthSerializer(serializers.ModelSerializer):
     first_course = CourseSerializer(read_only = True)
     second_course = CourseSerializer(read_only = True)

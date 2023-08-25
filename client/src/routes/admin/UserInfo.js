@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react"
 import axios from "axios"
-import { useParams } from "react-router-dom"
 
 const AdminUserInfo = function () {
     const SERVER = process.env.REACT_APP_BACK_BASE_URL

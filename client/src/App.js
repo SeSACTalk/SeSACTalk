@@ -21,7 +21,8 @@ import Admin from './routes/admin/Admin.js';
 
 import Posts from './routes/common/post/Posts';
 import WritePost from './routes/common/post/WritePost';
-
+import AdminAuthedUser from './routes/admin/UserList';
+import AdminUserDetail from './routes/admin/UserDeatil';
 
 function App() {
   return (
@@ -29,10 +30,9 @@ function App() {
       <Link to='/accounts'>accounts</Link>&nbsp;|&nbsp;
       <Link to='/general'>general</Link>&nbsp;|&nbsp;
       <Link to='/admin'>admin</Link>
-      <Link to='/chat/'>채팅</Link>
+      <Link to='/chat'>채팅</Link>
       <Routes>
         {/* Root routes */}
-        <Route path='/accounts' element={<Accounts />} />
         <Route path='/admin' element={<Admin />} />
         <Route path='/general' element={<General />} />
         <Route path='/chat' element={<Chat />}>
@@ -40,17 +40,24 @@ function App() {
         </Route>
 
         {/* /routes/accounts/ */}
-        <Route path='/accounts/login' element={<Login />} />
-        <Route path='/accounts/signup' element={<SignUp />} />
-        <Route path='/accounts/find/user/id/' element={<FindId />} />
-        <Route path='/accounts/find/user/password' element={<FindPassword />} />
+        <Route path='/accounts' element={<Accounts />} >
+          <Route path='login' element={<Login />} />
+          <Route path='signup' element={<SignUp />} />
+          <Route path='find'>
+            <Route path='user/id' element={<FindId />} />
+            <Route path='user/password' element={<FindPassword />} />
+          </Route>
+        </Route>
 
         {/* /routes/admin/ */}
         <Route path='/admin' element={<Admin />}>
+          <Route path='user' element={<AdminAuthedUser />} >
+            <Route path=':id' element={<AdminUserDetail />}></Route>
+          </Route>
           <Route path='auth/user' element={<AdminUserInfo />} />
         </Route>
       </Routes>
-    </div>
+    </div >
   );
 }
 
