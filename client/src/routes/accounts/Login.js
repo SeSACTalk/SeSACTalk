@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { setCookie } from '../../modules/handle_cookie';
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
-const SERVER_ACCOUNTS_LOGIN = SERVER + '/accounts/login/'
+const SERVER_ACCOUNTS_LOGIN = `${SERVER}/accounts/login/`
 
 const Login = function () {
     const navigate = useNavigate()
