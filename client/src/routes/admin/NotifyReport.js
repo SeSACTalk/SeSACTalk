@@ -132,7 +132,6 @@ const ReportDetail =  function ({ report, content_type }) {
               },
               data : {
                 'id' : report.id,
-                'content_id' : report.content_id,
                 'report_status' : report_status,
               },
             });
@@ -179,12 +178,14 @@ const ReportDetail =  function ({ report, content_type }) {
                 reportStatus
               }
               </span>
+              &nbsp;|&nbsp;
+              <span style={{'fontWeight' : 800, 'cursor' : 'pointer'}} onClick={()=>{
+                getPostDetail();
+              }}>{content_type} 디테일</span>
             </p>
             <br/>
-            <p><span style={{'fontWeight' : 800}}>신고자</span> { report.reported_name }({ report.reported_username })</p>
-            <p><span style={{'fontWeight' : 800, 'cursor' : 'pointer'}} onClick={()=>{
-            getPostDetail();
-          }}>{content_type} 디테일</span></p>
+            <p><span style={{'fontWeight' : 800}}>신고자</span> { report.reporter_name }({ report.reporter_username })</p>
+            <p><span style={{'fontWeight' : 800}}>피신고자</span> { report.reported_name }({ report.reported_username })</p>
             <p><span style={{'fontWeight' : 800}}>신고 분류</span> { report.category }</p>
             <p><span style={{'fontWeight' : 800}}>신고 날짜</span> { report.date }</p>
         </div>
