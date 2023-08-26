@@ -34,13 +34,13 @@ const Main = function () {
     return (
         <div>
             {
-                managerProfileList.map((mp)=>{  
+                managerProfileList.map((mp, i)=>{  
                     return (  
                         // 아직 route정의한 게 없어서 오류 : 나중에 주석 풀면 됩니다.
                         // <div onClick={
                         //     navigate(`/profile/${mp.manager_username}`)
                         // }>  
-                        <div>  
+                        <div key={i}>  
                             <img src = {`${SERVER_GENERAL_MAIN}${mp.profile_img_path}`}/>
                             <div>
                                     {mp.campus}

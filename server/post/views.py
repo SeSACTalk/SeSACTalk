@@ -84,9 +84,14 @@ class Post(APIView, OwnerPermissionMixin):
 
 class PostDetail(APIView, OwnerPermissionMixin):
     def get(self, request: HttpRequest, **kwargs) -> Response:
+        if bool(request.query_params.get('request_post')):
+            post = PostModel.objects.get(id = kwargs['pk'])
+            postSerializer = PostSerializer(post).data
+            return Response(postSerializer, status.HTTP_200_OK)
+
         # 권한 확인(게시물 주인 확인)
-        access_user = self.check_post_owner(request.META.get('HTTP_AUTHORIZATION'), kwargs['username'])
-        response_data = {'isPostMine': access_user}
+        access_user_condition = self.check_post_owner(request.META.get('HTTP_AUTHORIZATION'), kwargs['username'])
+        response_data = {'isPostMine': access_user_condition}
         return Response(response_data, status.HTTP_200_OK)
 
     def put(self, request, **kwargs) -> Response:

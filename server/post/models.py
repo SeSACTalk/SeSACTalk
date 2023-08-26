@@ -44,5 +44,7 @@ class Report(models.Model):
     content_id = models.IntegerField()
     reporter = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'reporter_id')
     reported = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'reported_id')
+    #! 0: 신고발생, 10: 신고처리 20: 보류, 30: 거절
+    report_status =  models.IntegerField(default = 0)
 
 

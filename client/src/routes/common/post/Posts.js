@@ -24,7 +24,7 @@ const Posts = function () {
               method: "get",
               url: SERVER_POST_POSTS,
               headers: { 
-                'Authorization': `${session_key}`
+                'Authorization': session_key
               },
             });
             console.log(response.data)
@@ -84,7 +84,10 @@ const Post =  function ({ post }) {
               method: "get",
               url: SERVER_POST_POST,
               headers: { 
-                'Authorization': `${session_key}`
+                'Authorization': session_key
+                },
+              params: {
+                request_post: ''
               },
             });
             setIsPostMine(response.data.isPostMine);
@@ -219,7 +222,7 @@ const ReportPost = function ({post, setReportPostClickStatus}) {
         method: "post",
         url: SERVER_REPORT_POST,
         headers: { 
-          'Authorization': `${session_key}`
+          'Authorization': session_key
           },
         data : {
           'content_type' : contentType,
@@ -278,7 +281,7 @@ const ReportPost = function ({post, setReportPostClickStatus}) {
                 method: "delete",
                 url: SERVER_POST_POST,
                 headers: { 
-                  'Authorization': `${session_key}`
+                  'Authorization': session_key
                   },
               });
               console.log(response.data);
@@ -334,7 +337,7 @@ const ReportPost = function ({post, setReportPostClickStatus}) {
           },
           headers: { 
             'Content-Type': "multipart/form-data",
-            'Authorization': `${session_key}`
+            'Authorization': session_key
            },
         });
         console.log(response.data);
@@ -377,4 +380,4 @@ const ReportPost = function ({post, setReportPostClickStatus}) {
       );
   }
 
-export default Posts;
+export {Posts, PostDetail};

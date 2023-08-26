@@ -28,9 +28,10 @@ function Admin() {
     let username = getCookie('username')
     return (
         <div className="Common">
-            <Link to={`/post/${username}`}>Post</Link>
-            <Link to={`/admin/user`}>사용자 조회</Link>
-            <Link to={`/admin/auth/user`}>사용자 권한</Link>
+            <Link to={`/post/${username}`}>Post</Link>&nbsp;|&nbsp;
+            <Link to={`/admin/user`}>사용자 조회</Link>&nbsp;|&nbsp;
+            <Link to={`/admin/auth/user`}>사용자 권한</Link>&nbsp;|&nbsp;
+            <Link to={`/admin/notify/report`}>신고 내역</Link>{/* &nbsp;|&nbsp; */}
             <Outlet></Outlet>
         </div>
     );

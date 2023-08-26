@@ -2,7 +2,6 @@ from django.contrib.sessions.models import Session
 
 from accounts.models import User
 
-
 class SessionDecoderMixin:
     def extract_user_id_from_session(self, frontend_session_key: str) -> int:
         session = Session.objects.get(session_key=frontend_session_key)

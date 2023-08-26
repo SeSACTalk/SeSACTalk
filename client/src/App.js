@@ -20,10 +20,11 @@ import General from './routes/general/General'
 import Main from './routes/general/Main'
 import Admin from './routes/admin/Admin.js';
 
-import Posts from './routes/common/post/Posts';
+import {Posts} from './routes/common/post/Posts';
 import WritePost from './routes/common/post/WritePost';
 import AdminAuthedUser from './routes/admin/UserList';
 import AdminUserDetail from './routes/admin/UserDeatil';
+import NotifyReport from './routes/admin/NotifyReport';
 
 function App() {
   return (
@@ -57,6 +58,7 @@ function App() {
         
         {/* /routes/admin/ */}
         <Route path='/admin' element={<Admin />}>
+          <Route path = 'notify/report'element={<NotifyReport/>}/>
           <Route path='user' element={<AdminAuthedUser />} >
             <Route path=':id' element={<AdminUserDetail />}></Route>
           </Route>

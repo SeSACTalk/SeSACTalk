@@ -14,7 +14,7 @@ class Notification(models.Model):
         like = 'like', '좋아요'
 
     targeting_user = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'targeting_user_id')
-    trageted_user = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'targeted_user_id')
+    targeted_user = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'targeted_user_id')
     type = models.CharField(max_length = 20, choices = category.choices)
     uri = models.TextField(max_length = 500)
     occur_date = models.DateTimeField(auto_now_add = True)
