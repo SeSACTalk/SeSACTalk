@@ -5,7 +5,10 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from PIL import Image
 import io
 
+from accounts.models import User
 from post.models import Post, Like, View, Reply, HashTag, Report
+from profiles.models import Profile
+
 
 class PostContentLengthValidator:
     """
@@ -168,3 +171,23 @@ class ReportSerializer(serializers.ModelSerializer):
         copy_querydict['reporter'] = self.reporter
 
         return super().to_internal_value(copy_querydict)
+
+class ManagerProfileSerializer(serializers.ModelSerializer):
+    campus = serializers.CharField(source='first_course.campus.name', read_only = True)
+    manager_id = serializers.IntegerField(source='id', read_only = True)
+    manager_username = serializers.CharField(source='username', read_only = True)
+    profile_img_path = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            'campus', 'manager_id', 'manager_username', 'profile_img_path'
+        )
+    def get_profile_img_path(self, user):
+        profile = Profile.objects.get(user=user.id)
+        if profile.img_path:
+            profile_img_path = profile.img_path
+        else:
+            profile_img_path = '/media/profile/default_profile.png'
+
+        return profile_img_path

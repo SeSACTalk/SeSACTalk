@@ -1,6 +1,3 @@
-import json
-from pytz import unicode
-
 from django.db.models import Q
 from django.http import HttpRequest
 
@@ -11,10 +8,10 @@ from rest_framework.response import Response
 from post.models import Post as PostModel, Like, View, Reply, HashTag, Report
 from accounts.models import User
 from user.models import UserRelationship
-from profiles.models import Profile
 
-from post.serializers import PostSerializer, LikeSerializer, ViewSerializer, ReplySerializer, HashTagSerializer, ReportSerializer
-from post.mixins import OwnerPermissionMixin, get_profile_img_mixin
+from post.serializers import PostSerializer, LikeSerializer, ViewSerializer, ReplySerializer, HashTagSerializer, \
+    ReportSerializer, ManagerProfileSerializer
+from post.mixins import OwnerPermissionMixin
 from post.constants import ResponseMessages
 
 class Main(APIView):
@@ -29,16 +26,8 @@ class Main(APIView):
             return Response({'message': ResponseMessages.MANAGERS_NO_POSTS_TO_DISPLAY}, status=status.HTTP_200_OK)
 
         # pk리스트
-        managers_serializers = [
-           {
-                'campus' : manager_user.first_course.campus.name,
-                'manager_id' : manager_user.pk,
-                'manager_username' : manager_user.username,
-                                    # ImageFieldFile를 serialize
-                'profile_img_path' : get_profile_img_mixin(json.dumps(unicode(Profile.objects.get(user = manager_user.pk).img_path))),
-           } for manager_user in manager_users
-        ]
-        return Response(managers_serializers, status=status.HTTP_200_OK)
+        managerProfileSerializer = ManagerProfileSerializer(manager_users, many = True)
+        return Response(managerProfileSerializer.data, status=status.HTTP_200_OK)
 
 
 class Post(APIView, OwnerPermissionMixin):

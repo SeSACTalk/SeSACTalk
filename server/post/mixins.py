@@ -19,8 +19,3 @@ class OwnerPermissionMixin(SessionDecoderMixin):
             return user_post_owner, condition
 
         return condition
-
-def get_profile_img_mixin(img):
-    if img != '""':
-        return img
-    return '/media/profile/default_profile.png'
