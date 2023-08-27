@@ -9,12 +9,13 @@ const AdminUserInfo = function () {
     const [filter_data, setFilterData] = useState({
         'username': '',
         'campus': 0,
-        'approvaldate': '',
+        'signupdate': '',
         'is_auth': 0,
     })
 
     const SERVER = process.env.REACT_APP_BACK_BASE_URL
-    const SERVER_AUTH_REQUEST = `${SERVER}/admin/auth/user/?username=${filter_data['username']}&campus=${filter_data['campus']}&date=${filter_data['approvaldate']}&auth=${filter_data['is_auth']}`
+    const SERVER_AUTH_REQUEST = `${SERVER}/admin/auth/user/?username=${filter_data['username']}&campus=${filter_data['campus']}&date=${filter_data['signupdate']}&auth=${filter_data['is_auth']}`
+
     useEffect(() => {
         axios.get(SERVER_AUTH_REQUEST)
             .then(
@@ -62,15 +63,15 @@ const AdminUserInfo = function () {
                 <h4>날짜순 정렬</h4>
                 <ul>
                     <li>
-                        <label for='latest'>최신순</label>
-                        <input type="checkbox" name="latest" value='latest' onClick={e => {
-                            let copy = filter_data
-                            copy['date'] = 'latest'
+                        <label htmlFor='latest'>최신순</label>
+                        <input type="checkbox" name="latest" value='latest' onChange={e => {
+                            let copy = {...filter_data}
+                            copy['signupdate'] = e.target.value
                             setFilterData(copy)
                         }}></input>
-                        <label for='oldest' onClick={e => {
-                            let copy = filter_data
-                            copy['date'] = 'oldest'
+                        <label htmlFor='oldest' onChange={e => {
+                            let copy = {...filter_data}
+                            copy['signupdate'] = e.target.value
                             setFilterData(copy)
                         }}>과거순</label>
                         <input type="checkbox" name="oldest" value='oldest'></input>
@@ -98,7 +99,7 @@ const AdminUserInfo = function () {
                             campuses.map((a, i) => {
                                 return (
                                     <>
-                                        <label for={a.id}>{a.name}</label>
+                                        <label htmlFor={a.id} key={i}>{a.name}</label>
                                         <input type="checkbox" name={a.id} value={a.name}></input>
                                     </>
                                 )

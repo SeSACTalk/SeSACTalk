@@ -1,4 +1,4 @@
-from django.db.models import Q, Subquery
+from django.db.models import Q
 from django.http import HttpRequest
 from rest_framework import status
 from rest_framework.views import APIView
@@ -10,10 +10,42 @@ from master.serializers import UserSerializer, UserAuthSerializer
 
 class UserListView(APIView):
     def get(self, request: HttpRequest) -> Response:
-        auth_users = User.objects.exclude(is_auth = 0).all()
-        serializer = UserSerializer(auth_users, many = True)
+       # 필터들
+        username_value = request.query_params.get('username')
+        campus_value = int(request.query_params.get('campus'))
+        approval_date_value = request.query_params.get('approvaldate')
 
-        return Response(serializer.data, status = status.HTTP_200_OK)
+        date_filter = None
+        # 날짜별 정렬
+        if approval_date_value == 'oldest':
+            date_filter = '-auth_approval_date'
+        else:
+            date_filter = 'auth_approval_date'
+
+        users = None
+        # default 유저 쿼리
+        if campus_value == 0: 
+            users = User.objects.exclude(is_auth = 10).filter(
+                Q(username__contains = username_value) 
+                ).order_by(date_filter).all()
+        else:
+            users = User.objects.exclude(is_auth = 10).filter(
+                Q(username__contains = username_value) & 
+                Q(first_course__campus = campus_value) 
+                ).order_by(date_filter).all()
+            
+        # 캠퍼스 쿼리
+        campuses = Campus.objects.all()
+
+        # 직렬화
+        user_serializer = UserAuthSerializer(users, many = True)
+        campus_serializer = CampusSerializer(campuses, many = True)
+
+        data ={
+            'list': user_serializer.data,
+            'campus': campus_serializer.data
+        }
+        return Response(data, status = status.HTTP_200_OK)
 
 class UserDetailVeiw(APIView):
     def get(self, request: HttpRequest, **kwargs) -> Response:
@@ -43,9 +75,9 @@ class UserAuthRequestView(APIView):
         date_filter = None
         # 날짜별 정렬
         if approval_date_value == 'oldest':
-            date_filter = '-auth_approval_date'
+            date_filter = '-signup_date'
         else:
-            date_filter = 'auth_approval_date'
+            date_filter = 'signup_date'
 
         users = None
         # default 유저 쿼리
