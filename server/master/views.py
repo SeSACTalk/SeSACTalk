@@ -1,9 +1,11 @@
+from django.db.models import Q, Subquery
 from django.http import HttpRequest
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from accounts.models import User
+from accounts.models import User, Campus
+from accounts.serializers import CampusSerializer
 from master.serializers import UserSerializer, UserAuthSerializer
 
 class UserListView(APIView):
@@ -32,10 +34,62 @@ class UserDetailVeiw(APIView):
 
 class UserAuthRequestView(APIView):
     def get(self, request: HttpRequest) -> Response:
-        users = User.objects.exclude(is_auth = 1).all()
-        serializer = UserAuthSerializer(users, many = True)
+        #! 필터가 없을때
+        print(request.query_params)
+        # 필터들
+        username_value = request.query_params.get('username')
+        campus_value = int(request.query_params.get('campus'))
+        approval_date_value = request.query_params.get('approvaldate')
+        auth_value = int(request.query_params.get('auth'))
 
-        return Response(serializer.data, status = status.HTTP_200_OK)
+        date_filter = None
+        # 날짜별 정렬
+        if approval_date_value == 'oldest':
+            date_filter = '-auth_approval_date'
+        else:
+            date_filter = 'auth_approval_date'
+
+        users = None
+        # default 유저 쿼리
+        if campus_value == 0: 
+            users = User.objects.exclude(is_auth = 10).filter(
+                Q(username__contains = username_value) & 
+                Q(is_auth = auth_value)
+                ).order_by(date_filter).all()
+        else:
+            users = User.objects.exclude(is_auth = 10).filter(
+                Q(username__contains = username_value) & 
+                Q(first_course__campus = campus_value) &
+                Q(is_auth = auth_value)
+                ).order_by(date_filter).all()
+            
+        # 캠퍼스 쿼리
+        campuses = Campus.objects.all()
+
+        # 직렬화
+        user_serializer = UserAuthSerializer(users, many = True)
+        campus_serializer = CampusSerializer(campuses, many = True)
+
+        data ={
+            'list': user_serializer.data,
+            'campus': campus_serializer.data
+        }
+        return Response(data, status = status.HTTP_200_OK)
+    
+    def post(self, request: HttpRequest) -> Response:
+        #! 필터가 존재할떄
+        # 필터 조건
+        codnition = (Q(campus = 1) &  Q(is_auth = 1))
+        
+        #! 정렬기준에 대한 요청이 있을때 .orderby(-date) 추가해주기
+        # DB
+        users = User.objects.exclude(is_auth = 10).filter(codnition).order_by('date').all()
+        
+        # 직렬화
+        user_serializer = UserSerializer(users, many = True)
+
+        return Response(user_serializer.data, status = status.HTTP_200_OK)
+
     
     def put(self, request: HttpRequest) -> Response:
         user = User.objects.get(id = request.data['id'])
