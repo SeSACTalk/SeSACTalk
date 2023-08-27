@@ -34,8 +34,6 @@ class UserDetailVeiw(APIView):
 
 class UserAuthRequestView(APIView):
     def get(self, request: HttpRequest) -> Response:
-        #! 필터가 없을때
-        print(request.query_params)
         # 필터들
         username_value = request.query_params.get('username')
         campus_value = int(request.query_params.get('campus'))
@@ -75,21 +73,6 @@ class UserAuthRequestView(APIView):
             'campus': campus_serializer.data
         }
         return Response(data, status = status.HTTP_200_OK)
-    
-    def post(self, request: HttpRequest) -> Response:
-        #! 필터가 존재할떄
-        # 필터 조건
-        codnition = (Q(campus = 1) &  Q(is_auth = 1))
-        
-        #! 정렬기준에 대한 요청이 있을때 .orderby(-date) 추가해주기
-        # DB
-        users = User.objects.exclude(is_auth = 10).filter(codnition).order_by('date').all()
-        
-        # 직렬화
-        user_serializer = UserSerializer(users, many = True)
-
-        return Response(user_serializer.data, status = status.HTTP_200_OK)
-
     
     def put(self, request: HttpRequest) -> Response:
         user = User.objects.get(id = request.data['id'])
