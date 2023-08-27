@@ -25,7 +25,6 @@ const Explore = function() {
     }
     
     const getExploreTagsResult = async (inputData) => {
-        console.log(`tag : ${inputData}`)
         const SERVER_TAGS_EXPLORE = `${SERVER}/explore/tags/${inputData.split('#')[1]}/`
         try {
             const response = await axios({
@@ -67,31 +66,33 @@ const Explore = function() {
                     }/>
                 </div>
                 <div className="explore_result" style={{'width' : '90%', 'margin' : '20px auto', 'padding' : '3px', 'border' : '1px solid black'}}>
-                {   exploreContent.trim().length == 0 ? <p>검색어를 입력하세요(유저 아이디 / 해시태그 검색)</p> :
-                        (
-                            (exploreUsersResult.length === 0 && exploreTagsResult.length === 0) ? (
-                                <p>검색 결과 없음</p>
-                            ) : (
-                                exploreUsersResult.length > 0 ? (
-                                exploreUsersResult.map((er, i) => (
-                                    <RenderExploreResults
-                                    key={i}
-                                    results={ er }
-                                    isLast = {exploreUsersResult.length === (i + 1)}
-                                    />
-                                ))
-                                ) : (
-                                exploreTagsResult.map((er, i) => (
-                                    <RenderExploreResults
-                                    key={i}
-                                    results={ er }
-                                    isLast = {exploreTagsResult.length === (i + 1)}
-                                    />
-                                ))
+                    <div style={{ margin: '0 auto', width: '90%' }}>
+                        {   exploreContent.trim().length == 0 ? <p>검색어를 입력하세요(유저 아이디 / 해시태그 검색)</p> :
+                                (
+                                    (exploreUsersResult.length === 0 && exploreTagsResult.length === 0) ? (
+                                        <p>검색 결과 없음</p>
+                                    ) : (
+                                        exploreUsersResult.length > 0 ? (
+                                        exploreUsersResult.map((er, i) => (
+                                            <ExploreUser
+                                            key={i}
+                                            results={ er }
+                                            isLast = {exploreUsersResult.length === (i + 1)}
+                                            />
+                                        ))
+                                        ) : (
+                                        exploreTagsResult.map((er, i) => (
+                                            <ExploreTag
+                                            key={i}
+                                            results={ er }
+                                            isLast = {exploreTagsResult.length === (i + 1)}
+                                            />
+                                        ))
+                                        )
+                                    )
                                 )
-                            )
-                        )
-                }
+                        }
+                    </div>
                 </div>
 
             </div>
@@ -99,22 +100,16 @@ const Explore = function() {
     )
 }
 
-const RenderExploreResults = ({ results, isLast }) => (
-  <div style={{ margin: '0 auto', width: '70%' }}>
-    <ExploreUser results={results} />
-    <ExploreTag results={results} />
-    { isLast ? null : <hr />}
-  </div>
-);
-
-const ExploreUser = function({results}) {
+const ExploreUser = function({results, isLast}) {
     let navigate = useNavigate()
 
+    /* variables */
     // 프로필이 완성되면 링크 변경해주세요!
     const CLIENT_PROFILE = `/profile/${results.username}`
     const profile_img_path = `${SERVER}${results.profile_img_path}`
 
     return (
+        <>
         <div style={{'display' : 'flex', 'cursor' : 'pointer'}} onClick={()=>{
             navigate(CLIENT_PROFILE);
         }}>
@@ -122,7 +117,7 @@ const ExploreUser = function({results}) {
                 {/* 프로필 영역 */}
                 <img src={profile_img_path}/>
             </div>
-            <div>
+            <div style={{'margin' : '4px 80px', 'padding' : '3px 10px'}} >
                 <div style={{'display' : 'block'}}>
                     {/* 이름 영역 */}
                     {results.name}
@@ -134,11 +129,41 @@ const ExploreUser = function({results}) {
                 </div>
             </div>
         </div>
+        { isLast ? null : <hr />}
+        </>
     )
 }
-const ExploreTag = function({results}) {
+const ExploreTag = function({results, isLast}) {
+    /* variables */
+    let navigate = useNavigate()
+
+    const hashtag_name = results.hashtag_name;
+    const hashtag_id = results.hashtag_id;
+    const post_ids = results.post_ids; //list
+    const count_post = results.count_post;
+
+
     return (
-        <></>
+        <>
+        <div style={{'display' : 'flex', 'cursor' : 'pointer'}} onClick={()=>{
+            // navigate(CLIENT_PROFILE);
+        }}>
+            <div style={{'backgroundColor' : '#D9D9D9', 'width' : '70px', 'height' : '70px', 'borderRadius' : '50%'
+            , 'fontSize' : '50px', 'color' : 'gray', 'fontWeight' : 900}}>#</div>
+            <div style={{'margin' : '4px 80px', 'padding' : '3px 10px'}}>
+                {/* 해시태그 내용 영역 */}
+                <div style={{'display' : 'block',}}>
+                    {hashtag_name}
+                </div>
+                {/* 개수 영역 */}
+                <div style={{'display' : 'block', 'color' : 'green'}}>
+                    <span></span>
+                    <span>{count_post}개&nbsp;게시물</span>
+                </div>
+            </div>
+        </div>
+        { isLast ? null : <hr />}
+        </>
     )
 }
 export default Explore

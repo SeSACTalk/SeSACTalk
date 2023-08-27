@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from profiles.models import Profile
+from post.models import HashTag
 
 
 class UserExploreResultSerializer(serializers.ModelSerializer):
@@ -33,3 +34,19 @@ class UserExploreResultSerializer(serializers.ModelSerializer):
             profile_img_path = '/media/profile/default_profile.png'
 
         return profile_img_path
+
+
+class HashTagExploreResultSerializer(serializers.ModelSerializer):
+    hashtag_name = serializers.CharField(source = 'name', read_only = True)
+    hashtag_id = serializers.IntegerField(source = 'id', read_only = True)
+    post_ids = serializers.SerializerMethodField(read_only = True)
+    count_post = serializers.IntegerField(source = 'post_set.count', read_only = True)
+
+    class Meta:
+        model = HashTag
+        fields = (
+            'hashtag_name', 'hashtag_id', 'post_ids', 'count_post',
+        )
+
+    def get_post_ids(self, hashtag):
+        return [post.id for post in hashtag.post_set.all()]

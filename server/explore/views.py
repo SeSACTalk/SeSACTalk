@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 
-from explore.serializers import UserExploreResultSerializer
+from explore.serializers import UserExploreResultSerializer, HashTagExploreResultSerializer
+from post.models import HashTag
 from profiles.models import Profile
 
 
@@ -26,4 +27,7 @@ class ExploreUsers(APIView):
 
 class ExploreTags(APIView):
     def post(self, request: HttpRequest, h_name) -> Response:
-        return Response("success", status=status.HTTP_200_OK)
+        hashtag_queryset = HashTag.objects.filter(name__startswith=h_name).prefetch_related('post_set')
+        serializer = HashTagExploreResultSerializer(hashtag_queryset, many = True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
