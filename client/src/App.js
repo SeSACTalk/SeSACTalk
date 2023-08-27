@@ -22,6 +22,7 @@ import Admin from './routes/admin/Admin.js';
 
 import {Posts} from './routes/common/post/Posts';
 import WritePost from './routes/common/post/WritePost';
+import Explore from './routes/general/Explore'
 import AdminAuthedUser from './routes/admin/UserList';
 import AdminUserDetail from './routes/admin/UserDeatil';
 import NotifyReport from './routes/admin/NotifyReport';
@@ -54,7 +55,10 @@ function App() {
         
         {/* /routes/posts/ */}
         <Route path='/post/:username' element={<Posts/>} ></Route>
-        <Route path='/post/:username/write' element={<WritePost />}></Route>       
+        <Route path='/post/:username/write' element={<WritePost />}></Route> 
+        
+        {/* /routes/explore/ */}      
+        <Route path='/explore' element={<Explore/>} ></Route>
         
         {/* /routes/admin/ */}
         <Route path='/admin' element={<Admin />}>

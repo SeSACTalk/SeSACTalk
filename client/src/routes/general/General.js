@@ -26,14 +26,17 @@ function General() {
         , []);
     let username = getCookie('username')
     return (
-        <>
-            <div className="Main">
-                <Link to={'/'}>Main</Link>{/* &nbsp;|&nbsp; */}
-            </div>
-            <div className="General">
-                <Link to={`/post/${username}`}>Post</Link>{/* &nbsp;|&nbsp; */}
-            </div>
-        </>
+        <div>
+            <span className="Main">
+                <Link to={'/'}>Main</Link>&nbsp;|&nbsp;
+            </span>
+            <span className="General">
+                <Link to={`/post/${username}`}>Post</Link>&nbsp;|&nbsp;
+            </span>
+            <span className="Explore">
+                <Link to={`/explore`}>Explore</Link>{/* nbsp;|&nbsp; */}
+            </span>
+        </div>
     );
 }
 
