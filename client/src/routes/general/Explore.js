@@ -135,30 +135,25 @@ const ExploreUser = function({results, isLast}) {
 }
 const ExploreTag = function({results, isLast}) {
     /* variables */
-    let navigate = useNavigate()
-
-    const hashtag_name = results.hashtag_name;
-    const hashtag_id = results.hashtag_id;
-    const post_ids = results.post_ids; //list
-    const count_post = results.count_post;
-
+    let navigate = useNavigate();
+    const CLIENT_EXPLORE_TAG_RESULT = `/explore/tags/${results.name}`
 
     return (
         <>
         <div style={{'display' : 'flex', 'cursor' : 'pointer'}} onClick={()=>{
-            // navigate(CLIENT_PROFILE);
+            navigate(CLIENT_EXPLORE_TAG_RESULT);
         }}>
             <div style={{'backgroundColor' : '#D9D9D9', 'width' : '70px', 'height' : '70px', 'borderRadius' : '50%'
             , 'fontSize' : '50px', 'color' : 'gray', 'fontWeight' : 900}}>#</div>
             <div style={{'margin' : '4px 80px', 'padding' : '3px 10px'}}>
                 {/* 해시태그 내용 영역 */}
                 <div style={{'display' : 'block',}}>
-                    {hashtag_name}
+                    {results.name}
                 </div>
                 {/* 개수 영역 */}
                 <div style={{'display' : 'block', 'color' : 'green'}}>
                     <span></span>
-                    <span>{count_post}개&nbsp;게시물</span>
+                    <span>{results.count_post}개&nbsp;게시물</span>
                 </div>
             </div>
         </div>

@@ -380,4 +380,4 @@ const ReportPost = function ({post, setReportPostClickStatus}) {
       );
   }
 
-export {Posts, PostDetail};
+export {Posts, Post, PostDetail};

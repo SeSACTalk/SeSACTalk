@@ -1,8 +1,7 @@
 from rest_framework import serializers
 
 from profiles.models import Profile
-from post.models import HashTag
-
+from post.models import HashTag, Post
 
 class UserExploreResultSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source='user.id', read_only = True)
@@ -37,16 +36,22 @@ class UserExploreResultSerializer(serializers.ModelSerializer):
 
 
 class HashTagExploreResultSerializer(serializers.ModelSerializer):
-    hashtag_name = serializers.CharField(source = 'name', read_only = True)
-    hashtag_id = serializers.IntegerField(source = 'id', read_only = True)
-    post_ids = serializers.SerializerMethodField(read_only = True)
-    count_post = serializers.IntegerField(source = 'post_set.count', read_only = True)
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(read_only=True)
+    count_post = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = HashTag
         fields = (
-            'hashtag_name', 'hashtag_id', 'post_ids', 'count_post',
+            'id', 'name', 'count_post',
         )
 
-    def get_post_ids(self, hashtag):
-        return [post.id for post in hashtag.post_set.all()]
+class HashTagExploreResultDetailSerializer(serializers.ModelSerializer):
+    hashtag_name = serializers.CharField(read_only=True)
+    username =  serializers.CharField(read_only=True)
+    class Meta:
+        model = Post
+        fields = (
+            'hashtag_name', 'id', 'content', 'date', 'img_path', 'user',
+            'tag_set', 'report_status', 'uuid', 'username'
+        )

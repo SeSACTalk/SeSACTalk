@@ -23,6 +23,7 @@ import Admin from './routes/admin/Admin.js';
 import {Posts} from './routes/common/post/Posts';
 import WritePost from './routes/common/post/WritePost';
 import Explore from './routes/general/Explore'
+import ExploreTagDetail from './routes/general/ExploreTagDetail'
 import AdminAuthedUser from './routes/admin/UserList';
 import AdminUserDetail from './routes/admin/UserDeatil';
 import NotifyReport from './routes/admin/NotifyReport';
@@ -59,6 +60,7 @@ function App() {
         
         {/* /routes/explore/ */}      
         <Route path='/explore' element={<Explore/>} ></Route>
+        <Route path='/explore/tags/:h_name' element={<ExploreTagDetail/>} ></Route>
         
         {/* /routes/admin/ */}
         <Route path='/admin' element={<Admin />}>
