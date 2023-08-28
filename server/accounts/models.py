@@ -8,7 +8,7 @@ class Campus(models.Model):
 
 class Course(models.Model):
     name = models.CharField(max_length = 100)
-    campus = models.ForeignKey(Campus, on_delete = models.CASCADE)
+    campus = models.ForeignKey(Campus, on_delete = models.PROTECT)
 
 # 과정
 class UserManager(BaseUserManager):
@@ -48,8 +48,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique = True)
     signup_date = models.DateTimeField(auto_now_add = True)
     withdraw_date = models.DateTimeField(null = True)
-    first_course = models.ForeignKey(Course, on_delete = models.CASCADE, related_name = 'first_course')
-    second_course = models.ForeignKey(Course, on_delete = models.CASCADE, null = True, related_name = 'second_course')
+    first_course = models.ForeignKey(Course, on_delete = models.PROTECT, related_name = 'first_course')
+    second_course = models.ForeignKey(Course, on_delete = models.PROTECT, null = True, related_name = 'second_course')
 
     objects = UserManager()
 
