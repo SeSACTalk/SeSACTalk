@@ -40,8 +40,8 @@ class UserInfoView(APIView, SessionDecoderMixin):
     def post(self, request: HttpRequest) -> Response:
         user = self.get_user_by_pk(request.META.get('HTTP_AUTHORIZATION'))
         if user.is_staff:
-            return Response(status = status.HTTP_200_OK)
-        return Response(status = status.HTTP_400_BAD_REQUEST)
+            return Response({'role' : 'STAFF'}, status = status.HTTP_200_OK)
+        return Response({'role' : 'USER'}, status = status.HTTP_200_OK)
 
 class LoginView(APIView):
     def post(self, request: HttpRequest) -> Response:
