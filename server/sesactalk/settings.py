@@ -73,7 +73,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'accounts',
-    'user.apps.UserConfig',
+    'user',
     'post',
     'chat',
     'explore',
@@ -109,18 +109,6 @@ CORS_ORIGIN_WHITELIST = (
     env.str('BACK_BASE_URL'), env.str('FRONT_BASE_URL')
 )
 CORS_ALLOW_CREDENTIALS = True
-
-CORS_ALLOW_HEADERS = [
-'accept',
-'accept-encoding',
-'authorization',
-'content-type',
-'dnt',
-'origin',
-'user-agent',
-'x-csrftoken',
-'x-requested-with',
-]
 
 # 비동기 함수에서도 장고 orm 조회를 가능하게 하는 방법
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = 'true'
