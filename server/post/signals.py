@@ -32,6 +32,9 @@ def connect_with_tags(sender, instance, created, **kwargs):
         instance.save()
 
         for hash_tag in hash_tags:
-            tag, created = HashTag.objects.get_or_create(name = hash_tag)
-            instance.tag_set.add(tag)
-            print(instance.tag_set.all())
+            
+            h_tag, created = HashTag.objects.get_or_create(name = hash_tag)
+            instance.tags.add(h_tag)
+            print(instance.tags)
+            print(h_tag)
+        

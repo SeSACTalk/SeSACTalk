@@ -1,9 +1,8 @@
 from django.db import models
-from accounts.models import User
-from chat.models import Chat
 import uuid
 
-# 게시글, 좋아요, 신고, 조회수(추가해야하나?)
+from accounts.models import User
+
 class Post(models.Model):
     uuid = models.UUIDField(default = uuid.uuid4, editable = False, unique = True)
     content = models.TextField(max_length = 1000)
@@ -11,7 +10,7 @@ class Post(models.Model):
     img_path = models.ImageField(upload_to = 'posts/', null = True)
     report_status = models.BooleanField(default = False)
     user = models.ForeignKey(User, on_delete = models.CASCADE)
-    tag_set = models.ManyToManyField('HashTag', blank = True, related_name = 'HashTag')
+    tags = models.ManyToManyField('HashTag', blank = True, related_name = 'post', through = 'HandleTag')
 
 class Like(models.Model):
     date = models.DateTimeField(auto_now_add = True)
@@ -31,6 +30,10 @@ class Reply(models.Model):
     
 class HashTag(models.Model):
     name = models.CharField(max_length = 255, unique = True)
+
+class HandleTag(models.Model):
+    post = models.ForeignKey(Post, on_delete = models.CASCADE)
+    tag = models.ForeignKey(HashTag, on_delete = models.CASCADE)
 
 class Report(models.Model):
     class types(models.TextChoices):

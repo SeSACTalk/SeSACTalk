@@ -52,7 +52,7 @@ class Post(APIView, OwnerPermissionMixin):
         user_s_follows = UserRelationship.objects.filter(user_follower=access_user.id)
         posts = PostModel.objects.filter(
             Q(user=access_user.id) | Q(user__in=user_s_follows.values('user_follow'))
-        ).select_related('user').order_by('-date')
+        ).prefetch_related('tags').select_related('user').order_by('-date')
 
         # QuerySet이 비어있을 경우
         if not bool(posts):
@@ -61,7 +61,7 @@ class Post(APIView, OwnerPermissionMixin):
         # 반환할 게시물이 있는 경우
         postSerializer = PostSerializer(posts, many=True)
         for i, post in enumerate(posts): postSerializer.data[i]['username'] = post.user.username
-
+        
         return Response(postSerializer.data, status=status.HTTP_200_OK)
 
     def post(self, request: HttpRequest, username) -> Response:

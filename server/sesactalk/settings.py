@@ -108,7 +108,7 @@ INTERNAL_IPS = ['127.0.0.1'] # 디버깅할 ip 기재
 CORS_ORIGIN_WHITELIST = (
     env.str('BACK_BASE_URL'), env.str('FRONT_BASE_URL')
 )
-COLS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True
 
 # 비동기 함수에서도 장고 orm 조회를 가능하게 하는 방법
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = 'true'
