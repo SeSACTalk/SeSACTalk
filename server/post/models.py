@@ -11,7 +11,7 @@ class Post(models.Model):
     img_path = models.ImageField(upload_to = 'posts/', null = True)
     report_status = models.BooleanField(default = False)
     user = models.ForeignKey(User, on_delete = models.CASCADE)
-    tag_set = models.ManyToManyField('HashTag', blank = True)
+    tag_set = models.ManyToManyField('HashTag', blank = True, related_name = 'HashTag')
 
 class Like(models.Model):
     date = models.DateTimeField(auto_now_add = True)

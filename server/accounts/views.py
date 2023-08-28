@@ -50,7 +50,8 @@ class LoginView(APIView):
         if user:
             login(request, user)
             data = {
-                'session_key': request.session.session_key
+                'session_key': request.session.session_key,
+                'username': request.data['username'],
             }
             return Response(data, status = status.HTTP_200_OK)
         else:

@@ -107,7 +107,6 @@ class PostDetail(APIView, OwnerPermissionMixin):
 
 
     def delete(self, request, **kwargs) -> Response:
-        # TODO: db에서 이미지를 삭제하면 server의 이미지도 삭제
         # 권한 확인
         access_user, condition  = self.check_post_owner(request.META.get('HTTP_AUTHORIZATION'), kwargs['username'], 'get_owner')
         if not condition:

@@ -73,7 +73,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'accounts',
-    'user.apps.UserConfig',
+    'user',
     'post',
     'chat',
     'explore',
