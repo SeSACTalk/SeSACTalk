@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 let session_key = createSlice({
-    name: 'user',
+    name: 'session_key',
     initialState: '',
     reducers: {
         changeSession(state, action) {
