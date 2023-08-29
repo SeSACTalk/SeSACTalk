@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-let user = createSlice({
+let session_key = createSlice({
     name: 'user',
     initialState: '',
     reducers: {
@@ -10,5 +10,5 @@ let user = createSlice({
     }
 })
 
-export default user; // state export
-export let { changeName, changeAge } = user.actions // state 변경 함수 export
+export default session_key; // state export
+export let { changeSession } = session_key.actions // state 변경 함수 export

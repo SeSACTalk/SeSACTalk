@@ -1,8 +1,8 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit'
-import user from './store/uesrSlice.js'
+import session_key from './store/userSlice.js'
 
 export default configureStore({
     reducer: {
-        user: user.reducer,
+        session_key: session_key.reducer,
     }
 }) 
