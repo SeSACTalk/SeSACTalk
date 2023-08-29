@@ -39,7 +39,7 @@ const Main = function () {
                         //     navigate(`/profile/${mp.manager_username}`)
                         // }>  
                         <div key={i}>  
-                            <img src = {`${SERVER_GENERAL_MAIN}${mp.profile_img_path}`}/>
+                            <img src = {`${SERVER}${mp.profile_img_path}`}/>
                             <div>
                                 {mp.campus}
                             </div>
