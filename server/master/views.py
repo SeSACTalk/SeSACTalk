@@ -126,7 +126,7 @@ class NotifycationReport(APIView):
         if not reports:
             return Response({'message': ResponseMessages.REPORT_NO_POSTS_TO_DISPLAY}, status=status.HTTP_200_OK)
 
-        serializer = ReportDetailSerializer(reports, many=True)
+        serializer = ReportDetailSerializer(reports, many = True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class HandleReport(APIView):

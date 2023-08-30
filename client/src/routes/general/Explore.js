@@ -44,7 +44,7 @@ const Explore = function() {
         switch(removeSpacesExploreContent.charAt(0)){ //char의 인덱스 0번째가 #으로 시작할 경우
             case "":
                 setExploreUsersResult('');
-                setExploreUsersResult('');
+                setExploreTagsResult('');
                 break;
             case "#":
                 if (removeSpacesExploreContent.split('#')[1].length != 0){

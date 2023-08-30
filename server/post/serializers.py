@@ -173,7 +173,7 @@ class ReportSerializer(serializers.ModelSerializer):
         return super().to_internal_value(copy_querydict)
 
 class ManagerProfileSerializer(serializers.ModelSerializer):
-    campus = serializers.CharField(source='first_course.campus.name', read_only = True)
+    campus = serializers.CharField(source = 'first_course.campus.name', read_only = True)
     manager_id = serializers.IntegerField(source='id', read_only = True)
     manager_username = serializers.CharField(source='username', read_only = True)
     profile_img_path = serializers.SerializerMethodField()

@@ -14,8 +14,8 @@ class ExploreUsers(APIView):
         #  활성화된 회원만, 승인 여부가 10 11 21(재로그인 필요)인 회원만
         profiles_with_users_campus_name = Profile.objects.filter(
             Q(user__username__startswith=u_name) &
-            Q(user__is_active=True) &
-            (Q(user__is_auth=10) | Q(user__is_auth=11) | Q(user__is_auth=21))
+            Q(user__is_active = True) &
+            (Q(user__is_auth = 10) | Q(user__is_auth=11) | Q(user__is_auth=21))
         ).select_related(
             'user__first_course__campus',
             'user__second_course__campus'

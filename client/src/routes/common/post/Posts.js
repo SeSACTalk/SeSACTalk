@@ -335,7 +335,7 @@ const ReportPost = function ({post, setReportPostClickStatus}) {
             'original_content' : post.content,
             'update_content' : content,
           },
-          headers: { 
+          headers: {
             'Content-Type': "multipart/form-data",
             'Authorization': session_key
            },
