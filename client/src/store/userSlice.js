@@ -5,10 +5,21 @@ let session_key = createSlice({
     initialState: '',
     reducers: {
         changeSession(state, action) {
-            state = action.payload
+            return action.payload
         }
     }
 })
 
-export default session_key; // state export
+let user = createSlice({
+    name: 'user',
+    initialState: '',
+    reducers: {
+        changeUser(state, action) {
+            return action.payload
+        }
+    }
+})
+
+export { session_key, user }; // state export
 export let { changeSession } = session_key.actions // state 변경 함수 export
+export let { changeUser } = user.actions

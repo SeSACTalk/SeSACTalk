@@ -53,5 +53,5 @@ class HashTagExploreResultDetailSerializer(serializers.ModelSerializer):
         model = Post
         fields = (
             'hashtag_name', 'id', 'content', 'date', 'img_path', 'user',
-            'tag_set', 'report_status', 'uuid', 'username'
+            'tags', 'report_status', 'uuid', 'username'
         )

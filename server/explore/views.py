@@ -27,10 +27,10 @@ class ExploreUsers(APIView):
 
 class ExploreTags(APIView):
     def get(self, request: HttpRequest, h_name) -> Response:
-        post_queryset = Post.objects.filter(tag_set__name__startswith=h_name)\
+        post_queryset = Post.objects.filter(tags__name=h_name)\
             .select_related('user')\
             .order_by('-date')\
-            .annotate(hashtag_name=F('tag_set__name'), username=F('user__username'))
+            .annotate(hashtag_name=F('tags__name'), username=F('user__username'))
         serializer = HashTagExploreResultDetailSerializer(post_queryset, many = True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
