@@ -1,10 +1,8 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import CryptoJS from 'crypto-js'
 import { useNavigate } from 'react-router-dom'
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
-const SERVER_GENERAL_MAIN = `${SERVER}`
 
 const Main = function () {
 
@@ -17,19 +15,19 @@ const Main = function () {
         const getManagers = async () => {
             try {
                 const response = await axios({
-                method: "get",
-                url: SERVER_GENERAL_MAIN,
-                // headers: { 
-                //     'Authorization': `${session_key}`
-                // },
+                    method: "get",
+                    url: SERVER,
+                    // headers: { 
+                    //     'Authorization': `${session_key}`
+                    // },
                 });
                 console.log(response.data)
                 setManagerProfileList(response.data)
             } catch (error) {
-                console.log(error.response.data);
+                console.log(error);
             }
         }
-            getManagers();
+        getManagers();
     }, []);
     return (
         <div>
@@ -41,10 +39,10 @@ const Main = function () {
                         //     navigate(`/profile/${mp.manager_username}`)
                         // }>  
                         <div key={i}>  
-                            <img src = {`${SERVER_GENERAL_MAIN}${mp.profile_img_path}`}/>
+                            <img src = {`${SERVER}${mp.profile_img_path}`}/>
                             <div>
-                                    {mp.campus}
-                            </div> 
+                                {mp.campus}
+                            </div>
                         </div>
                     )
                 })

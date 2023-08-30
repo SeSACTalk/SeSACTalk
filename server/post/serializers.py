@@ -33,6 +33,7 @@ class ImgPathContentTypeValidator:
 
 class PostSerializer(serializers.ModelSerializer):
     user = None
+    hash_tag_name = serializers.SerializerMethodField(read_only = True)
 
     content = serializers.CharField(
         validators=[
@@ -54,6 +55,9 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = '__all__'
     
+    def get_hash_tag_name(self, post):
+        return [hashtag.name for hashtag in post.tags.all()]
+
     def to_internal_value(self, data):
         """
             호출 시점: 역직렬화 정의
