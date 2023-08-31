@@ -126,3 +126,13 @@ class ReportPost(OwnerPermissionMixin, APIView):
 
         # 한 사람이 같은 게시물을 연속적으로 신고 가능?
         return Response({'message': ResponseMessages.REPORT_CREATE_SUCCESS}, status=status.HTTP_201_CREATED)
+    
+class Replys(APIView):
+    def get(self, request: HttpRequest, u_sq: int, p_sq: int)-> Response:
+        # TODO : data query
+        data={
+            'u_sq':u_sq,
+            'p_sq':p_sq
+        }
+
+        return Response(data=data, status=status.HTTP_200_OK)

@@ -28,6 +28,10 @@ import AdminAuthedUser from './routes/admin/UserList';
 import AdminUserDetail from './routes/admin/UserDeatil';
 import NotifyReport from './routes/admin/NotifyReport';
 
+import {Profile, EditProfile} from './routes/profiles/Profile'
+import { Replys, Reply } from './routes/post/Reply';
+
+
 function App() {
   return (
     <div className="App">
@@ -70,7 +74,12 @@ function App() {
           </Route>
           <Route path='auth/user' element={<AdminUserInfo />} />
         </Route>
+
+        <Route path='/profile/:username' element={<Profile/>}/>
+        <Route path='/profile/:username/edit' element={<EditProfile/>}/>
       </Routes>
+
+      
     </div >
   );
 }
