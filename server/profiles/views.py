@@ -6,9 +6,10 @@ from rest_framework import status
 from django.contrib.sessions.models import Session
 
 from profiles.models import Profile
-from user.models import User
+# from user.models import User
+from accounts.models import Campus, Course, User
 from profiles.serializers import ProfileSerializer, EditProfileSerializer
-from accounts.serializers import UserSerializer
+from accounts.serializers import UserSerializer, CampusSerializer, CourseSerializer
 
 # Create your views here.
 
@@ -49,9 +50,7 @@ class EditProfileView(APIView):
         frontend_session_key = request.META.get('HTTP_AUTHORIZATION', '')
         session = Session.objects.get(session_key = frontend_session_key)
         user_id = session.get_decoded().get('_auth_user_id')
-
-        data = None
-
+        
         # user_id와 username 값 비교(True == 내 프로필)
         if (username == User.objects.get(id=user_id).username):
             try:
@@ -59,39 +58,29 @@ class EditProfileView(APIView):
                 profile_queryset = Profile.objects.select_related('user').filter(user__username = username).first()
                 profileSerializers = EditProfileSerializer(profile_queryset)
 
-                # profile_queryset.user.first_course.campus.name
-                # queryset = User.objects.select_related('profile', 'first_course__campus', 'second_course__campus').filter(profile__isnull=False, id=user_id)
+                # 프로필 수정 폼의 캠퍼스 셀렉트 옵션을 보낸다.
+                campuses = Campus.objects.all()
+                campusSerializer = CampusSerializer(campuses, many = True)
 
-                # result = queryset.values(
-                #     'id', 'username', 'name', 'birthdate', 'phone_number', 'email',
-                #     'profile__img_path', 'profile__content', 'profile__link', 'profile__course_status',
-                #     'first_course__name', 'first_course__campus__name', 'second_course__name', 'second_course__campus__name'
-                # ).first()
+                response_data = {
+                    'profile' : profileSerializers.data,
+                    'campus': campusSerializer.data,
+                }
 
-                # # 직렬화
-                # if result:
-                #     data={
-                #         'id': result['id'],
-                #         'username': result['username'],
-                #         'name': result['name'],
-                #         'birthdate': result['birthdate'],
-                #         'phone_number': result['phone_number'],
-                #         'email': result['email'],
-                #         'img_path': result['profile__img_path'],
-                #         'content': result['profile__content'],
-                #         'link': result['profile__link'],
-                #         'course_status': result['profile__course_status'],
-                #         'first_course': result['first_course__name'],
-                #         'first_course_campus_name': result['first_course__campus__name'],
-                #         'second_course': result['second_course__name'],
-                #         'second_course_campus_name': result['second_course__campus__name'],
-                #     }
+                # 과정 axios 요청
+                campus_id = request.query_params.get('campus_id')
+                print('campusid :', campus_id)
+                if campus_id:
+                    courses_on_campus = Course.objects.filter(campus_id = campus_id)
+                    courseSerializer = CourseSerializer(courses_on_campus, many = True)
+                    response_data['course'] = courseSerializer.data
+
 
             except Exception:
                 print(Exception)
                 return Response({'error': 'EditProfile not found'}, status=status.HTTP_404_NOT_FOUND)
         
-            return Response(data = profileSerializers.data, status=status.HTTP_200_OK)
+            return Response(data = response_data, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'EditProfile not found'}, status=status.HTTP_404_NOT_FOUND)
         
@@ -101,47 +90,35 @@ class EditProfileView(APIView):
         session = Session.objects.get(session_key = frontend_session_key)
         user_id = session.get_decoded().get('_auth_user_id')
 
-        # try:
-        #     editProfileUserData=request.data.get('editProfileUserData')
-        #     editProfileUserDataSerializer=EditProfileSerializer(data=editProfileUserData)
-        #     if editProfileUserDataSerializer.is_valid():
-
-        #         data=editProfileUserDataSerializer.data
-        #         print(data)
-        #         return Response({'message': 'Data updated successfully'}, status=status.HTTP_200_OK)
-        #     else:
-        #         print('유효성 에러')
-        #         return Response(editProfileUserDataSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        # except Exception as e:
-        #     return Response({'역직렬화 에러': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        # 역직렬화
-        editProfileUserData=request.data.get('editProfileUserData')
         userObj = User.objects.get(id=user_id)
         profileObj = Profile.objects.get(user=user_id)
 
-        userObj.id = editProfileUserData.get('id')
-        userObj.username = editProfileUserData.get('username')
-        userObj.name = editProfileUserData.get('name')
-        userObj.birthdate = editProfileUserData.get('birthdate')
-        userObj.phone_number = editProfileUserData.get('phone_number')
-        userObj.email = editProfileUserData.get('email')
-        password = editProfileUserData.get('password')
-        
-        profileObj.img_path = editProfileUserData.get('img_path')
-        profileObj.content = editProfileUserData.get('content')
-        profileObj.link = editProfileUserData.get('link')
-        profileObj.course_status = editProfileUserData.get('course_status')
-        
-        first_course = editProfileUserData.get('first_course')
-        first_course_campus_name = editProfileUserData.get('first_course_campus_name')
-        second_course = editProfileUserData.get('second_course')
-        second_course_campus_name = editProfileUserData.get('second_course_campus_name')
-        
+        # 역직렬화
+        editProfileUserData=request.data
+        userObj.birthdate=editProfileUserData['birthdate']
+        userObj.phone_number = editProfileUserData['phone_number']
+        userObj.email = editProfileUserData['email']
+        if editProfileUserData['password'] != '*****':
+            userObj.password = editProfileUserData['password']
+
+        profileObj.img_path  = editProfileUserData['profile_img_path']
+        profileObj.content  = editProfileUserData['profile_content']
+        profileObj.link  = editProfileUserData['profile_link']
+        profileObj.course_status  = editProfileUserData['profile_course_status']
+        if profileObj.course_status.lower() == 'true':
+            profileObj.course_status = True
+        else:
+            profileObj.course_status = False
+
+        second_course = editProfileUserData['second_course__name']
+        if second_course:
+            second_course_id = int(second_course)
+            userObj.second_course = Course.objects.get(id = second_course_id)
+
         userObj.save()
         profileObj.save()
 
-        print(userObj.birthdate)
-        print(profileObj)
+        print(userObj.birthdate, userObj.phone_number, userObj.email, userObj.password, second_course)
+        print(profileObj.img_path, profileObj.content, profileObj.link, profileObj.course_status)
 
         return Response({'message': 'Data updated successfully'}, status=status.HTTP_200_OK)
