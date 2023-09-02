@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import axios from 'axios';
 import CryptoJS from 'crypto-js'
-import { useDispatch, useSelector } from 'react-redux';
-import { changeSession, changeUser } from '../../store/userSlice';
+import { useDispatch } from 'react-redux';
+import { changeUser } from '../../store/userSlice';
 
 import { useNavigate } from 'react-router-dom'
 import { setCookie } from '../../modules/handle_cookie';
@@ -13,9 +13,6 @@ const SERVER_ACCOUNTS_LOGIN = `${SERVER}/accounts/login/`
 const Login = function () {
     const navigate = useNavigate()
 
-    let session_key = useSelector((state) => state.session_key);
-    let user = useSelector((state) => state.user);
-      
     let dispatch = useDispatch();
 
     const [username, setUsername] = useState('')
@@ -31,8 +28,7 @@ const Login = function () {
             setCookie('session_key', response.data.session_key, 60)
             setCookie('username', response.data.username, 60)
 
-            // state 변경
-            dispatch(changeSession(response.data.session_key))
+            // 사용자명 저장
             dispatch(changeUser(response.data.username))
 
             navigate('/')

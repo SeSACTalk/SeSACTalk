@@ -15,18 +15,14 @@ const checkAuthMiddleware = async () => {
                 }
             });
             if (response.status === 200) {
-                console.log('인증된 사용자입니다.')
                 return Promise.resolve();
             } else {
-                console.error('인증되지 않은 사용자입니다.', response.status)
                 return Promise.reject();
             }
         } catch (error) {
-            console.error('인증되지 않은 사용자입니다.', error)
             return Promise.reject();
         }
     } else {
-        console.error('세션 키가 없습니다.')
         return Promise.reject();
     }
 }
@@ -39,18 +35,18 @@ const checkInfoMiddleware = async () => {
 
     try {
         const response = await axios.post(SERVER_ACCOUNTS_INFO, null, {
-            headers: { 
+            headers: {
                 'Authorization': session_key
             }
         });
         const role = response.data.role;
         if (response.status === 200) {
             switch (role) {
-                case 'STAFF' :
-                    console.log('관리자입니다.')
+                case 'STAFF':
                     return Promise.resolve();
-                case 'USER' :
-                    console.log('일반 사용자입니다.')
+                case 'USER':
+                    return Promise.reject();
+                default:
                     return Promise.reject();
             }
         }

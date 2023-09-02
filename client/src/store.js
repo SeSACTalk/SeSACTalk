@@ -1,5 +1,5 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit'
-import { session_key, user } from './store/userSlice.js'
+import user from './store/userSlice'
 
 let server = createSlice({
     name: 'server',
@@ -11,8 +11,7 @@ let server = createSlice({
 
 export default configureStore({
     reducer: {
-        session_key: session_key.reducer,
         user: user.reducer,
-        server:server.reducer
+        server: server.reducer
     }
 }) 
