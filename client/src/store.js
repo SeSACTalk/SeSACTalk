@@ -1,5 +1,6 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit'
 import user from './store/userSlice'
+import writeModal from './store/modalSlice'
 
 let server = createSlice({
     name: 'server',
@@ -12,6 +13,7 @@ let server = createSlice({
 export default configureStore({
     reducer: {
         user: user.reducer,
-        server: server.reducer
+        server: server.reducer,
+        writeModal:writeModal.reducer
     }
 }) 

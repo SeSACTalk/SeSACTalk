@@ -1,10 +1,13 @@
-import '../../../css/Navbar.css'
-
 import React, { useState } from "react";
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
+
+import { changeWirteModal } from "../../../store/modalSlice";
 
 const Navbar = function () {
-    const [writePost, setWritePost] = useState(false);
+    // states
+    let writeModal = useSelector((state) => state.wirteModal)
+    let dispatch = useDispatch();
 
     return (
         <nav className="nav_wrap w-1/5 p-3 h-screen sticky border-solid border border-gray-300 ">
@@ -46,7 +49,7 @@ const Navbar = function () {
                     </Link>
                 </li>
                 <li>
-                    <Link to='#' onClick={(e) => { setWritePost(!writePost) }}>
+                    <Link to='#' onClick={(e) => { dispatch(changeWirteModal(writeModal)) }}>
                         <i className="fa fa-pencil-square-o mr-3" aria-hidden="true"></i>
                         <span>글쓰기</span>
                     </Link>

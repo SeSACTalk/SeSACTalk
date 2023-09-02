@@ -44,7 +44,7 @@ const WritePost = function () {
   const onFileChange = (event) => setImgPath(event.target.files[0]);
 
   return (
-    <div className="WritePost" style={{ 'width': '50%', 'margin': '20px auto' }}>
+    <div className="WritePost absolute top-1/2" >
       <form onSubmit={uploadPost}>
         <table>
           <tbody>
