@@ -20,14 +20,14 @@ class Main(APIView):
         manager_users = User.objects.filter(
             Q(is_staff = True) & Q(is_superuser = False)
         ).select_related('first_course').all()
-
+        
         # QuerySet이 비어있을 경우
         if not bool(manager_users):
-            return Response({'message': ResponseMessages.MANAGERS_NO_POSTS_TO_DISPLAY}, status=status.HTTP_200_OK)
+            return Response({'message': ResponseMessages.MANAGERS_NO_POSTS_TO_DISPLAY}, status = status.HTTP_200_OK)
 
         # pk리스트
         managerProfileSerializer = ManagerProfileSerializer(manager_users, many = True)
-        return Response(managerProfileSerializer.data, status=status.HTTP_200_OK)
+        return Response(managerProfileSerializer.data, status = status.HTTP_200_OK)
 
 
 class Post(APIView, OwnerPermissionMixin):

@@ -26,12 +26,15 @@ class UserListView(APIView):
 
         users = None
         # default 유저 쿼리
+        # 각 필터들은 하나만 선택가능
         if campus_value == 0: 
-            users = User.objects.exclude(is_auth = 10).filter(
+            users = User.objects.filter(
+                Q(is_auth = 10) &
                 Q(username__contains = username_value) 
                 ).order_by(date_filter).all()
         else:
-            users = User.objects.exclude(is_auth = 10).filter(
+            users = User.objects.filter(
+                Q(is_auth = 10) &
                 Q(username__contains = username_value) & 
                 Q(first_course__campus = campus_value) 
                 ).order_by(date_filter).all()
@@ -43,7 +46,7 @@ class UserListView(APIView):
         user_serializer = UserAuthSerializer(users, many = True)
         campus_serializer = CampusSerializer(campuses, many = True)
 
-        data ={
+        data = {
             'list': user_serializer.data,
             'campus': campus_serializer.data
         }
@@ -71,18 +74,19 @@ class UserAuthRequestView(APIView):
         # 필터들
         username_value = request.query_params.get('username')
         campus_value = int(request.query_params.get('campus'))
-        approval_date_value = request.query_params.get('approvaldate')
+        signupdate_date_value = request.query_params.get('signupdate')
         auth_value = int(request.query_params.get('auth'))
 
         date_filter = None
         # 날짜별 정렬
-        if approval_date_value == 'oldest':
+        if signupdate_date_value == 'oldest':
             date_filter = '-signup_date'
         else:
             date_filter = 'signup_date'
 
         users = None
         # default 유저 쿼리
+        # 필터는 하나만 적용 가능, is_active false 제외할것인가..
         if campus_value == 0: 
             users = User.objects.exclude(is_auth = 10).filter(
                 Q(username__contains = username_value) & 

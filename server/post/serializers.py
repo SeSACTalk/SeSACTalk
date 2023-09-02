@@ -187,8 +187,9 @@ class ManagerProfileSerializer(serializers.ModelSerializer):
         fields = (
             'campus', 'manager_id', 'manager_username', 'profile_img_path'
         )
+        
     def get_profile_img_path(self, user):
-        profile = Profile.objects.get(user=user.id)
+        profile = Profile.objects.get(user = user.id)
         if profile.img_path:
             profile_img_path = profile.img_path
         else:

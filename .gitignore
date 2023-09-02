@@ -148,3 +148,8 @@ sketch
 migrations/
 *.idea/
 */.idea/
+
+.*.png
+.*.jpg
+img
+favicon

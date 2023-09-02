@@ -18,12 +18,15 @@ def connect_with_tags(sender, instance, created, **kwargs):
         
         hash_tags = [] # 해시태그들
         content = '' # 저장해야할 content
-
+        
+        # 띄어쓰기를 다 붙여버리는 문제가 있음
         for origin_content in origin_contents:
             if origin_content.startswith('#'):
                 hash_tags.append(origin_content[1:])
             else:
-                content += origin_content
+                content += f'{origin_content} '
+
+        content = content.strip()
 
         # 원본 content 업데이트
         instance.content = content
@@ -32,9 +35,5 @@ def connect_with_tags(sender, instance, created, **kwargs):
         instance.save()
 
         for hash_tag in hash_tags:
-            
             h_tag, created = HashTag.objects.get_or_create(name = hash_tag)
             instance.tags.add(h_tag)
-            print(instance.tags)
-            print(h_tag)
-        
