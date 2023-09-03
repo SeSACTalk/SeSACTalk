@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 
 import { getCookie } from "../../../modules/handle_cookie";
 
+import '../../../css/modal.css'
+
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
 
 const WritePost = function () {
@@ -34,46 +36,55 @@ const WritePost = function () {
           'Authorization': `${session_key}`
         },
       });
-      console.log(response.data);
       navigate(`/post/${username}`)
     } catch (error) {
       console.log(error.response.data);
     }
   };
+
+  // Functions
   // FileList에서 index 0번 즉 File객체 상태변수에 저장
   const onFileChange = (event) => setImgPath(event.target.files[0]);
+  const limitText = (e) => {
+    let text = e.target.value
+    document.querySelector('.current_length').innerHTML = text.length;
+    console.log(document.querySelector('.current_length'))
+    if (text.length > 500) {
+      text = text.substring(0, 500);
+      document.querySelector('current_length').innerHTML = 500
+    }
+  }
 
   return (
-    <div className="WritePost absolute top-1/2" >
-      <form onSubmit={uploadPost}>
-        <table>
-          <tbody>
-            <tr>
-              {/* 글 내용 : 500자 이내 */}
-              <td colSpan={2}>
-                <textarea
-                  style={{ 'width': '100%', 'margin': '50px auto' }}
-                  placeholder="500자 이내 입력"
-                  name="content"
-                  onChange={(e) => setContent(e.target.value.trim())}
-                ></textarea>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <input
-                  type="file"
-                  accept="image/png, image/jpeg, image/jpg"
-                  onChange={(event) => onFileChange(event)}
-                />
-              </td>
-            </tr>
-            <tr>
-
-            </tr>
-          </tbody>
-        </table>
-        <input type="submit" value="글쓰기" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" />
+    <div className="modal post-modal absolute w-full h-full flex justify-center items-center">
+      <form className='w-1/2 h-2/3 bg-zinc-50 rounded-xl' onSubmit={uploadPost}>
+        {/* 글 내용 : 500자 이내 */}
+        <div className="text_container relative h-2/3 rounded-xl pt-12 px-8 box-border">
+          <textarea className="w-full h-full rounded-xl p-7 bg-gray-100 outline-0"
+            placeholder="무슨 일이 있었나요?"
+            name="content"
+            onChange={(e) => setContent(e.target.value.trim())}
+            onkeyup={limitText}
+          />
+          <div className="flex justify-between w-full px-12 absolute left-0 bottom-3">
+            <label htmlFor="upload_img">
+              <span className="hidden">업로드</span>
+              <i className="fa fa-camera text-3xl text-gray-400 cursor-pointer" aria-hidden="true"></i>
+            </label>
+            <input
+              id="upload_img"
+              className="hidden"
+              type="file"
+              accept="image/png, image/jpeg, image/jpg"
+              onChange={(event) => onFileChange(event)}
+            />
+            <span className="text-gray-400">
+              <span className="current_length">0 </span>/
+              <span className="max_length"> 500</span>
+            </span>
+          </div>
+        </div>
+        <button className="bg-red-100" type="submit">글쓰기</button>
       </form>
     </div>
   );

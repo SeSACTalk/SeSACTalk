@@ -56,7 +56,7 @@ const Navbar = function () {
                 </li>
                 <li>
                     <Link to='#'>
-                        <i class="fa fa-file-text-o mr-3" aria-hidden="true"></i>
+                        <i className="fa fa-file-text-o mr-3" aria-hidden="true"></i>
                         <span>채용공고</span>
                     </Link>
                 </li>

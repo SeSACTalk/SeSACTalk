@@ -16,7 +16,6 @@ const StaffProfile = function () {
                 response => {
                     let copy = [...response.data]
                     setManagerProfileList(copy)
-                    console.log(managerProfileList)
                 }
             )
             .catch(

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useSelector } from "react-redux";
 
 // Components
@@ -7,15 +7,14 @@ import Posts from './Posts';
 import WritePost from '../post/WritePost';
 
 const Main = function () {
-    let writeModal = useSelector((state) => state.wirteModal)
+    let writeModal = useSelector((state) => state.writeModal)
 
     return (
-        <div className='main_container flex'>
+        <div className='main_container flex relative'>
             <Navbar />
             <Posts />
             {/* Modals */}
-            {console.log(writeModal)}
-            {writeModal && <p>headers</p>}
+            {writeModal && <WritePost />}
         </div >
     );
 };
