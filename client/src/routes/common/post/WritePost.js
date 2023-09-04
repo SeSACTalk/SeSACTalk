@@ -1,23 +1,31 @@
-import { useParams } from "react-router-dom";
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { changeWirteModal } from "../../../store/modalSlice";
 
 import { getCookie } from "../../../modules/handle_cookie";
 
 import '../../../css/modal.css'
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
+let username = getCookie('username')
 
 const WritePost = function () {
   /* variables */
-  let navigate = useNavigate()
-  let { username } = useParams();
   const SERVER_POST_WRITE = `${SERVER}/post/${username}/`;
   const session_key = getCookie('session_key')
 
+  /* DOM */
+  const textLength = useRef();
+  const modalPopup = useRef();
+
+  /* states */
   const [content, setContent] = useState([]);
   const [imgPath, setImgPath] = useState(null);
+  let writeModal = useSelector((state) => state.wirteModal)
+
+  let dispatch = useDispatch();
 
   const uploadPost = async (event) => {
     /* 포스팅 처리 */
@@ -36,37 +44,45 @@ const WritePost = function () {
           'Authorization': `${session_key}`
         },
       });
-      navigate(`/post/${username}`)
+      dispatch(changeWirteModal(writeModal))
     } catch (error) {
       console.log(error.response.data);
     }
   };
 
-  // Functions
-  // FileList에서 index 0번 즉 File객체 상태변수에 저장
+  /* Functions */
   const onFileChange = (event) => setImgPath(event.target.files[0]);
+
   const limitText = (e) => {
     let text = e.target.value
-    document.querySelector('.current_length').innerHTML = text.length;
-    console.log(document.querySelector('.current_length'))
+    textLength.current.innerHTML = text.length;
     if (text.length > 500) {
       text = text.substring(0, 500);
-      document.querySelector('current_length').innerHTML = 500
+      textLength.current.innerHTML = 500
     }
   }
 
+  const closeModal = (e) => {
+    if (modalPopup.current === e.target) {
+      dispatch(changeWirteModal(writeModal))
+    }
+  }
+
+  const closeModalbutton = (e) => {
+    dispatch(changeWirteModal(writeModal))
+  }
+
   return (
-    <div className="modal post-modal absolute w-full h-full flex justify-center items-center">
-      <form className='w-1/2 h-2/3 bg-zinc-50 rounded-xl' onSubmit={uploadPost}>
-        {/* 글 내용 : 500자 이내 */}
-        <div className="text_container relative h-2/3 rounded-xl pt-12 px-8 box-border">
+    <div className="modal post-modal absolute w-full h-full" ref={modalPopup} onClick={closeModal}>
+      <form className='w-1/2 h-96 bg-zinc-50 rounded-xl translate-x-1/2 translate-y-1/2' onSubmit={uploadPost}>
+        <div className="text_container relative h-3/4 rounded-xl pt-12 px-8 box-border">
           <textarea className="w-full h-full rounded-xl p-7 bg-gray-100 outline-0"
             placeholder="무슨 일이 있었나요?"
             name="content"
             onChange={(e) => setContent(e.target.value.trim())}
-            onkeyup={limitText}
+            onKeyUp={limitText}
           />
-          <div className="flex justify-between w-full px-12 absolute left-0 bottom-3">
+          <div className="modal_footer flex justify-between items-center w-full px-12 absolute left-0 bottom-3">
             <label htmlFor="upload_img">
               <span className="hidden">업로드</span>
               <i className="fa fa-camera text-3xl text-gray-400 cursor-pointer" aria-hidden="true"></i>
@@ -79,13 +95,19 @@ const WritePost = function () {
               onChange={(event) => onFileChange(event)}
             />
             <span className="text-gray-400">
-              <span className="current_length">0 </span>/
+              <span className="current_length" ref={textLength}>0 </span>/
               <span className="max_length"> 500</span>
             </span>
           </div>
         </div>
-        <button className="bg-red-100" type="submit">글쓰기</button>
+        <div className="text-end mt-9 mr-8">
+          <button className="w-36 h-11 border border-solid rounded-xl bg-sesac-green text-slate-100 text-lg" type="submit">완료</button>
+        </div>
       </form>
+      <button className="absolute top-4 right-4 text-4xl text-gray-200" type="button" onClick={closeModalbutton}>
+        <i className="fa fa-times" aria-hidden="true"></i>
+        <span className="hidden">닫기</span>
+      </button>
     </div>
   );
 };
