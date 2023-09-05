@@ -120,7 +120,7 @@ class ReportPost(OwnerPermissionMixin, APIView):
 
         if not reportSerializer.is_valid():
             print(f'<<CHECK INVALID DATA>>\n{reportSerializer.errors}')
-            return Response({'error': ResponseMessages.INVALID_DATA}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': ResponseMessages.INVALID_DATA}, status=status.HTTP_400_BAD_REQUEST)            
 
         reportSerializer.save()
 

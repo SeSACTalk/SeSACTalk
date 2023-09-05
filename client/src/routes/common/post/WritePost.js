@@ -1,11 +1,9 @@
 import axios from "axios";
-import React, { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 import { changeWirteModal } from "../../../store/modalSlice";
-
 import { getCookie } from "../../../modules/handle_cookie";
-
 import '../../../css/modal.css'
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
@@ -21,15 +19,16 @@ const WritePost = function () {
   const modalPopup = useRef();
 
   /* states */
+  const [scroll, setScroll] = useState()
   const [content, setContent] = useState([]);
   const [imgPath, setImgPath] = useState(null);
   let writeModal = useSelector((state) => state.wirteModal)
 
   let dispatch = useDispatch();
 
-  const uploadPost = async (event) => {
+  const uploadPost = async (e) => {
     /* 포스팅 처리 */
-    event.preventDefault();
+    e.preventDefault();
     const formData = new FormData();
     formData.append("content", content);
     formData.append("img_path", imgPath);
@@ -72,8 +71,14 @@ const WritePost = function () {
     dispatch(changeWirteModal(writeModal))
   }
 
+  useEffect(() => {
+    setScroll(window.scrollY)
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = 'unset'; }
+  }, [scroll])
+
   return (
-    <div className="modal post-modal absolute w-full h-full" ref={modalPopup} onClick={closeModal}>
+    <div className="modal post_modal absolute w-full h-screen" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>
       <form className='w-1/2 h-96 bg-zinc-50 rounded-xl translate-x-1/2 translate-y-1/2' onSubmit={uploadPost}>
         <div className="text_container relative h-3/4 rounded-xl pt-12 px-8 box-border">
           <textarea className="w-full h-full rounded-xl p-7 bg-gray-100 outline-0"
@@ -111,4 +116,5 @@ const WritePost = function () {
     </div>
   );
 };
+
 export default WritePost;
