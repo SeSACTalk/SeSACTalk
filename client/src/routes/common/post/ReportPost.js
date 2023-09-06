@@ -6,6 +6,9 @@ import { changeReportModal } from "../../../store/modalSlice";
 import '../../../css/modal.css'
 import axios from "axios";
 
+const SERVER = process.env.REACT_APP_BACK_BASE_URL
+let session_key = getCookie('session_key')
+
 const ReportPost = function ({ postId }) {
     /* DOM */
     const modalPopup = useRef();
@@ -16,15 +19,7 @@ const ReportPost = function ({ postId }) {
     let dispatch = useDispatch();
 
     /* SERVER */
-    const SERVER = process.env.REACT_APP_BACK_BASE_URL
     const SERVER_REPORT_POST = `${SERVER}/post/${postId}/report/`
-    let session_key = getCookie('session_key')
-
-    const closeModal = (e) => {
-        if (modalPopup.current === e.target) {
-            dispatch(changeReportModal(reportModal))
-        }
-    }
 
     useEffect(() => {
         setScroll(window.scrollY)
@@ -50,6 +45,13 @@ const ReportPost = function ({ postId }) {
             dispatch(changeReportModal(reportModal))
         }
     }
+
+    const closeModal = (e) => {
+        if (modalPopup.current === e.target) {
+            dispatch(changeReportModal(reportModal))
+        }
+    }
+
 
     return (
         <div className="modal report_modal flex justify-center items-center absolute left-0 w-full h-screen" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>

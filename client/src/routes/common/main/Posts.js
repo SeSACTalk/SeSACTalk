@@ -7,9 +7,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCookie } from "../../../modules/handle_cookie";
 import { changeOptionModal } from "../../../store/modalSlice";
 /* components */
-import StaffProfile from "./StaffProfile";
+import StaffProfile from "../../general/StaffProfile";
 import PostOption from "../post/PostOption";
 import ReportPost from "../post/ReportPost";
+import PostDetail from "../post/PostDetail";
+
+// cookie
+let username = getCookie('username')
+let session_key = getCookie('session_key')
+
+const SERVER = process.env.REACT_APP_BACK_BASE_URL
 
 const Posts = function () {
   // states
@@ -19,13 +26,9 @@ const Posts = function () {
   const [isPostMine, setIsPostMine] = useState(false)
   let optionModal = useSelector((state) => state.optionModal)
   let reportModal = useSelector((state) => state.reportModal)
+  let detailModal = useSelector((state) => state.detailModal)
   let dispatch = useDispatch();
 
-  // cookie
-  let username = getCookie('username')
-  let session_key = getCookie('session_key')
-
-  const SERVER = process.env.REACT_APP_BACK_BASE_URL
   const SERVER_POST_POSTS = `${SERVER}/post/${username}/`;
 
   // post 실시간으로 받아오기
@@ -48,6 +51,7 @@ const Posts = function () {
   // console.log(post.data)
   // console.log(post.isLoading)
   // console.log(post.error)
+  
   useEffect(() => {
     if (post.data && typeof post.data.message == 'undefined') {
       setPostList(post.data);
@@ -78,6 +82,7 @@ const Posts = function () {
                     </Link>
                   </div>
                   <p className='post_content mt-5 text-sm'>{element.content}</p>
+                  {/* TODO 데이터 바인딩해야함 */}
                   <h3 className='hidden'>좋아요, 댓글</h3>
                   <ul className='absolute right-5 bottom-8 post_option flex flex-row justify-end gap-3 text-xl'>
                     <li className='flex flex-row items-center'>
@@ -116,6 +121,7 @@ const Posts = function () {
         {/* Modals */}
         {optionModal && <PostOption detailPath={detailPath} isPostMine={isPostMine} />}
         {reportModal && <ReportPost postId={postId} />}
+        {detailModal && <PostDetail detailPath={detailPath} isPostMine={isPostMine} />}
       </section>
     </div>
   )

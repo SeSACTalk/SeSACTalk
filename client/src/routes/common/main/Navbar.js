@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 
 import { changeWirteModal } from "../../../store/modalSlice";
+import { getCookie } from "../../../modules/handle_cookie";
+
+const username = getCookie('username')
+const SERVER = process.env.REACT_APP_BACK_BASE_URL;
 
 const Navbar = function () {
     // states
@@ -12,14 +16,16 @@ const Navbar = function () {
     return (
         <nav className="nav_wrap w-1/5 p-3 h-screen sticky top-0 border-solid border-x border-gray-300">
             <div className="nav_profile flex justify-center">
-                <div className='profile_wrap p-4'>
+                <div className="profile_wrap p-4">
                     <div className='logo_wrap w-20 m-auto'>
                         <Link to='/'>
                             <img src={`${process.env.PUBLIC_URL}/img/logo.png`} alt='청년취업사관학교' />
                         </Link>
                     </div>
-                    <div className='logo_wrap w-32 p-2 rounded-full overflow-hidden border border-solid border-gray-200'>
-                        <img src={`${process.env.PUBLIC_URL}/img/default_profile.png`} alt='김새싹' />
+                    <div className='logo_wrap w-32 rounded-full overflow-hidden border border-solid border-gray-200'>
+                        <Link className="block w-full h-full p-2" to={`/profile/${username}`}>
+                            <img src={`${SERVER}/media/profile/default_profile.png`} alt='김새싹' />
+                        </Link>
                     </div>
                 </div>
             </div>

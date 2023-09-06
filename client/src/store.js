@@ -1,6 +1,6 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit'
 import user from './store/userSlice'
-import { writeModal, optionModal, reportModal } from './store/modalSlice'
+import { writeModal, optionModal, reportModal, detailModal } from './store/modalSlice'
 
 let server = createSlice({
     name: 'server',
@@ -16,6 +16,7 @@ export default configureStore({
         server: server.reducer,
         writeModal: writeModal.reducer,
         optionModal: optionModal.reducer,
-        reportModal: reportModal.reducer
+        reportModal: reportModal.reducer,
+        detailModal: detailModal.reducer
     }
 }) 

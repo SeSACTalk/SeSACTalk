@@ -49,6 +49,12 @@ const WritePost = function () {
     }
   };
 
+  useEffect(() => {
+    setScroll(window.scrollY)
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = 'unset'; }
+  }, [scroll])
+  
   /* Functions */
   const onFileChange = (event) => setImgPath(event.target.files[0]);
 
@@ -70,12 +76,6 @@ const WritePost = function () {
   const closeModalbutton = (e) => {
     dispatch(changeWirteModal(writeModal))
   }
-
-  useEffect(() => {
-    setScroll(window.scrollY)
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = 'unset'; }
-  }, [scroll])
 
   return (
     <div className="modal post_modal absolute w-full h-screen" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>

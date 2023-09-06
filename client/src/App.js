@@ -38,7 +38,6 @@ function App() {
         <Route path='/accounts/login' element={<Login />}></Route>
         {/* 일반 사용자 */}
         <Route path='/' element={<Main />}></Route>
-
         {/* 관리자 */}
         <Route path='/admin' element={<Admin />}></Route>
       </Routes>
