@@ -65,7 +65,7 @@ const PostDetail = function ({ detailPath, isPostMine }) {
                     {/* TODO 데이터 바인딩하기 */}
                     <div className="content_option">
                         <h3 className='hidden'>좋아요, 댓글</h3>
-                        <ul className='post_option flex flex-row gap-3 text-xl h-10'>
+                        <ul className='post_option flex flex-row justify-end gap-3 text-xl h-10'>
                             <li className='flex flex-row items-center'>
                                 <span className='hidden'>좋아요</span>
                                 <i className="fa fa-gratipay mr-1 text-rose-500" aria-hidden="true"></i>
@@ -99,16 +99,18 @@ const PostDetail = function ({ detailPath, isPostMine }) {
                                 </Link>
                                 <p className='reply_content mt-5 text-sm py-5'>댓글내용</p>
                             </div>
-                            {/* 조건에 따라 신고하기/삭제하기 */}
+                            {/* 댓글 작성자 조건에 따라 신고하기/삭제하기 */}
                             {
-                                !isPostMine ?
+                                isPostMine ?
                                     <button className='absolute right-5 top-3'>
-                                        <span className='hidden'>댓글 삭제하기</span>
-                                        <i className="fa fa-trash-o text-gray-300 text-2xl" aria-hidden="true"></i>
+                                        <span className='hidden'>댓글 세부설정</span>
+                                        <i className="fa fa-ellipsis-h text-gray-300 text-2xl" aria-hidden="true"></i>
                                     </button>
                                     : <button className='absolute right-5 top-3'>
-                                        <span className='hidden'>댓글 신고하기</span>
-                                        <i className="fa fa-trash-o text-gray-300 text-2xl" aria-hidden="true"></i>
+                                        <span className='hidden'>댓글 신고</span>
+                                        <div className="img_wrap w-6 h-6">
+                                            <img src={`${process.env.PUBLIC_URL}/img/siren.png`} alt="신고" />
+                                        </div>
                                     </button>
                             }
                         </div>
