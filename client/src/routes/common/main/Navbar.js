@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 
@@ -24,7 +24,7 @@ const Navbar = function () {
                     </div>
                     <div className='logo_wrap w-32 rounded-full overflow-hidden border border-solid border-gray-200'>
                         <Link className="block w-full h-full p-2" to={`/profile/${username}`}>
-                            <img src={`${SERVER}/media/profile/default_profile.png`} alt='김새싹' />
+                            <img src={`${SERVER}/media/profile/default_profile.png`} alt={username} />
                         </Link>
                     </div>
                 </div>

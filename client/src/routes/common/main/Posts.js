@@ -73,7 +73,7 @@ const Posts = function () {
                   <div className='post_author'>
                     <Link className='inline-flex gap-5' to={element.username}>
                       <div className='img_wrap w-24 h-24 p-2 rounded-full overflow-hidden border border-solid border-gray-200'>
-                        <img src={`${process.env.PUBLIC_URL}/img/default_profile.png`} alt='작성자명' />
+                        <img src={`${SERVER}/media/profile/default_profile.png`} alt={element.username} />
                       </div>
                       <p className='flex flex-col gap-1 text_wrap justify-center'>
                         <span className='text-base'>{element.username}</span>

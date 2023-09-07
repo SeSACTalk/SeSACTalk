@@ -15,9 +15,13 @@ class ChatInfoSerializer(serializers.Serializer):
 class ChatUserSerializer(serializers.Serializer):
     sender = serializers.IntegerField()
     sender__name = serializers.CharField()
+    sender__first_course__campus__name = serializers.CharField()
+    content = serializers.CharField()
+    date = serializers.DateTimeField(format = "%Y년 %m월 %d일")
+    img_path = serializers.CharField()
 
     class Meta:
-        fields = ('sender', 'sender__name')
+        fields = ('sender', 'sender__name', 'sender__first_course__campus__name', 'content', 'date', 'img_path')
 
 class ChatSerializers(serializers.ModelSerializer):
     class Meta:

@@ -11,6 +11,7 @@ import { checkAuthMiddleware, checkInfoMiddleware } from './middleware/middlewar
 import Main from './routes/common/main/Main'
 import Login from './routes/accounts/Login';
 import Admin from './routes/admin/Admin';
+import Chat from './routes/common/chat/Chat'
 
 function App() {
   let navigate = useNavigate()
@@ -38,6 +39,7 @@ function App() {
         <Route path='/accounts/login' element={<Login />}></Route>
         {/* 일반 사용자 */}
         <Route path='/' element={<Main />}></Route>
+        <Route path='/chat' element={<Chat />}></Route>
         {/* 관리자 */}
         <Route path='/admin' element={<Admin />}></Route>
       </Routes>

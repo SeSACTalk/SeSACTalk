@@ -1,6 +1,7 @@
 from django.http import HttpRequest
 from django.contrib.sessions.models import Session
-from django.db.models import Q
+from django.db.models import Q, Value, ImageField, Max, Subquery, OuterRef
+from django.db.models.functions import Coalesce
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
@@ -14,8 +15,18 @@ class ChatListView(APIView):
         frontend_session_key = request.META.get('HTTP_AUTHORIZATION', '')
         session = Session.objects.get(session_key = frontend_session_key)
         user_id = session.get_decoded().get('_auth_user_id')
-        
-        chat_users = Chat.objects.filter(receiver = user_id).values('sender', 'sender__name').distinct().all()
+        # ! 날짜 슬라이싱은 어떻게 할건데?
+        max_chat_date_subquery = Chat.objects.filter(receiver = user_id).values('receiver').annotate(max_date = Max('date')).filter(receiver = OuterRef('receiver')).values('max_date')[:1]
+
+        chat_users = Chat.objects.filter(receiver = user_id, date = Subquery(max_chat_date_subquery)).values(
+            'sender',
+            'sender__name',
+            'sender__first_course__campus__name',
+            'content',
+            'date',
+            img_path = Coalesce('sender__profile__img_path', Value('default_profile.png'), output_field = ImageField())
+        ).distinct().all()
+
         serializer = ChatUserSerializer(chat_users, many = True)
         data = {
             'id': user_id,
