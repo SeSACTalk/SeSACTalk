@@ -90,17 +90,21 @@ class PostDetail(APIView, OwnerPermissionMixin):
         # 권한 확인
         access_user, condition = self.check_post_owner(request.META.get('HTTP_AUTHORIZATION'), kwargs['username'], 'get_owner')
         if not condition:
-            return Response({'error': ResponseMessages.FORBIDDEN_ACCESS}, status.HTTP_403_FORBIDDEN)
+            return Response({'error': ResponseMessages.FORBIDDEN_ACCESS}, status = status.HTTP_403_FORBIDDEN)
 
+        # Post 조회
+        post = PostModel.objects.get(id = kwargs['pk'], user = access_user.id)
+        prev_content = post.content
+        new_content = request.data['content']
+        
         # update 데이터가 전과 다르지 않아서, update하지 않음
-        if request.data['original_content'].strip() == request.data['update_content'].strip():
-            return Response({'message': ResponseMessages.POST_NOT_UPDATE}, status.HTTP_304_NOT_MODIFIED)
-
-        # update
-        post = PostModel.objects.get(id = kwargs['pk'], user=access_user.id)
-        post.content = request.data['update_content']
+        if prev_content == new_content:
+            return Response({'message': ResponseMessages.POST_NOT_UPDATE}, status = status.HTTP_304_NOT_MODIFIED)
+        
+        post.content = request.data['content']
         post.save()
-        return Response({'message': 'UPDATE SUCCESS'}, status.HTTP_200_OK)
+
+        return Response({'message': 'UPDATE SUCCESS'}, status = status.HTTP_200_OK)
 
 
     def delete(self, request, **kwargs) -> Response:

@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from chat.models import Chat
   
-class ChatInfoSerializer(serializers.Serializer):
+class ChatDetailSerializer(serializers.Serializer):
     sender__name = serializers.CharField()
     receiver__name = serializers.CharField()
     content = serializers.CharField()

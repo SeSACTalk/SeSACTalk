@@ -6,15 +6,14 @@ import { getCookie } from "../../../modules/handle_cookie";
 
 const ChatDetail = function () {
     // 서버 주소
-    const { username } = useParams()
-    const userProps = useOutletContext()
+    const { receiver, sender } = useParams()
 
     const SERVER = process.env.REACT_APP_BACK_BASE_URL
-    const SERVER_CHAT_DETAIL = `${SERVER}/chat/${username}/`
+    const SERVER_CHAT_DETAIL = `${SERVER}/chat/${receiver}/${sender}`
 
     // 웹 소켓 주소
     const SERVER_WEB_SOCKET = process.env.REACT_APP_BACK_SOCKET_URL
-    const SERVER_CHAT = `${SERVER_WEB_SOCKET}/ws/chat/${userProps.user}/${username}`
+    const SERVER_CHAT = `${SERVER_WEB_SOCKET}/ws/chat/${receiver}/${sender}`
 
     // 세션키
     const session_key = getCookie('session_key')
@@ -38,6 +37,7 @@ const ChatDetail = function () {
                 response => {
                     let copy = [...response.data];
                     setItems(copy)
+                    console.log(response.data)
                 }
             )
             .catch(
@@ -82,23 +82,30 @@ const ChatDetail = function () {
         }
     }
     return (
-        <div>
-            <h4>상세채팅임</h4>
-            <ul>
-                {
-                    items.map((a, i) => {
-                        return (
-                            <li key={i} className="bg-orange-100">
-                                <p>보낸사람:{a.sender__name}</p>
-                                <p>내용: {a.content}</p>
-                                <p>날짜: {a.date}</p>
-                            </li>
-                        )
-                    })
-                }
-            </ul>
-            <input type="text" name='username' id='username' className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5' onChange={(e) => setChat(e.target.value)}></input>
-            <button type="submit" onClick={handleChat}>전송</button>
+        <div className="w-[calc(85%-6rem)] h-screen">
+            <h4 className="hidden">상세채팅</h4>
+            <div className="chat_user_info">
+                
+            </div>
+            <div className="h-5/6 overflow-y-scroll">
+                <ul>
+                    {
+                        items.map((a, i) => {
+                            return (
+                                <li key={i} className="bg-orange-100">
+                                    <p>보낸사람:{a.sender__name}</p>
+                                    <p>내용: {a.content}</p>
+                                    <p>날짜: {a.date}</p>
+                                </li>
+                            )
+                        })
+                    }
+                </ul>
+            </div>
+            <div className="chat_input">
+                <input type="text" name='username' id='username' className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5' onChange={(e) => setChat(e.target.value)}></input>
+                <button type="submit" onClick={handleChat}>전송</button>
+            </div>
         </div>
     )
 }

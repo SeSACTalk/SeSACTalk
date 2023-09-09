@@ -35,7 +35,7 @@ const ChatList = function () {
     }, [])
 
     return (
-        <div className="main_content_container w-1/4 border-r border-gray-300">
+        <div className="main_content_container w-1/4 h-screen border-r border-gray-300">
             <div className="user_info_wrap relative px-5 mt-14">
                 <h4 className="text-2xl font-medium">메시지</h4>
                 <div className="img_wrap w-1/4 h-1/4">
@@ -48,22 +48,24 @@ const ChatList = function () {
                 </button>
             </div>
             <div className="chat_list_wrap overflow-y-scroll">
-                {console.log(senders)}
                 {
                     senders.length === 0 ? (
                         <p className="flex justify-center items-center h-96">아직 대화 중인 이웃 새싹이 없어요</p>
                     ) : (
                         <ul className="chat_list flex flex-col gap-2 mt-3">
                             {senders.map((element, i) => (
-                                <li className="box-border bg-red-100 p-3" key={i}>
-                                    <Link className="flex " to={`${element.sender}`}>
+                                <li className="box-border p-3" key={i}>
+                                    <Link className="flex items-center gap-3" to={`${user}/${element.sender}`}>
                                         <div className="img_wrap w-1/4 h-1/4">
                                             <img src={`${SERVER}/media/profile/${element.img_path}`} alt={element.sender__name} />
                                         </div>
-                                        <div className="chat_info">
-                                            <span>{element.sender__name}</span>
+                                        <div className="sender_info">
+                                            <span className="mr-1">{element.sender__name}</span>
                                             <span className="text-sm text-sesac-green">{element.sender__first_course__campus__name}캠퍼스</span>
-                                            <p>{element.content}</p>
+                                            <div className="chat_info flex gap-2">
+                                                <p className="text-sm text-gray-500">{element.content}</p>
+                                                <span className="text-sm text-gray-500">{element.date}</span>
+                                            </div>
                                         </div>
                                     </Link>
                                 </li>
@@ -71,7 +73,6 @@ const ChatList = function () {
                         </ul>
                     )
                 }
-                <Outlet context={{ user }}></Outlet>
             </div>
         </div>
     )

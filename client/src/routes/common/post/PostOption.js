@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { getCookie } from "../../../modules/handle_cookie";
-import { changeOptionModal, changeReportModal, changeDetailModal } from "../../../store/modalSlice";
+import { changeOptionModal, changeReportModal, changeDetailModal,changePostEditModal } from "../../../store/modalSlice";
 import axios from "axios";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
@@ -17,6 +17,7 @@ const PostOption = function ({ detailPath, isPostMine }) {
     const [scroll, setScroll] = useState()
     let optionModal = useSelector((state) => state.optionModal)
     let reportModal = useSelector((state) => state.reportModal)
+    let postEditModal = useSelector((state) => state.postEditModal)
     let detailModal = useSelector((state) => state.detailModal)
     let dispatch = useDispatch();
 
@@ -47,7 +48,10 @@ const PostOption = function ({ detailPath, isPostMine }) {
                             }}>상세보기</button>
                         </li>
                         <li className="border-b border-black h-1/4">
-                            <Link className="flex justify-center items-center w-full h-full" to={`/post/${detailPath}/edit`}>수정하기</Link>
+                            <button className="flex justify-center items-center w-full h-full" onClick={() => {
+                                dispatch(changeOptionModal(optionModal))
+                                dispatch(changePostEditModal(postEditModal))
+                            }}>수정하기</button>
                         </li>
                         <li className="border-b border-black h-1/4">
                             <button className="block w-full h-full" type="button" onClick={async (e) => {
@@ -59,6 +63,7 @@ const PostOption = function ({ detailPath, isPostMine }) {
                                         }
                                     });
                                     dispatch(changeOptionModal(optionModal))
+                                    window.location.reload();
                                 } catch (error) {
                                     console.error(error)
                                 }

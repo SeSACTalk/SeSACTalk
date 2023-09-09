@@ -43,6 +43,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         serializer = ChatSerializers(data = data)
         if serializer.is_valid():
             serializer.save()
+            
         await self.channel_layer.group_send(
             self.room_group_name,
             {
