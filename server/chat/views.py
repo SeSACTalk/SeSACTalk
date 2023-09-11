@@ -6,26 +6,20 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 
-from chat.models import Chat
-from chat.serializers import ChatUserSerializer, ChatDetailSerializer
+from chat.models import Chat, ChatRoom
+from accounts.models import User
+from chat.serializers import ChatRoomSerializer, ChatDetailSerializer, ChatProfileSerializer
 from sesactalk.mixins import SessionDecoderMixin
 
 class ChatListView(APIView, SessionDecoderMixin):
     def get(self, request: HttpRequest) -> Response:
         user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
 
-        max_chat_date_subquery = Chat.objects.filter(receiver = user_id).values('receiver').annotate(max_date = Max('date')).filter(receiver = OuterRef('receiver')).values('max_date')[:1]
+        chat_rooms = ChatRoom.objects.select_related('sender').filter(Q(sender = user_id)).all()
 
-        chat_users = Chat.objects.filter(receiver = user_id, date = Subquery(max_chat_date_subquery)).values(
-            'sender',
-            'sender__name',
-            'sender__first_course__campus__name',
-            'content',
-            'date',
-            img_path = Coalesce('sender__profile__img_path', Value('default_profile.png'), output_field = ImageField())
-        ).distinct().all()
-
-        serializer = ChatUserSerializer(chat_users, many = True)
+        serializer = ChatRoomSerializer(chat_rooms, many = True)
+        print(chat_rooms)
+        print('직렬화', serializer.data)
         data = {
             'id': user_id,
             'users': serializer.data
@@ -40,10 +34,34 @@ class ChatDetailView(APIView):
         my_user_id = session.get_decoded().get('_auth_user_id')
         specific_user_id = kwargs['sender']
 
+        # 날짜를 백엔드에서 쪼개서 보내줘야할 것 같은데.. 프론트에서 쪼개야하나?
+        # 같은 날짜끼리 묶여야함..
+        # 보내줘야할 정보: 대화상대 이름, 아이디, 캠퍼스, 프로필사진, 대화내용들
         messages = Chat.objects.filter(
             (Q(receiver = my_user_id) & Q(sender = specific_user_id)) |
             (Q(sender = my_user_id) & Q(receiver = specific_user_id))
-        ).values('sender__name', 'receiver__name', 'content', 'date').order_by('date').all()
-    
-        serializer = ChatDetailSerializer(messages, many = True)
-        return Response(serializer.data, status = status.HTTP_200_OK)
+        ).values(
+            'sender',
+            'receiver',
+            'sender__name',
+            'receiver__name',
+            'content',
+            'date',
+            ).order_by('date').all()
+            
+        chatSerializer = ChatDetailSerializer(messages, many = True)
+
+        user_chat_with = User.objects.values(
+            'id',
+            'name',
+            'username',
+            'first_course__campus__name',
+            img_path = Coalesce('profile__img_path', Value('default_profile.png'), output_field = ImageField())
+        ).get(id = specific_user_id)
+
+        chatProfileSerializer = ChatProfileSerializer(user_chat_with)
+        response_data = {
+            'chat': chatSerializer.data,
+            'profile':chatProfileSerializer.data
+        }
+        return Response(response_data, status = status.HTTP_200_OK)

@@ -67,7 +67,6 @@ const Posts = function () {
       <StaffProfile />
       <section className='post mt-8 mx-24 '>
         <h2 className='hidden'>게시글</h2>
-        {console.log(postList)}
         {
           postList.length === 0
             ? <p className="text-center">SeSACTalk과 함께하게 되어 반가워요! 다양한 사람들과 팔로우를 맺고 새로운 글을 작성해보세요!</p>

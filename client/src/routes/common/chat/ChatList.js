@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { Outlet, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { getCookie } from "../../../modules/handle_cookie";
 
@@ -56,12 +56,12 @@ const ChatList = function () {
                             {senders.map((element, i) => (
                                 <li className="box-border p-3" key={i}>
                                     <Link className="flex items-center gap-3" to={`${user}/${element.sender}`}>
-                                        <div className="img_wrap w-1/4 h-1/4">
+                                        <div className="img_wrap w-1/5 h-1/5">
                                             <img src={`${SERVER}/media/profile/${element.img_path}`} alt={element.sender__name} />
                                         </div>
                                         <div className="sender_info">
                                             <span className="mr-1">{element.sender__name}</span>
-                                            <span className="text-sm text-sesac-green">{element.sender__first_course__campus__name}캠퍼스</span>
+                                            <span className="font-semibold text-sm text-sesac-green">{element.sender__first_course__campus__name}캠퍼스</span>
                                             <div className="chat_info flex gap-2">
                                                 <p className="text-sm text-gray-500">{element.content}</p>
                                                 <span className="text-sm text-gray-500">{element.date}</span>
