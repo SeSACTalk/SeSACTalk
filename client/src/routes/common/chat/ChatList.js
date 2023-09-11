@@ -48,6 +48,7 @@ const ChatList = function () {
                 </button>
             </div>
             <div className="chat_list_wrap overflow-y-scroll">
+                {console.log(senders)}
                 {
                     senders.length === 0 ? (
                         <p className="flex justify-center items-center h-96">아직 대화 중인 이웃 새싹이 없어요</p>
@@ -56,15 +57,19 @@ const ChatList = function () {
                             {senders.map((element, i) => (
                                 <li className="box-border p-3" key={i}>
                                     <Link className="flex items-center gap-3" to={`${user}/${element.sender}`}>
-                                        <div className="img_wrap w-1/5 h-1/5">
-                                            <img src={`${SERVER}/media/profile/${element.img_path}`} alt={element.sender__name} />
+                                        <div className="img_wrap w-1/5 h-1/5 rounded-full border border-gray-200 overflow-hidden p-1.5">
+                                            <img src={SERVER + element.profile_img_path} alt={element.sender_name} />
                                         </div>
                                         <div className="sender_info">
-                                            <span className="mr-1">{element.sender__name}</span>
-                                            <span className="font-semibold text-sm text-sesac-green">{element.sender__first_course__campus__name}캠퍼스</span>
+                                            <span className="mr-1">{element.sender_name}</span>
+                                            <span className="font-semibold text-sm text-sesac-green">{
+                                                element.sender_second_campus_name ?
+                                                    element.sender_second_campus_name :
+                                                    element.sender_first_campus_name
+                                            } 캠퍼스</span>
                                             <div className="chat_info flex gap-2">
-                                                <p className="text-sm text-gray-500">{element.content}</p>
-                                                <span className="text-sm text-gray-500">{element.date}</span>
+                                                <p className="text-sm text-gray-500">{element.latest_content}</p>
+                                                <span className="text-sm text-gray-500">{element.latest_date}</span>
                                             </div>
                                         </div>
                                     </Link>

@@ -18,8 +18,6 @@ class ChatListView(APIView, SessionDecoderMixin):
         chat_rooms = ChatRoom.objects.select_related('sender').filter(Q(sender = user_id)).all()
 
         serializer = ChatRoomSerializer(chat_rooms, many = True)
-        print(chat_rooms)
-        print('직렬화', serializer.data)
         data = {
             'id': user_id,
             'users': serializer.data
