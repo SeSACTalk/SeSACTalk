@@ -176,10 +176,11 @@ class ReportSerializer(serializers.ModelSerializer):
 
         return super().to_internal_value(copy_querydict)
 
+
 class ManagerProfileSerializer(serializers.ModelSerializer):
-    campus = serializers.CharField(source = 'first_course.campus.name', read_only = True)
-    manager_id = serializers.IntegerField(source='id', read_only = True)
-    manager_username = serializers.CharField(source='username', read_only = True)
+    campus = serializers.CharField(source='first_course.campus.name', read_only=True)
+    manager_id = serializers.IntegerField(source='id', read_only=True)
+    manager_username = serializers.CharField(source='username', read_only=True)
     profile_img_path = serializers.SerializerMethodField()
 
     class Meta:
@@ -187,9 +188,52 @@ class ManagerProfileSerializer(serializers.ModelSerializer):
         fields = (
             'campus', 'manager_id', 'manager_username', 'profile_img_path'
         )
-        
+
     def get_profile_img_path(self, user):
-        profile = Profile.objects.get(user = user.id)
+        profile = Profile.objects.get(user=user.id)
+        if profile.img_path:
+            profile_img_path = profile.img_path
+        else:
+            profile_img_path = '/media/profile/default_profile.png'
+
+        return profile_img_path
+
+
+class PostSetSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
+    user_name = serializers.CharField(source='user.name', read_only=True)
+    user_first_campus_name = serializers.CharField(source = 'user.first_course.campus.name', read_only=True)
+    user_second_campus_name = serializers.SerializerMethodField()
+
+    profile_img_path = serializers.SerializerMethodField()
+
+    like_set = serializers.SerializerMethodField()
+    reply_set = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Post
+        fields = (
+            'id', 'uuid', 'content', 'date', 'img_path', 'report_status',
+            'user_id', 'user_name', 'user_first_campus_name', 'user_second_campus_name',
+            'profile_img_path','like_set', 'reply_set',
+        )
+
+    def get_user_second_campus_name(self, post):
+        try:
+            user_second_course_campus_name = post.user.second_course.campus.name
+        except:
+            return ""
+        return user_second_course_campus_name
+
+    def get_like_set(self, obj):
+        likes = obj.like_set.all()  # Post 객체의 like_set을 가져옴
+        return LikeSerializer(likes, many=True).data
+
+    def get_reply_set(self, obj):
+        replies = obj.reply_set.all()  # Post 객체의 reply_set을 가져옴
+        return ReplySerializer(replies, many=True).data
+    def get_profile_img_path(self, post):
+        profile = Profile.objects.get(user = post.user.id)
         if profile.img_path:
             profile_img_path = profile.img_path
         else:

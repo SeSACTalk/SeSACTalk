@@ -10,7 +10,7 @@ from accounts.models import User
 from user.models import UserRelationship
 
 from post.serializers import PostSerializer, LikeSerializer, ViewSerializer, ReplySerializer, HashTagSerializer, \
-    ReportSerializer, ManagerProfileSerializer
+    ReportSerializer, ManagerProfileSerializer, PostSetSerializer
 from post.mixins import OwnerPermissionMixin
 from post.constants import ResponseMessages
 
@@ -39,9 +39,11 @@ class Post(APIView, OwnerPermissionMixin):
 
         # 팔로우 기반 또는 자신의 게시물 포스트를 가져오는 쿼리문 수행, order by의 - 기호는 역순을 의미
         user_s_follows = UserRelationship.objects.filter(user_follower=access_user.id)
-        posts = PostModel.objects.filter(
+        posts = PostModel.objects.select_related('user').filter(
             Q(user=access_user.id) | Q(user__in=user_s_follows.values('user_follow'))
-        ).prefetch_related('tags').select_related('user').order_by('-date')
+        ).prefetch_related('tags', 'like_set', 'reply_set').order_by('-date')
+
+        postSetSerializer = PostSetSerializer(posts, many = True)
 
         # QuerySet이 비어있을 경우
         if not bool(posts):
@@ -51,7 +53,7 @@ class Post(APIView, OwnerPermissionMixin):
         postSerializer = PostSerializer(posts, many=True)
         for i, post in enumerate(posts): postSerializer.data[i]['username'] = post.user.username
         
-        return Response(postSerializer.data, status=status.HTTP_200_OK)
+        return Response(postSetSerializer.data, status=status.HTTP_200_OK)
 
     def post(self, request: HttpRequest, username) -> Response:
         # 권한 확인

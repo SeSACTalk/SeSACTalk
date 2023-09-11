@@ -3,13 +3,129 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 
-import {checkAuthMiddleware} from "../../middleware/middleware"
-import { getCookie } from "../../modules/handle_cookie";
+import { checkAuthMiddleware } from "../../../middleware/middleware"
+import { getCookie } from "../../../modules/handle_cookie";
 
+import React from 'react';
+import { Link, Outlet } from 'react-router-dom'
+
+
+// Components
+import Navbar from '../main/Navbar';
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
 
 
-export const Profile = function () {
+const ProfileLayout = function () {
+    return (
+        <div className='main_container flex relative'>
+            <Navbar />
+            <div className="main_content_container w-full">
+                <Outlet />
+            </div>
+        </div >
+    );
+};
+
+function ExProfile() {
+    return (
+        // 전체 컨테이너
+        <div className="profile_container pt-12 px-20 text-lg">
+            <header className="profile_header flex mb-8">
+                {/* 프로필 사진 */}
+                <div className="profile_img_container flex align-middle justify-center w-2/6 ">
+                    <div className="profile_img_div w-36 h-36 self-center rounded-full overflow-hidden border-4 border-solid border-sesac-green p-2">
+                        <img className="block w-full h-full p-2" src={`${SERVER}/media/profile/default_profile.png`} alt='김새싹' />
+                    </div>
+                    {/*  */}
+                </div>
+                {/* 
+                    이름, 캠퍼스명, 수정, 설정
+                    게시물, 팔로워, 팔로우
+                    한줄소개
+                    링크
+                */}
+                <section className="profile_userinfo_container flex flex-col gap-4 w-6/12 px-1 ">
+                    <div className="flex flex-col gap-1">  
+                        <div className="profile_userinfo flex">
+                            <div>
+                                <h2 className="inline-block font-bold text-2xl mr-3">김용구</h2>
+                                <span className="inline-block text-sesac-green font-semibold text-sm">강동 캠퍼스</span>
+                            </div>
+                            <div className=" ml-auto flex gap-3">
+                                <button className="inline-block">
+                                    <i className="fa fa-thin fa-gear"></i>
+                                </button>
+                                <button className="inline-block">
+                                    {/* 안 돼서 임시로 설정 이용-> <i className="fa fa-solid fa-pen-to-square"></i> */}
+                                    <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <ul className="profile_user_stats flex gap-12 text-slate-600">
+                            <li className="flex gap-2">
+                                <span>게시물</span>
+                                <span className="font-semibold text-black">10</span>
+                            </li>
+                            <li className="flex gap-2">
+                                <span>팔로워</span>
+                                <span className="font-semibold text-black">100</span>
+                            </li>
+                            <li className="flex gap-2">
+                                <span>팔로우</span>
+                                <span className="font-semibold text-black">100</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-1 text-sm">
+                            <div className="text-sesac-green">한줄소개</div>
+                            <div className="font-semibold">나는야 김용구</div>
+                        </div>
+                        <div className="text-sm">
+                            <div className="text-sesac-green">링크</div>
+                            <div className="font-semibold">www.sesactalk.com</div>
+                        </div>
+                    </div>
+                </section>
+            </header>
+            {/* 
+                게시물, 좋아요, 댓글
+            */}
+            <div className="profile_nav flex gap-32 align-middle justify-center border-t-2 border-gray-300 text-base">
+                <Link to='' className="block border-t-2 border-gray-600 p-3 relative -top-0.5">
+                    <span>게시물</span>
+                </Link>
+                <Link to='' className="p-3">
+                    <span>좋아요</span>
+                </Link>
+                <Link to='' className="p-3">
+                    <span>댓글</span>
+                </Link>
+            </div>
+            <div className="profile_nav bg-blue-600">
+                {/* 게시물, 좋아요, 댓글 디테일 */}
+                <div>
+                    게시물
+                </div>
+                <div>
+                    좋아요
+                </div>
+                <div>
+                    댓글
+                </div>
+            </div>
+        </div>
+    )
+}
+function ExProfileEdit() {
+    return (
+        <div>
+
+        </div>
+    )
+}
+
+const Profile = function () {
     const navigate = useNavigate()
     const { username } = useParams()
     const SERVER_USER_PROFILE = `${SERVER}/profile/${username}`
@@ -80,7 +196,7 @@ export const Profile = function () {
     )
 }
 
-export const EditProfile = function () {
+const EditProfile = function () {
     const navigate = useNavigate()
     const [campusList, setCampusList] = useState([])
     const [courseList, setCourseList] = useState({ first: [], second: [] })
@@ -252,7 +368,6 @@ export const EditProfile = function () {
     return (
         <div>
             <div>
-                <h1>프로필...</h1>
                 <form onSubmit={handleSubmit}>
                     <label>
                         아이디 :
@@ -360,3 +475,5 @@ function CourseOptions({ courseList }) {
         </>
     );
 }
+
+export { ProfileLayout, Profile, EditProfile, ExProfile, ExProfileEdit }

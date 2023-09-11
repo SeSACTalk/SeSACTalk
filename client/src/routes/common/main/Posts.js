@@ -55,6 +55,7 @@ const Posts = function () {
   useEffect(() => {
     if (post.data && typeof post.data.message == 'undefined') {
       setPostList(post.data);
+      console.log(post.data)
     }
   }, [post.data])
 
@@ -71,7 +72,7 @@ const Posts = function () {
               return (
                 <article className='relative post_container p-5 h-96 border-solid border-b border-gray-200' key={i}>
                   <div className='post_author'>
-                    <Link className='inline-flex gap-5' to={element.username}>
+                    <Link className='inline-flex gap-5' to={`profile/${element.username}`}>
                       <div className='img_wrap w-24 h-24 p-2 rounded-full overflow-hidden border border-solid border-gray-200'>
                         <img src={`${SERVER}/media/profile/default_profile.png`} alt={element.username} />
                       </div>
