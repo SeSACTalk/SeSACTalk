@@ -1,11 +1,10 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
-from django.contrib.sessions.models import Session
+from django.db.models import Q
 
 import json
 
-from chat.models import Chat
+from chat.models import Chat, ChatRoom
 from chat.serializers import ChatSerializers
-
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -34,16 +33,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
         sender_id = self.scope['url_route']['kwargs']['sender_id']
         receiver_id = self.scope['url_route']['kwargs']['receiver_id']
         
-        data = {
-            'sender': sender_id,
-            'receiver': receiver_id,
-            'content': content
-        }
-        # DB에 저장
-        serializer = ChatSerializers(data = data)
-        if serializer.is_valid():
-            serializer.save()
-            
+        # 채팅방 확인 및 가져오기
+        chat_room = ChatRoom.objects.filter(
+            (Q(sender=sender_id, receiver=receiver_id) | Q(sender=receiver_id, receiver=sender_id))
+        ).first()
+
+        if not chat_room:
+            # 채팅방이 없으면 생성
+            chat_room = ChatRoom.objects.create(sender = sender_id, receiver = receiver_id, latest_content = content)
+
+        chat_room.latest_content = content
+        chat_room.save()
+
+        # 채팅 내역 생성
+        chat = Chat.objects.create(content=content, chat_room=chat_room)
+        chat.save()
+
         await self.channel_layer.group_send(
             self.room_group_name,
             {

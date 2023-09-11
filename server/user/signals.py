@@ -64,17 +64,17 @@ def send_fcm_on_new_follow(sender, instance, created, **kwargs):
 @receiver(post_save, sender = Chat) # 채팅 알림
 def send_fcm_on_new_chat(sender, instance, created, **kwargs):
     if created:
-        sender = instance.sender.name
+        sender = instance.chat_room.sender.name
         
         try:
-            receiver_token = instance.receiver.fcmtoken.token
+            receiver_token = instance.chat_room.receiver.fcmtoken.token
         except:
                 receiver_token = None
 
         message_title = "새 메시지"
         message_body = f"{sender}님이 회원님에게 메시지를 보냈습니다.."
         data_message = {
-            'sender_id': str(instance.id),
+            'sender_id': str(instance.chat_room.sender),
         }
 
         send_fcm_notification(receiver_token, message_title, message_body, data_message)

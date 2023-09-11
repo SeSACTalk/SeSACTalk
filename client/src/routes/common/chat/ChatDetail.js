@@ -68,7 +68,7 @@ const ChatDetail = function () {
         if (sendMsg) {
             ws.current.onmessage = (evt) => {
                 const data = JSON.parse(evt.data);
-                setChatDetail((prevItems) => [...prevItems, data]);
+                // setChatDetail((prevItems) => [...prevItems, data]);
             };
         }
     }, [sendMsg]);
@@ -90,7 +90,7 @@ const ChatDetail = function () {
     return (
         <div className="w-[calc(75%-6rem)] h-screen">
             <h4 className="hidden">상세채팅</h4>
-            {
+            {/* {
                 'id' in profile && <div className="chat_user_info flex items-center h-20 p-1 gap-5 border-b border-gray-200">
                     <div className="img_wrap w-16 h-16 rounded-full overflow-hidden border border-solid border-gray-200 p-1">
                         <img src={`${SERVER}/media/profile/${profile.img_path}`} alt={profile.name} />
@@ -130,7 +130,7 @@ const ChatDetail = function () {
                         })
                     }
                 </ul>
-            </div>
+            </div> */}
             <div className="chat_input_container h-16 p-3">
                 <div className="chat_input w-full h-full border border-gray-200 px-2 py-1 rounded-lg">
                     <input className='inline-block w-[calc(100%-2rem)] h-full' type="text" onChange={(e) => setChat(e.target.value)} ref={chatInput}/>
