@@ -24,9 +24,10 @@ const ChatDetail = function () {
     let ws = useRef(null);
 
     // 상태 선언
-    const [socketConnected, setSocketConnected] = useState(false)
+    const [socketConnected, setSocketConnected] = useState(false);
     const [sendMsg, setSendMsg] = useState(false);
-    const [chat, setChat] = useState('')
+    const [chat, setChat] = useState('');
+    const [sender, setSender] = useState('');
     const [chatDetail, setChatDetail] = useState([]);
     const [profile, setProfile] = useState({})
 
@@ -40,6 +41,8 @@ const ChatDetail = function () {
             .then(
                 response => {
                     let copy = { ...response.data };
+                    console.log(response.data)
+                    setSender(copy.id)
                     setChatDetail(copy.chat)
                     setProfile(copy.profile)
                 }
@@ -52,25 +55,25 @@ const ChatDetail = function () {
     }, [sendMsg])
 
     // 소켓 객체 생성
-    // useEffect(() => {
-    //     if (!ws.current) {
-    //         ws.current = new WebSocket(SERVER_CHAT);
-    //         ws.current.onopen = () => {
-    //             console.log('connect to' + SERVER_CHAT)
-    //             setSocketConnected(true)
-    //         }
-    //     }
-    // }, [])
+    useEffect(() => {
+        if (!ws.current) {
+            ws.current = new WebSocket(SERVER_CHAT);
+            ws.current.onopen = () => {
+                console.log('connect to' + SERVER_CHAT)
+                setSocketConnected(true)
+            }
+        }
+    }, [])
 
-    // // send 후에 onmessage로 데이터 가져오기
-    // useEffect(() => {
-    //     if (sendMsg) {
-    //         ws.current.onmessage = (evt) => {
-    //             const data = JSON.parse(evt.data);
-    //             // setChatDetail((prevItems) => [...prevItems, data]);
-    //         };
-    //     }
-    // }, [sendMsg]);
+    // send 후에 onmessage로 데이터 가져오기
+    useEffect(() => {
+        if (sendMsg) {
+            ws.current.onmessage = (evt) => {
+                const data = JSON.parse(evt.data);
+                setChatDetail((prevItems) => [...prevItems, data]);
+            };
+        }
+    }, [sendMsg]);
 
     // 메시지 전송
     const handleChat = (e) => {
@@ -89,16 +92,21 @@ const ChatDetail = function () {
     return (
         <div className="w-[calc(75%-6rem)] h-screen">
             <h4 className="hidden">상세채팅</h4>
-            {/* {
-                'id' in profile && <div className="chat_user_info flex items-center h-20 p-1 gap-5 border-b border-gray-200">
+            {
+                profile && <div className="chat_user_info flex items-center h-20 p-1 gap-5 border-b border-gray-200">
                     <div className="img_wrap w-16 h-16 rounded-full overflow-hidden border border-solid border-gray-200 p-1">
-                        <img src={`${SERVER}/media/profile/${profile.img_path}`} alt={profile.name} />
+                        <img src={SERVER + profile.profile_img_path} alt={profile.name} />
                     </div>
                     <p className="flex flex-col">
                         <span>{profile.name}</span>
                         <p className="flex items-end gap-3 text-sm">
                             <span className="text-gray-500">{profile.username}</span>
-                            <span className="font-semibold text-sesac-green">{profile.first_course__campus__name} 캠퍼스</span>
+                            {
+                                profile.second_campus_name ?
+                                    <span className="font-semibold text-sesac-green">{profile.second_campus_name} 캠퍼스</span> :
+                                    <span className="font-semibold text-sesac-green">{profile.first_campus_name} 캠퍼스</span>
+                            }
+
                         </p>
                     </p>
                 </div>
@@ -108,7 +116,7 @@ const ChatDetail = function () {
                 <ul>
                     {
                         chatDetail.map((element, i) => {
-                            if (element.receiver == receiver) {
+                            if (element.sender == sender) {
                                 return (
                                     <li key={i} className="flex items-center gap-4 mb-3">
                                         <p className="text-start">
@@ -129,7 +137,7 @@ const ChatDetail = function () {
                         })
                     }
                 </ul>
-            </div> */}
+            </div>
             <div className="chat_input_container h-16 p-3">
                 <div className="chat_input w-full h-full border border-gray-200 px-2 py-1 rounded-lg">
                     <input className='inline-block w-[calc(100%-2rem)] h-full' type="text" onChange={(e) => setChat(e.target.value)} ref={chatInput} />

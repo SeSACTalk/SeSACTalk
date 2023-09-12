@@ -64,6 +64,6 @@ class ChatDetailView(APIView, SessionDecoderMixin):
             'chat': chatSerializer.data,
             'profile': profileSerializer.data
         }
-
-        return Response(response_data, status = status.HTTP_200_OK)
+        
+        return Response(data = response_data, status = status.HTTP_200_OK)
     
