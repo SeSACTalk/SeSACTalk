@@ -11,8 +11,7 @@ const username = getCookie('username')
 
 const ChatList = function () {
 
-    const [senders, setSender] = useState([])
-    let [user, setUser] = useState('')
+    const [target, setTarget] = useState([])
 
     useEffect(() => {
         axios.get(SERVER_CHAT_LIST, {
@@ -22,9 +21,8 @@ const ChatList = function () {
         })
             .then(
                 response => {
-                    setUser(response.data.id)
-                    let copy = [...response.data.users]
-                    setSender(copy)
+                    let copy = [...response.data]
+                    setTarget(copy)
                 }
             )
             .catch(
@@ -48,24 +46,23 @@ const ChatList = function () {
                 </button>
             </div>
             <div className="chat_list_wrap overflow-y-scroll">
-                {console.log(senders)}
                 {
-                    senders.length === 0 ? (
+                    target.length === 0 ? (
                         <p className="flex justify-center items-center h-96">아직 대화 중인 이웃 새싹이 없어요</p>
                     ) : (
                         <ul className="chat_list flex flex-col gap-2 mt-3">
-                            {senders.map((element, i) => (
+                            {target.map((element, i) => (
                                 <li className="box-border p-3" key={i}>
-                                    <Link className="flex items-center gap-3" to={`${user}/${element.sender}`}>
+                                    <Link className="flex items-center gap-3" to={`${element.id}`}>
                                         <div className="img_wrap w-1/5 h-1/5 rounded-full border border-gray-200 overflow-hidden p-1.5">
-                                            <img src={SERVER + element.profile_img_path} alt={element.sender_name} />
+                                            <img src={SERVER + element.profile_img_path} alt={element.target_name} />
                                         </div>
                                         <div className="sender_info">
-                                            <span className="mr-1">{element.sender_name}</span>
+                                            <span className="mr-1">{element.target_name}</span>
                                             <span className="font-semibold text-sm text-sesac-green">{
-                                                element.sender_second_campus_name ?
-                                                    element.sender_second_campus_name :
-                                                    element.sender_first_campus_name
+                                                element.target_second_campus_name ?
+                                                    element.target_second_campus_name :
+                                                    element.target_first_campus_name
                                             } 캠퍼스</span>
                                             <div className="chat_info flex gap-2">
                                                 <p className="text-sm text-gray-500">{element.latest_content}</p>

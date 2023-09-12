@@ -9,14 +9,14 @@ const ChatDetail = function () {
     const chatInput = useRef();
 
     // 서버 주소
-    const { receiver, sender } = useParams();
+    const { chatRoom } = useParams();
 
     const SERVER = process.env.REACT_APP_BACK_BASE_URL
-    const SERVER_CHAT_DETAIL = `${SERVER}/chat/${receiver}/${sender}`
+    const SERVER_CHAT_DETAIL = `${SERVER}/chat/${chatRoom}`
 
     // 웹 소켓 주소
     const SERVER_WEB_SOCKET = process.env.REACT_APP_BACK_SOCKET_URL
-    const SERVER_CHAT = `${SERVER_WEB_SOCKET}/ws/chat/${receiver}/${sender}`
+    const SERVER_CHAT = `${SERVER_WEB_SOCKET}/ws/chat/${chatRoom}`
 
     // 세션키
     const session_key = getCookie('session_key')
@@ -52,26 +52,25 @@ const ChatDetail = function () {
     }, [sendMsg])
 
     // 소켓 객체 생성
-    useEffect(() => {
-        if (!ws.current) {
-            ws.current = new WebSocket(SERVER_CHAT);
-            ws.current.onopen = () => {
-                console.log('connect to' + SERVER_CHAT)
-                setSocketConnected(true)
-            }
-        }
+    // useEffect(() => {
+    //     if (!ws.current) {
+    //         ws.current = new WebSocket(SERVER_CHAT);
+    //         ws.current.onopen = () => {
+    //             console.log('connect to' + SERVER_CHAT)
+    //             setSocketConnected(true)
+    //         }
+    //     }
+    // }, [])
 
-    }, [])
-
-    // send 후에 onmessage로 데이터 가져오기
-    useEffect(() => {
-        if (sendMsg) {
-            ws.current.onmessage = (evt) => {
-                const data = JSON.parse(evt.data);
-                // setChatDetail((prevItems) => [...prevItems, data]);
-            };
-        }
-    }, [sendMsg]);
+    // // send 후에 onmessage로 데이터 가져오기
+    // useEffect(() => {
+    //     if (sendMsg) {
+    //         ws.current.onmessage = (evt) => {
+    //             const data = JSON.parse(evt.data);
+    //             // setChatDetail((prevItems) => [...prevItems, data]);
+    //         };
+    //     }
+    // }, [sendMsg]);
 
     // 메시지 전송
     const handleChat = (e) => {
@@ -79,7 +78,7 @@ const ChatDetail = function () {
         if (socketConnected) {
             ws.current.send(
                 JSON.stringify({
-                    content: chat
+                    content: chat,
                 })
             )
             setSendMsg(true)
@@ -133,7 +132,7 @@ const ChatDetail = function () {
             </div> */}
             <div className="chat_input_container h-16 p-3">
                 <div className="chat_input w-full h-full border border-gray-200 px-2 py-1 rounded-lg">
-                    <input className='inline-block w-[calc(100%-2rem)] h-full' type="text" onChange={(e) => setChat(e.target.value)} ref={chatInput}/>
+                    <input className='inline-block w-[calc(100%-2rem)] h-full' type="text" onChange={(e) => setChat(e.target.value)} ref={chatInput} />
                     <button className="inline-block w-8" type="submit" onClick={handleChat}>
                         <span className="hidden">전송</span>
                         <i className="fa fa-paper-plane-o text-xl font-semibold text-sesac-green" aria-hidden="true"></i>

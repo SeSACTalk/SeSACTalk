@@ -82,7 +82,6 @@ class PostDetail(APIView, OwnerPermissionMixin):
             'post': postSerializer.data,
             'isPostMine': access_user_condition
             }
-
         
         return Response(response_data, status.HTTP_200_OK)
 
