@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from chat.models import Chat, ChatRoom
 from profiles.models import Profile
+from accounts.models import User
 
 class ChatRoomSerilaizer(serializers.ModelSerializer):
     class Meta:
@@ -67,28 +68,25 @@ class ChatRoomTwoSerializer(serializers.ModelSerializer):
 
         return profile_img_path
 
-class ChatDetailSerializer(serializers.ModelSerializer):
-    sender = serializers.IntegerField(source = 'chatroom.sender.id', read_only=True)
-    sender_name = serializers.CharField(source = 'chatroom.sender.name', read_only=True)
-    sender_first_campus_name = serializers.CharField(source = 'chatroom.sender.first_course.campus.name', read_only=True)
-    sender_second_campus_name = serializers.SerializerMethodField()
+class ChatProfileSerializer(serializers.ModelSerializer):
+    first_campus_name = serializers.CharField(source = 'first_course.campus.name', read_only = True)
+    second_campus_name = serializers.SerializerMethodField()
     profile_img_path = serializers.SerializerMethodField()
-    date = serializers.DateTimeField(format = "%Y년 %m월 %d일 %H:%M")
-
-    class Meta:
-        model = Chat
-        fields = ('id', 'sender', 'sender_name', 'sender_first_campus_name', 'sender_second_campus_name', 'profile_img_path', 'content', 'date')
     
-    def get_sender_second_campus_name(self, chat):
+    class Meta:
+        model = User
+        fields = ('id', 'name', 'username', 'first_campus_name', 'second_campus_name', 'profile_img_path')
+    
+    def get_second_campus_name(self, user):
         try:
-            sender_second_course_campus_name = chat.sender.second_course.campus.name
+            sender_second_course_campus_name = user.second_course.campus.name
         except:
             return ""
         
         return sender_second_course_campus_name
     
-    def get_profile_img_path(self, chat):
-        profile = Profile.objects.get(user = chat.sender.id)
+    def get_profile_img_path(self, user):
+        profile = Profile.objects.get(user = user.id)
         if profile.img_path:
             profile_img_path = profile.img_path
         else:
@@ -96,8 +94,8 @@ class ChatDetailSerializer(serializers.ModelSerializer):
 
         return profile_img_path
 
-
-class ChatSerializers(serializers.ModelSerializer):
+class ChatSerializer(serializers.ModelSerializer):
+    date = serializers.DateTimeField(format = "%Y년 %m월 %d일 %H:%M")
     class Meta:
         model = Chat
-        fields ='__all__'
+        fields = '__all__'

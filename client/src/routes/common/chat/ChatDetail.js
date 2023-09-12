@@ -78,7 +78,7 @@ const ChatDetail = function () {
         if (socketConnected) {
             ws.current.send(
                 JSON.stringify({
-                    content: chat,
+                    content: chat
                 })
             )
             setSendMsg(true)
