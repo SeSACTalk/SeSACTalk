@@ -6,26 +6,23 @@ from rest_framework.response import Response
 
 from chat.models import Chat, ChatRoom
 from accounts.models import User
-from chat.serializers import ChatRoomSerilaizer, ChatRoomSenderSerializer, ChatRoomReceiverSerializer, ChatDetailSerializer
+from chat.serializers import ChatRoomSerilaizer, ChatRoomOneSerializer, ChatRoomTwoSerializer, ChatDetailSerializer
 from sesactalk.mixins import SessionDecoderMixin
 
 class ChatListView(APIView, SessionDecoderMixin):
     def get(self, request: HttpRequest) -> Response:
         user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
 
-        # select_related가 바뀌어야할듯. 만약 receiver 면 sender, sender면 receiver
-        condition = ChatRoom.objects.filter(sender = user_id).exists()
+        # select_related가 바뀌어야할듯. 만약 접속중인 사용자가 user_one이면 user_two를 조회, user_two면 user_one
+        condition = ChatRoom.objects.filter(user_one = user_id).exists()
 
-        chat_rooms = None
         serializer = None
         if condition:
-            chat_rooms = ChatRoom.objects.select_related('receiver').filter(sender = user_id ).all()
-            serializer = ChatRoomReceiverSerializer(chat_rooms, many = True)
+            chat_rooms = ChatRoom.objects.select_related('user_two').filter(user_one = user_id ).all()
+            serializer = ChatRoomTwoSerializer(chat_rooms, many = True)
         else:
-            chat_rooms = ChatRoom.objects.select_related('sender').filter(receiver = user_id).all()
-            serializer = ChatRoomSenderSerializer(chat_rooms, many = True)
-        
-        print(serializer.data)
+            chat_rooms = ChatRoom.objects.select_related('user_one').filter(user_two = user_id).all()
+            serializer = ChatRoomOneSerializer(chat_rooms, many = True)
 
         return Response(serializer.data, status = status.HTTP_200_OK)
 
