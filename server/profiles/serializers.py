@@ -4,9 +4,25 @@ from profiles.models import Profile
 from accounts.models import User, Course, Campus
 
 class ProfileSerializer(serializers.ModelSerializer):
+    img_path = serializers.SerializerMethodField()
+    user_id = serializers.IntegerField(source='user.id')
+    user_name = serializers.CharField(source='user.name')
+    post_count = serializers.IntegerField()
+    follower_count = serializers.IntegerField()
+    follow_count = serializers.IntegerField()
+
     class Meta:
         model = Profile
-        fields = '__all__'
+        fields = ['img_path', 'content', 'link', 'date', 'course_status',
+                  'user_name', 'user_id', 'post_count', 'follower_count', 'follow_count']
+
+    def get_img_path(self, profile):
+        if profile.img_path:
+            profile_img_path = profile.img_path
+        else:
+            profile_img_path = '/media/profile/default_profile.png'
+
+        return profile_img_path
 
 class CampusSerializer(serializers.ModelSerializer):
     class Meta:

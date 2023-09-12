@@ -1,3 +1,4 @@
+from django.db.models import Count, Subquery, OuterRef
 from django.shortcuts import render
 from django.http import HttpRequest
 from rest_framework.response import Response
@@ -10,37 +11,44 @@ from profiles.models import Profile
 from accounts.models import Campus, Course, User
 from profiles.serializers import ProfileSerializer, EditProfileSerializer
 from accounts.serializers import UserSerializer, CampusSerializer, CourseSerializer
+from sesactalk.mixins import SessionDecoderMixin
+from user.models import UserRelationship
+
 
 # Create your views here.
 
-class ProfileView(APIView):
+class ProfileView(APIView, SessionDecoderMixin):
     def get(self, request:HttpRequest, username: str) -> Response:
         # session_key로 user_id get
-        frontend_session_key = request.META.get('HTTP_AUTHORIZATION', '')
-        session = Session.objects.get(session_key = frontend_session_key)
-        user_id = session.get_decoded().get('_auth_user_id')
-        
-        data = None
+        profile_user_id = user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
+        isProfileMine = username == User.objects.get(id=user_id).username
 
         # user_id와 username 값 비교(True == 내 프로필)
-        if (username == User.objects.get(id=user_id).username):
-            profile = Profile.objects.get(user=user_id)
-
-            profileSerializer=ProfileSerializer(profile)
-            data=profileSerializer.data
-            data['isProfileMine'] = 'True'
-        else: 
+        if not isProfileMine:
             try: # 경로로 넘어온 username의 조회 결과가 None일 때 exception
-                user_id = User.objects.get(username=username).id
-                profile=Profile.objects.get(user=user_id)
-
-                profileSerializer=ProfileSerializer(profile)
-                data=profileSerializer.data
-                data['isProfileMine'] = 'False'
+                profile_user_id = User.objects.get(username=username).id
             except Exception:
                 print(Exception)
                 return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
-            
+
+        profile = Profile.objects.filter(user=profile_user_id).annotate(
+            post_count=Count('user__post'),
+            follower_count=Subquery(
+                UserRelationship.objects.filter(user_follower=OuterRef('user')).values('user_follower').annotate(
+                    follower_count=Count('user_follower')
+                ).values('follower_count')[:1]
+            ),
+            follow_count=Subquery(
+                UserRelationship.objects.filter(user_follow=OuterRef('user')).values('user_follow').annotate(
+                    follow_count=Count('user_follow')
+                ).values('follow_count')[:1]
+            )
+        ).first()
+
+        profileSerializer = ProfileSerializer(profile)
+        data = profileSerializer.data
+        data['isProfileMine'] = isProfileMine
+
         return Response(data = data, status=status.HTTP_200_OK)
 
 

@@ -27,94 +27,153 @@ const ProfileLayout = function () {
 };
 
 function ExProfile() {
+    const navigate = useNavigate()
+    const { username } = useParams()
+    const SERVER_USER_PROFILE = `${SERVER}/profile/${username}`
+
+    const redirectToLogin = () => {
+        navigate('/accounts/login'); // 로그인 페이지로 이동
+    };
+    useEffect(() => {
+        checkAuthMiddleware()
+            .then(() => {
+            })
+            .catch(() => {
+                redirectToLogin();
+            });
+    }, []);
+
+    const [profileData, setProfileData] = useState(null);
+    const session_key = getCookie('session_key')
+
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const response = await axios.get(SERVER_USER_PROFILE, {
+                    headers: {
+                        'Authorization': `${session_key}`
+                    }
+                });
+
+                if (response.status === 200) {
+                    const data = response.data;
+                    setProfileData(data); // profileData 설정
+                    console.log(data);
+                } else {
+                    console.error('Error fetching profile data');
+                }
+            } catch (error) {
+                console.error('Error fetching profile data:', error);
+            }
+        }
+        fetchData();
+    }, [username]); // username을 종속성 배열에 추가
+
+    const handleEditButtonClick = () => {
+        navigate('edit');
+    };
     return (
         // 전체 컨테이너
         <div className="profile_container pt-12 px-20 text-lg">
-            <header className="profile_header flex mb-8">
-                {/* 프로필 사진 */}
-                <div className="profile_img_container flex align-middle justify-center w-2/6 ">
-                    <div className="profile_img_div w-36 h-36 self-center rounded-full overflow-hidden border-4 border-solid border-sesac-green p-2">
-                        <img className="block w-full h-full p-2" src={`${SERVER}/media/profile/default_profile.png`} alt='김새싹' />
-                    </div>
-                    {/*  */}
-                </div>
-                {/* 
+            {profileData ? (
+                <>
+                    <header className="profile_header flex mb-8 min-h-full">
+                        {/* 프로필 사진 */}
+                        <div className="profile_img_container flex justify-center w-2/6 h-36 ">
+                            <div className="profile_img_div w-36 TOP self-center rounded-full overflow-hidden border-4 border-solid border-sesac-green p-2">
+                                <img className="block p-2" src={`${SERVER + profileData.img_path}`} alt='프로필 이미지' />
+                            </div>
+                            {/*  */}
+                        </div>
+                        {/* 
                     이름, 캠퍼스명, 수정, 설정
                     게시물, 팔로워, 팔로우
                     한줄소개
                     링크
                 */}
-                <section className="profile_userinfo_container flex flex-col gap-4 w-6/12 px-1 ">
-                    <div className="flex flex-col gap-1">  
-                        <div className="profile_userinfo flex">
-                            <div>
-                                <h2 className="inline-block font-bold text-2xl mr-3">김용구</h2>
-                                <span className="inline-block text-sesac-green font-semibold text-sm">강동 캠퍼스</span>
+                        <section className="profile_userinfo_container flex flex-col gap-4 w-6/12 h-44 px-1 ">
+                            <div className="flex flex-col gap-1">
+                                <div className="profile_userinfo flex">
+                                    <div>
+                                        <h2 className="inline-block font-bold text-2xl mr-3">{profileData.user_name}</h2>
+                                        <span className="inline-block text-sesac-green font-semibold text-sm">강동 캠퍼스</span>
+                                    </div>
+                                    <div className=" ml-auto flex gap-3">
+                                        <button className="inline-block">
+                                            <i className="fa fa-thin fa-gear"></i>
+                                        </button>
+                                        <button className="inline-block">
+                                            {/* 안 돼서 임시로 설정 이용-> <i className="fa fa-solid fa-pen-to-square"></i> */}
+                                            <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <ul className="profile_user_stats flex gap-12 text-slate-600">
+                                    <li className="flex gap-2">
+                                        <span>게시물</span>
+                                        <span className="font-semibold text-black">{profileData.post_count}</span>
+                                    </li>
+                                    <li className="flex gap-2">
+                                        <span>팔로워</span>
+                                        <span className="font-semibold text-black">{profileData.follower_count}</span>
+                                    </li>
+                                    <li className="flex gap-2">
+                                        <span>팔로우</span>
+                                        <span className="font-semibold text-black">{profileData.follow_count}</span>
+                                    </li>
+                                </ul>
                             </div>
-                            <div className=" ml-auto flex gap-3">
-                                <button className="inline-block">
-                                    <i className="fa fa-thin fa-gear"></i>
-                                </button>
-                                <button className="inline-block">
-                                    {/* 안 돼서 임시로 설정 이용-> <i className="fa fa-solid fa-pen-to-square"></i> */}
-                                    <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
-                                </button>
+                            <div className="flex flex-col gap-2">
+                                {
+                                    profileData.content ?
+                                        <div className="flex flex-col gap-1 text-sm">
+                                            <div className="text-sesac-green">한줄소개</div>
+                                            <div className="font-semibold">{profileData.content}</div>
+                                        </div>
+                                        : null
+                                }
+                                {
+                                    profileData.link ?
+                                        <div className="text-sm">
+                                            <div className="text-sesac-green">링크</div>
+                                            <div className="font-semibold">{profileData.link}</div>
+                                        </div>
+                                        : null
+                                }
                             </div>
-                        </div>
-                        <ul className="profile_user_stats flex gap-12 text-slate-600">
-                            <li className="flex gap-2">
-                                <span>게시물</span>
-                                <span className="font-semibold text-black">10</span>
-                            </li>
-                            <li className="flex gap-2">
-                                <span>팔로워</span>
-                                <span className="font-semibold text-black">100</span>
-                            </li>
-                            <li className="flex gap-2">
-                                <span>팔로우</span>
-                                <span className="font-semibold text-black">100</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                        <div className="flex flex-col gap-1 text-sm">
-                            <div className="text-sesac-green">한줄소개</div>
-                            <div className="font-semibold">나는야 김용구</div>
-                        </div>
-                        <div className="text-sm">
-                            <div className="text-sesac-green">링크</div>
-                            <div className="font-semibold">www.sesactalk.com</div>
-                        </div>
-                    </div>
-                </section>
-            </header>
-            {/* 
+                        </section>
+                    </header>
+                    {/* 
                 게시물, 좋아요, 댓글
             */}
-            <div className="profile_nav flex gap-32 align-middle justify-center border-t-2 border-gray-300 text-base">
-                <Link to='' className="block border-t-2 border-gray-600 p-3 relative -top-0.5">
-                    <span>게시물</span>
-                </Link>
-                <Link to='' className="p-3">
-                    <span>좋아요</span>
-                </Link>
-                <Link to='' className="p-3">
-                    <span>댓글</span>
-                </Link>
-            </div>
-            <div className="profile_nav bg-blue-600">
-                {/* 게시물, 좋아요, 댓글 디테일 */}
-                <div>
-                    게시물
-                </div>
-                <div>
-                    좋아요
-                </div>
-                <div>
-                    댓글
-                </div>
-            </div>
-        </div>
+                    <div className="profile_nav flex gap-32 align-middle justify-center border-t-2 border-gray-300 text-base">
+                        <Link to='' className="block border-t-2 border-gray-600 p-3 relative -top-0.5">
+                            <span>게시물</span>
+                        </Link>
+                        <Link to='' className="p-3">
+                            <span>좋아요</span>
+                        </Link>
+                        <Link to='' className="p-3">
+                            <span>댓글</span>
+                        </Link>
+                    </div>
+                    <div className="profile_nav bg-blue-600">
+                        {/* 게시물, 좋아요, 댓글 디테일 */}
+                        <div>
+                            게시물
+                        </div>
+                        <div>
+                            좋아요
+                        </div>
+                        <div>
+                            댓글
+                        </div>
+                    </div>
+                </>
+            )
+                : (
+                    <p>Loading...</p>
+                )}</div>
     )
 }
 function ExProfileEdit() {
