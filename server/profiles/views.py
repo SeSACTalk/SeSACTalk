@@ -6,6 +6,9 @@ from rest_framework.views import APIView
 from rest_framework import status
 from django.contrib.sessions.models import Session
 
+from post.constants import ResponseMessages
+from post.models import Post
+from post.serializers import PostSetSerializer
 from profiles.models import Profile
 # from user.models import User
 from accounts.models import Campus, Course, User
@@ -31,7 +34,7 @@ class ProfileView(APIView, SessionDecoderMixin):
                 print(Exception)
                 return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        profile = Profile.objects.filter(user=profile_user_id).annotate(
+        profile = Profile.objects.filter(user=profile_user_id).select_related('user').annotate(
             post_count=Count('user__post'),
             follower_count=Subquery(
                 UserRelationship.objects.filter(user_follower=OuterRef('user')).values('user_follower').annotate(
@@ -52,12 +55,10 @@ class ProfileView(APIView, SessionDecoderMixin):
         return Response(data = data, status=status.HTTP_200_OK)
 
 
-class EditProfileView(APIView):
+class EditProfileView(APIView, SessionDecoderMixin):
     def get(self, request:HttpRequest, username: str) -> Response:
         # session_key로 user_id get
-        frontend_session_key = request.META.get('HTTP_AUTHORIZATION', '')
-        session = Session.objects.get(session_key = frontend_session_key)
-        user_id = session.get_decoded().get('_auth_user_id')
+        profile_user_id = user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
         
         # user_id와 username 값 비교(True == 내 프로필)
         if (username == User.objects.get(id=user_id).username):
@@ -94,9 +95,7 @@ class EditProfileView(APIView):
         
     def put(self, request:HttpRequest, username: str) -> Response:
         # session_key로 user_id get
-        frontend_session_key = request.META.get('HTTP_AUTHORIZATION', '')
-        session = Session.objects.get(session_key = frontend_session_key)
-        user_id = session.get_decoded().get('_auth_user_id')
+        profile_user_id = user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
 
         userObj = User.objects.get(id=user_id)
         profileObj = Profile.objects.get(user=user_id)
@@ -130,3 +129,26 @@ class EditProfileView(APIView):
         print(profileObj.img_path, profileObj.content, profileObj.link, profileObj.course_status)
 
         return Response({'message': 'Data updated successfully'}, status=status.HTTP_200_OK)
+
+class ProfilePost(APIView, SessionDecoderMixin):
+    def get(self, request:HttpRequest, user_pk: int) -> Response:
+        posts = Post.objects.filter(user_pk = user_pk)\
+                            .select_related('user')\
+                            .prefetch_related('tags', 'like_set', 'reply_set')\
+                            .order_by('-date')
+
+        postSetSerializer = PostSetSerializer(posts, many = True)
+
+        # QuerySet이 비어있을 경우
+        if not bool(posts):
+            return Response({'message': ResponseMessages.POST_NO_POSTS_TO_DISPLAY}, status=status.HTTP_200_OK)
+
+        return Response(postSetSerializer.data, status=status.HTTP_200_OK)
+
+class ProfileLike(APIView, SessionDecoderMixin):
+    def get(self, request:HttpRequest, user_pk: int) -> Response:
+        pass
+
+class ProfileReply(APIView, SessionDecoderMixin):
+    def get(self, request:HttpRequest, user_pk: int) -> Response:
+        pass

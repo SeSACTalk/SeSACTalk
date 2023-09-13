@@ -7,6 +7,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     img_path = serializers.SerializerMethodField()
     user_id = serializers.IntegerField(source='user.id')
     user_name = serializers.CharField(source='user.name')
+    user_campusname = serializers.SerializerMethodField()
     post_count = serializers.IntegerField()
     follower_count = serializers.IntegerField()
     follow_count = serializers.IntegerField()
@@ -14,7 +15,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ['img_path', 'content', 'link', 'date', 'course_status',
-                  'user_name', 'user_id', 'post_count', 'follower_count', 'follow_count']
+                  'user_name', 'user_campusname','user_id', 'post_count', 'follower_count', 'follow_count']
 
     def get_img_path(self, profile):
         if profile.img_path:
@@ -23,6 +24,16 @@ class ProfileSerializer(serializers.ModelSerializer):
             profile_img_path = '/media/profile/default_profile.png'
 
         return profile_img_path
+
+    def get_user_campusname(self, profile):
+        user = User.objects.get(pk = profile.user.id)
+        try:
+            campus_name = Campus.objects.get(pk = user.second_course.campus.id).name
+        except Exception as e:
+            print(e)
+            campus_name = Campus.objects.get(pk = user.first_course.campus.id).name
+
+        return campus_name
 
 class CampusSerializer(serializers.ModelSerializer):
     class Meta:
