@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from profiles.models import Profile
-from accounts.models import User, Course, Campus
+from accounts.models import Course, Campus
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,29 +18,7 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = '__all__'  
         
-# class EditProfileSerializer(serializers.ModelSerializer):
-#     # id = serializers.IntegerField()
-#     # username = serializers.CharField()
-#     # name = serializers.CharField()
-#     # birthdate = serializers.DateField()
-#     # phone_number = serializers.CharField()
-#     # email = serializers.EmailField()
-#     # profile__img_path = serializers.ImageField()
-#     # profile__content = serializers.CharField()
-#     # profile__link = serializers.URLField()
-#     # profile__course_status = serializers.BooleanField()
-#     # first_course__name = serializers.CharField()
-#     # first_course__campus__name = serializers.CharField()
-#     # second_course__name = serializers.CharField()
-#     # second_course__campus__name = serializers.CharField()
-#     class Meta:
-#         model = User  # 시리얼라이저가 사용할 모델을 지정합니다.
-#         fields = [
-#                 'id', 'username', 'name', 'birthdate', 'phone_number', 'email',
-#                 'profile__img_path', 'profile__content', 'profile__link', 'profile__course_status',
-#                 'first_course__name', 'first_course__campus__name',
-#                 'secon
-        
+
 class EditProfileSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source = 'user.id')
     username = serializers.CharField(source = 'user.username')

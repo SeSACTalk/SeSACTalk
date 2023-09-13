@@ -77,6 +77,8 @@ function App() {
 
         <Route path='/profile/:username' element={<Profile/>}/>
         <Route path='/profile/:username/edit' element={<EditProfile/>}/>
+        
+        <Route path='/reply/:p_sq' element={<Replys/>}/>
       </Routes>
 
       
