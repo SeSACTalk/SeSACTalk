@@ -51,7 +51,7 @@ class ChatDetailView(APIView, SessionDecoderMixin):
         # 대화 상대의 pk 조회하기
         target_id = None
         for message in messages:
-            if message.sender.id != int(my_user_id):
+            if message.sender.id != my_user_id:
                 target_id = message.sender.id
                 break
         

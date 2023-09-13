@@ -95,7 +95,7 @@ class ChatProfileSerializer(serializers.ModelSerializer):
         return profile_img_path
 
 class ChatSerializer(serializers.ModelSerializer):
-    date = serializers.DateTimeField(format = "%Y년 %m월 %d일 %H:%M")
+    date = serializers.DateTimeField(format = "%Y년 %m월 %d일 %H:%M", read_only = True)
     class Meta:
         model = Chat
         fields = '__all__'

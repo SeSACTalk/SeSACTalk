@@ -41,8 +41,7 @@ const ChatDetail = function () {
             .then(
                 response => {
                     let copy = { ...response.data };
-                    console.log(response.data)
-                    setSender(copy.id)
+                    setSender(parseInt(copy.id))
                     setChatDetail(copy.chat)
                     setProfile(copy.profile)
                 }
@@ -77,10 +76,11 @@ const ChatDetail = function () {
 
     // 메시지 전송
     const handleChat = (e) => {
-        e.preventDefault()
+        e.preventDefault();
         if (socketConnected) {
             ws.current.send(
                 JSON.stringify({
+                    sender: sender,
                     content: chat
                 })
             )
@@ -99,7 +99,7 @@ const ChatDetail = function () {
                     </div>
                     <p className="flex flex-col">
                         <span>{profile.name}</span>
-                        <p className="flex items-end gap-3 text-sm">
+                        <span className="flex items-end gap-3 text-sm">
                             <span className="text-gray-500">{profile.username}</span>
                             {
                                 profile.second_campus_name ?
@@ -107,7 +107,7 @@ const ChatDetail = function () {
                                     <span className="font-semibold text-sesac-green">{profile.first_campus_name} 캠퍼스</span>
                             }
 
-                        </p>
+                        </span>
                     </p>
                 </div>
             }
@@ -116,7 +116,7 @@ const ChatDetail = function () {
                 <ul>
                     {
                         chatDetail.map((element, i) => {
-                            if (element.sender == sender) {
+                            if (element.sender != sender) {
                                 return (
                                     <li key={i} className="flex items-center gap-4 mb-3">
                                         <p className="text-start">
