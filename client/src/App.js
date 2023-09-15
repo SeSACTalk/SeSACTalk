@@ -17,21 +17,21 @@ import ChatDetail from './routes/common/chat/ChatDetail';
 function App() {
   let navigate = useNavigate()
 
-  useEffect(() => {
-    checkAuthMiddleware()
-      .then(() => {
-        checkInfoMiddleware()
-          .then(() => {
-            navigate('/admin')
-          })
-          .catch(() => {
-            navigate('/')
-          })
-      })
-      .catch(() => {
-        navigate('/accounts/login');
-      });
-  }, []);
+  // useEffect(() => {
+  //   checkAuthMiddleware()
+  //     .then(() => {
+  //       checkInfoMiddleware()
+  //         .then(() => {
+  //           navigate('/admin')
+  //         })
+  //         .catch(() => {
+  //           navigate('/')
+  //         })
+  //     })
+  //     .catch(() => {
+  //       navigate('/accounts/login');
+  //     });
+  // }, []);
 
   return (
     <div className="App">

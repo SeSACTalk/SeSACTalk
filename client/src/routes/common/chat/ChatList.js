@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 
 import { getCookie } from "../../../modules/handle_cookie";
+import ChatExplore from "./ChatExplore";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
 const SERVER_CHAT_LIST = `${SERVER}/chat/`
@@ -76,6 +77,7 @@ const ChatList = function () {
                     )
                 }
             </div>
+            <ChatExplore />
         </div>
     )
 }

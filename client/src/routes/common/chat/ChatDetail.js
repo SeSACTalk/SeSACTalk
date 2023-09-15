@@ -7,6 +7,8 @@ import { getCookie } from "../../../modules/handle_cookie";
 const ChatDetail = function () {
     // DOM
     const chatInput = useRef();
+    const chatSubmit = useRef();
+    const scrollRef = useRef();
 
     // 서버 주소
     const { chatRoom } = useParams();
@@ -33,6 +35,7 @@ const ChatDetail = function () {
 
     // 이전 대화내용 DB로부터 가져오기
     useEffect(() => {
+        console.log(sender)
         axios.get(SERVER_CHAT_DETAIL, {
             headers: {
                 'Authorization': session_key
@@ -58,7 +61,7 @@ const ChatDetail = function () {
         if (!ws.current) {
             ws.current = new WebSocket(SERVER_CHAT);
             ws.current.onopen = () => {
-                console.log('connect to' + SERVER_CHAT)
+                console.log('connect to ' + SERVER_CHAT)
                 setSocketConnected(true)
             }
         }
@@ -69,14 +72,13 @@ const ChatDetail = function () {
         if (sendMsg) {
             ws.current.onmessage = (evt) => {
                 const data = JSON.parse(evt.data);
-                setChatDetail((prevItems) => [...prevItems, data]);
+                setSendMsg(!sender)
             };
         }
     }, [sendMsg]);
 
     // 메시지 전송
-    const handleChat = (e) => {
-        e.preventDefault();
+    const handleChat = () => {
         if (socketConnected) {
             ws.current.send(
                 JSON.stringify({
@@ -85,9 +87,16 @@ const ChatDetail = function () {
                 })
             )
             setSendMsg(true)
-            chatInput.current.value = ''
         }
     }
+
+    // 스크롤 가장아래로
+    useEffect(() => {
+        // scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+    }, [chatDetail]);
 
     return (
         <div className="w-[calc(75%-6rem)] h-screen">
@@ -112,7 +121,7 @@ const ChatDetail = function () {
                 </div>
             }
 
-            <div className="h-[calc(100%-9rem)] overflow-y-scroll px-6">
+            <div className="h-[calc(100%-9rem)] overflow-y-scroll px-6" ref={scrollRef}>
                 <ul>
                     {
                         chatDetail.map((element, i) => {
@@ -140,8 +149,24 @@ const ChatDetail = function () {
             </div>
             <div className="chat_input_container h-16 p-3">
                 <div className="chat_input w-full h-full border border-gray-200 px-2 py-1 rounded-lg">
-                    <input className='inline-block w-[calc(100%-2rem)] h-full' type="text" onChange={(e) => setChat(e.target.value)} ref={chatInput} />
-                    <button className="inline-block w-8" type="submit" onClick={handleChat}>
+                    <input className='inline-block w-[calc(100%-2rem)] h-full'
+                        type="text"
+                        value={chat}
+                        onChange={
+                            (e) => setChat(e.target.value)
+                        }
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.nativeEvent.isComposing) { // 엔터키 입력시 입력된 값에 setChat 적용 -> 비동기로 변경하면 가능할듯? 프로미스처럼
+                                chatSubmit.current.click()
+                                setChat('')
+                            }
+                            if (e.nativeEvent.isComposing) return;
+                        }}
+                        ref={chatInput} />
+                    <button className="inline-block w-8" type="submit" onClick={(e) => {
+                        e.preventDefault();
+                        handleChat()
+                    }} ref={chatSubmit}>
                         <span className="hidden">전송</span>
                         <i className="fa fa-paper-plane-o text-xl font-semibold text-sesac-green" aria-hidden="true"></i>
                     </button>

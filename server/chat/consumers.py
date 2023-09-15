@@ -33,6 +33,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         
         # 채팅 내역 생성
+        # TODO signals로 latest_content 저장하기
         serializer = ChatSerializer(data = data)
 
         if serializer.is_valid():

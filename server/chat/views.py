@@ -13,7 +13,7 @@ class ChatListView(APIView, SessionDecoderMixin):
     def get(self, request: HttpRequest) -> Response:
         user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
 
-        # select_related가 바뀌어야할듯. 만약 접속중인 사용자가 user_one이면 user_two를 조회, user_two면 user_one
+        # 만약 접속중인 사용자가 user_one이면 user_two를 조회, user_two면 user_one
         condition = ChatRoom.objects.filter(user_one = user_id).exists()
 
         serializer = None
@@ -37,6 +37,7 @@ class ChatListView(APIView, SessionDecoderMixin):
 
         return Response(status = status.HTTP_200_OK)
 
+        # post요청을 먼저 해서 채팅방을 생성한 후 get요청을 통해 이동이 되게하는게 맞을듯..
 class ChatDetailView(APIView, SessionDecoderMixin):
     def get(self, request: HttpRequest, **kwargs) -> Response:
         my_user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
