@@ -11,8 +11,9 @@ const session_key = getCookie('session_key')
 const username = getCookie('username')
 
 const ChatList = function () {
-
+    // states
     const [target, setTarget] = useState([])
+    const [chatExploreModal, setChatExplore] = useState(false)
 
     useEffect(() => {
         axios.get(SERVER_CHAT_LIST, {
@@ -41,7 +42,7 @@ const ChatList = function () {
                     <img src={`${SERVER}/media/profile/default_profile.png`} alt={username} />
                 </div>
                 <p>{username}</p>
-                <button className="absolute top-0 right-5" type="button">
+                <button className="absolute top-0 right-5" type="button" onClick={() => { setChatExplore(!chatExploreModal) }}>
                     <span className="hidden">대화하기</span>
                     <i className="fa fa-plus-square-o text-3xl" aria-hidden="true"></i>
                 </button>
@@ -77,7 +78,7 @@ const ChatList = function () {
                     )
                 }
             </div>
-            <ChatExplore />
+            {chatExploreModal && <ChatExplore chatExploreModal={chatExploreModal} setChatExplore={setChatExplore} />}
         </div>
     )
 }

@@ -35,7 +35,6 @@ const ChatDetail = function () {
 
     // 이전 대화내용 DB로부터 가져오기
     useEffect(() => {
-        console.log(sender)
         axios.get(SERVER_CHAT_DETAIL, {
             headers: {
                 'Authorization': session_key
@@ -92,7 +91,6 @@ const ChatDetail = function () {
 
     // 스크롤 가장아래로
     useEffect(() => {
-        // scrollRef.current.scrollIntoView({ behavior: 'smooth' });
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
@@ -115,12 +113,10 @@ const ChatDetail = function () {
                                     <span className="font-semibold text-sesac-green">{profile.second_campus_name} 캠퍼스</span> :
                                     <span className="font-semibold text-sesac-green">{profile.first_campus_name} 캠퍼스</span>
                             }
-
                         </span>
                     </p>
                 </div>
             }
-
             <div className="h-[calc(100%-9rem)] overflow-y-scroll px-6" ref={scrollRef}>
                 <ul>
                     {

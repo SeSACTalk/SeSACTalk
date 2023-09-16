@@ -28,12 +28,28 @@ class ChatListView(APIView, SessionDecoderMixin):
 
     # TODO 채팅방 생성하는 view도 만들어야함
     def post(self, request: HttpRequest) -> Response:
-        # request로 받아야 하는 정보는 나의 pk랑 상대의 pk -> chatroom을 생성해야함
-        # chatroom 만들때 필요한 정보 - user_one, user_two
-        # request.data
-        serializer = ChatRoomSerilaizer(data = request.data)
-        if serializer.is_valid():
-            serializer.save()
+        my_user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
+        target_id = request.data['user']
+        
+        data = {
+            'user_one': my_user_id,
+            'user_two': target_id
+        }
+        
+        # 방이 없을때만 생성되게 해야함
+        chat_room_exist = ChatRoom.objects.filter(
+            (Q(user_one = my_user_id) & Q(user_two = target_id)) |
+            (Q(user_one = target_id) & Q(user_one = my_user_id))
+            ).exists()
+
+        serializer = ChatRoomSerilaizer(data = data)
+        
+        # 응답들에 만들어진 혹은 존재하는 채팅방의 id를 보내줘야함
+        if chat_room_exist:
+            pass
+        else:
+            if serializer.is_valid():
+                serializer.save()
 
         return Response(status = status.HTTP_200_OK)
 

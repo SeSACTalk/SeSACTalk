@@ -10,27 +10,32 @@ from profiles.models import Profile
 
 
 class ExploreUsers(APIView):
-    def post(self, request: HttpRequest, u_name) -> Response:
-        #  활성화된 회원만, 승인 여부가 10 11 21(재로그인 필요)인 회원만
-        profiles_with_users_campus_name = Profile.objects.filter(
-            Q(user__username__startswith=u_name) &
+    def get(self, request:HttpRequest) -> Response:
+        # 사용자명
+        name = request.query_params.get('name')
+
+        users = Profile.objects.filter(
+            Q(user__name__startswith = name) &
             Q(user__is_active = True) &
-            (Q(user__is_auth = 10) | Q(user__is_auth=11) | Q(user__is_auth=21))
+            (Q(user__is_auth = 10) | Q(user__is_auth = 11) | Q(user__is_auth = 21))
         ).select_related(
             'user__first_course__campus',
             'user__second_course__campus'
         ).all()
+        
+        serializer = UserExploreResultSerializer(users, many = True)
 
-        serializer = UserExploreResultSerializer(profiles_with_users_campus_name, many = True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status = status.HTTP_200_OK)
 
 class ExploreTags(APIView):
     def get(self, request: HttpRequest, h_name) -> Response:
-        post_queryset = Post.objects.filter(tags__name=h_name)\
+        # 태그명
+        tag_name = request.query_params.get('name')
+        post_queryset = Post.objects.filter(tags__name = tag_name)\
             .select_related('user')\
             .order_by('-date')\
             .annotate(hashtag_name=F('tags__name'), username=F('user__username'))
+        
         serializer = HashTagExploreResultDetailSerializer(post_queryset, many = True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
