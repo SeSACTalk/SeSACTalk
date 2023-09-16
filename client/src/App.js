@@ -11,7 +11,8 @@ import { checkAuthMiddleware, checkInfoMiddleware } from './middleware/middlewar
 import Main from './routes/common/main/Main'
 import Login from './routes/accounts/Login';
 import Admin from './routes/admin/Admin';
-import { ProfileLayout, Profile, EditProfile, ExProfile, ExProfileEdit } from './routes/common/profiles/Profile';
+import { ProfileLayout, Profile } from './routes/common/profiles/Profile';
+import EditProfile from './routes/common/profiles/EditProfile';
 
 function App() {
   let navigate = useNavigate()
@@ -43,10 +44,8 @@ function App() {
         <Route path='/admin' element={<Admin />}></Route>
         {/* 프로필 */}
         <Route path="/profile/:username" element={<ProfileLayout />} >
-          {/* <Route path="" element={<Profile/>} />
-          <Route path="edit" element={<EditProfile/>} /> */}
-          <Route path="" element={<ExProfile/>} />
-          <Route path="edit" element={<ExProfileEdit/>} />
+          <Route path="" element={<Profile/>} />
+          <Route path="edit" element={<EditProfile/>} />
         </Route>
       </Routes>
     </div >

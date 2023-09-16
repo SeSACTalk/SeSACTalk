@@ -132,7 +132,7 @@ class EditProfileView(APIView, SessionDecoderMixin):
 
 class ProfilePost(APIView, SessionDecoderMixin):
     def get(self, request:HttpRequest, user_pk: int) -> Response:
-        posts = Post.objects.filter(user_pk = user_pk)\
+        posts = Post.objects.filter(user = user_pk)\
                             .select_related('user')\
                             .prefetch_related('tags', 'like_set', 'reply_set')\
                             .order_by('-date')

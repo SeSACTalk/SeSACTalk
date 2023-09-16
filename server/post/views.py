@@ -49,10 +49,6 @@ class Post(APIView, OwnerPermissionMixin):
         if not bool(posts):
             return Response({'message': ResponseMessages.POST_NO_POSTS_TO_DISPLAY}, status=status.HTTP_200_OK)
 
-        # 반환할 게시물이 있는 경우
-        postSerializer = PostSerializer(posts, many=True)
-        for i, post in enumerate(posts): postSerializer.data[i]['username'] = post.user.username
-        
         return Response(postSetSerializer.data, status=status.HTTP_200_OK)
 
     def post(self, request: HttpRequest, username) -> Response:
