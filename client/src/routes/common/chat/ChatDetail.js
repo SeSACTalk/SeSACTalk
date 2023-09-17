@@ -21,7 +21,7 @@ const ChatDetail = function () {
     const SERVER_CHAT = `${SERVER_WEB_SOCKET}/ws/chat/${chatRoom}`
 
     // 세션키
-    const session_key = getCookie('session_key')
+    const session_key = getCookie('session_key');
 
     let ws = useRef(null);
 
@@ -35,6 +35,7 @@ const ChatDetail = function () {
 
     // 이전 대화내용 DB로부터 가져오기
     useEffect(() => {
+        console.log(SERVER_CHAT_DETAIL)
         axios.get(SERVER_CHAT_DETAIL, {
             headers: {
                 'Authorization': session_key
@@ -72,7 +73,7 @@ const ChatDetail = function () {
             ws.current.onmessage = (evt) => {
                 const data = JSON.parse(evt.data);
                 setSendMsg(!sender)
-            };
+            }
         }
     }, [sendMsg]);
 
