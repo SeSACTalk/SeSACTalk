@@ -30,11 +30,11 @@ function ProfilePosts({user_id}){ // states
     let detailModal = useSelector((state) => state.detailModal)
     let dispatch = useDispatch();
   
-    const SERVER_POST_POSTS = `${SERVER}/profile/${user_id}/post/`;
+    const SERVER_PROFILE_POSTS = `${SERVER}/profile/${user_id}/post/`;
   
     // post 실시간으로 받아오기
     let post = useQuery(['post'], () => {
-      return axios.get(SERVER_POST_POSTS, {
+      return axios.get(SERVER_PROFILE_POSTS, {
         headers: {
           'Authorization': session_key
         }
@@ -63,18 +63,20 @@ function ProfilePosts({user_id}){ // states
           <h2 className='hidden'>게시글</h2>
           {
             postList.length === 0
-              ? <p className="text-center">SeSACTalk과 함께하게 되어 반가워요! 다양한 사람들과 팔로우를 맺고 새로운 글을 작성해보세요!</p>
+              ? <p className="text-center">아직 등록된 게시물이 없어요!</p>
               : postList.map((element, i) => {
                 return (
                   <article className='relative post_container p-5 h-96 border-solid border-b border-gray-200' key={i}>
                     <div className='post_author'>
-                      <Link className='inline-flex gap-5' to={`profile/${element.username}`}>
+                      <Link className='inline-flex gap-5' to={`/profile/${element.user_username}`}>
                         <div className='img_wrap w-24 h-24 p-2 rounded-full overflow-hidden border border-solid border-gray-200'>
-                          <img src={`${SERVER}/media/profile/default_profile.png`} alt={element.username} />
+                          <img src={SERVER + element.profile_img_path} alt={element.user_username} />
                         </div>
                         <p className='flex flex-col gap-1 text_wrap justify-center'>
-                          <span className='text-base'>{element.username}</span>
-                          <span className='text-sm'>캠퍼스명</span>
+                          <span className='text-base'>{element.user_name}</span>
+                          <span className='text-sm'>{
+                            element.user_second_campus_name == "" ? element.user_first_campus_name : element.user_second_campus_name
+                          } 캠퍼스</span>
                         </p>
                       </Link>
                     </div>
@@ -95,7 +97,7 @@ function ProfilePosts({user_id}){ // states
                     </ul>
                     <button className='absolute right-5 top-8' onClick={async () => {
                       try {
-                        const response = await axios.get(`${SERVER}/post/${element.username}/${element.id}`, {
+                        const response = await axios.get(`${SERVER}/post/${element.user_username}/${element.id}`, {
                           headers: {
                             'Authorization': session_key
                           }

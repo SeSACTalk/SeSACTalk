@@ -201,6 +201,7 @@ class ManagerProfileSerializer(serializers.ModelSerializer):
 
 class PostSetSerializer(serializers.ModelSerializer):
     user_id = serializers.IntegerField(source='user.id', read_only=True)
+    user_username = serializers.CharField(source='user.username', read_only=True)
     user_name = serializers.CharField(source='user.name', read_only=True)
     user_first_campus_name = serializers.CharField(source = 'user.first_course.campus.name', read_only=True)
     user_second_campus_name = serializers.SerializerMethodField()
@@ -214,8 +215,8 @@ class PostSetSerializer(serializers.ModelSerializer):
         model = Post
         fields = (
             'id', 'uuid', 'content', 'date', 'img_path', 'report_status',
-            'user_id', 'user_name', 'user_first_campus_name', 'user_second_campus_name',
-            'profile_img_path','like_set', 'reply_set',
+            'user_id', 'user_username', 'user_name', 'user_first_campus_name',
+            'user_second_campus_name', 'profile_img_path','like_set', 'reply_set',
         )
 
     def get_user_second_campus_name(self, post):
