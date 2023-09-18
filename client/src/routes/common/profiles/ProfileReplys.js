@@ -33,7 +33,7 @@ function ProfileReplys({ user_id }) {
 
     return (
         <div className='main_content_container'>
-            <section className='post mt-8 mx-24 '>
+            <section className='reply mt-8 mx-24 '>
                 <h2 className='hidden'>프로필 댓글</h2>
                 {
                     replyList.length === 0
@@ -49,6 +49,9 @@ function ProfileReplys({ user_id }) {
                                     <div className="flex flex-col align-middle gap-1">
                                         <div className='post_owner_info'>
                                             <p className='flex items-center gap-3 text_wrap justify-center text-zinc-500'>
+                                                <div>
+                                                    <i class="fa fa-reply" aria-hidden="true"></i>
+                                                </div>
                                                 <div className='text-base'><span className="text-sesac-green 800 font-semibold">{element.post_user_name}</span><span>님의 게시물</span></div>
                                                 <div className="text-xs">{element.format_date}</div>
                                             </p>
