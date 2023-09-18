@@ -64,19 +64,19 @@ def send_fcm_on_new_follow(sender, instance, created, **kwargs):
 @receiver(post_save, sender = Chat) # 채팅 알림
 def send_fcm_on_new_chat(sender, instance, created, **kwargs):
     if created:
+        chat_room_id = instance.chat_room.id
         sender_id = instance.sender.id
         sender_name = instance.sender.name
         
         # 조건에 따른 받는 사용자 조회
-        condition = ChatRoom.objects.filter(user_one = sender_id).exists()
         target = None
-        
-        if condition:
-            chat_room = ChatRoom.objects.get(user_one = sender_id)
-            target = chat_room.user_two
-        else:
-            chat_room = ChatRoom.objects.get(user_two = sender_id)
-            target = chat_room.user_one
+
+        chat_room = ChatRoom.objects.get(id = chat_room_id)
+
+        if chat_room.user_one.id == sender_id:
+            target = chat_room.user_two.id
+        elif chat_room.user_two.id == sender_id:
+            target = chat_room.user_one.id
 
         try:
             receiver_token = target.fcmtoken.token

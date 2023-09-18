@@ -11,9 +11,8 @@ const ChatDetail = function () {
     const scrollRef = useRef();
 
     // 서버 주소
-    const { chatRoom } = useParams();
-
     const SERVER = process.env.REACT_APP_BACK_BASE_URL
+    const { chatRoom } = useParams();
     const SERVER_CHAT_DETAIL = `${SERVER}/chat/${chatRoom}`
 
     // 웹 소켓 주소
@@ -35,7 +34,6 @@ const ChatDetail = function () {
 
     // 이전 대화내용 DB로부터 가져오기
     useEffect(() => {
-        console.log(SERVER_CHAT_DETAIL)
         axios.get(SERVER_CHAT_DETAIL, {
             headers: {
                 'Authorization': session_key
@@ -54,15 +52,16 @@ const ChatDetail = function () {
                     console.error(error)
                 }
             )
-    }, [sendMsg])
+    }, [sendMsg + chatRoom])
 
     // 소켓 객체 생성
     useEffect(() => {
         if (!ws.current) {
             ws.current = new WebSocket(SERVER_CHAT);
             ws.current.onopen = () => {
-                console.log('connect to ' + SERVER_CHAT)
                 setSocketConnected(true)
+                console.log(SERVER_CHAT_DETAIL)
+                console.log(chatRoom)
             }
         }
     }, [])
@@ -72,7 +71,7 @@ const ChatDetail = function () {
         if (sendMsg) {
             ws.current.onmessage = (evt) => {
                 const data = JSON.parse(evt.data);
-                setSendMsg(!sender)
+                setSendMsg(!sendMsg)
             }
         }
     }, [sendMsg]);
@@ -86,7 +85,7 @@ const ChatDetail = function () {
                     content: chat
                 })
             )
-            setSendMsg(true)
+            setSendMsg(!sendMsg)
         }
     }
 

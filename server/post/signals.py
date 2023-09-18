@@ -1,7 +1,8 @@
 import os
-
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
+
+
 from post.models import Post, HashTag
 
 @receiver(post_delete, sender = Post)

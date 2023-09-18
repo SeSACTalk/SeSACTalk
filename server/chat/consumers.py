@@ -1,8 +1,6 @@
-from channels.generic.websocket import AsyncWebsocketConsumer
-from django.db.models import Q
 import json
+from channels.generic.websocket import AsyncWebsocketConsumer
 
-from chat.models import Chat
 from chat.serializers import ChatSerializer
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -24,7 +22,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
-    # TODO : 채팅내역 저장하는 방식 고민하기
     async def receive(self, text_data):
         chat_room = self.scope['url_route']['kwargs']['chat_room']
         data = json.loads(text_data)
@@ -33,7 +30,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         
         # 채팅 내역 생성
-        # TODO signals로 latest_content 저장하기
         serializer = ChatSerializer(data = data)
 
         if serializer.is_valid():
