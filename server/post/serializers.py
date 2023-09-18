@@ -9,6 +9,8 @@ from accounts.models import User
 from post.models import Post, Like, View, Reply, HashTag, Report
 from profiles.models import Profile
 
+from datetime import datetime
+
 
 class PostContentLengthValidator:
     """
@@ -235,6 +237,33 @@ class PostSetSerializer(serializers.ModelSerializer):
         return ReplySerializer(replies, many=True).data
     def get_profile_img_path(self, post):
         profile = Profile.objects.get(user = post.user.id)
+        if profile.img_path:
+            profile_img_path = profile.img_path
+        else:
+            profile_img_path = '/media/profile/default_profile.png'
+
+        return profile_img_path
+
+class ReplysSetSerializer(ReplySerializer):
+    format_date = serializers.SerializerMethodField()
+    post_id = serializers.IntegerField(source='post.id', read_only=True)
+    post_user_username = serializers.CharField(read_only=True)
+    post_user_name = serializers.CharField(read_only=True)
+    post_user_profile_img_path = serializers.SerializerMethodField(read_only=True)
+    class Meta(ReplySerializer.Meta):
+        model = Reply
+        fields = (
+            'id', 'content', 'date', 'format_date', 'report_status', 'post_id',
+            'post_user_username', 'post_user_name', 'post_user_profile_img_path'
+        )
+    def get_format_date(self, reply):
+        parsed_date = datetime.fromisoformat(str(reply.date))
+        return parsed_date.strftime("%Y년 %m월 %d일")
+
+        # 원하는 포맷으로 포맷팅
+        formatted_date = parsed_date.strftime("%Y-%m-%d %H:%M:%S")
+    def get_post_user_profile_img_path(self, reply):
+        profile = Profile.objects.get(user = reply.post.user.id)
         if profile.img_path:
             profile_img_path = profile.img_path
         else:

@@ -52,12 +52,7 @@ function Profile() {
     const [likeClickStatus, setLikeClickStatus] = useState(false)
     const [replyClickStatus, setReplyClickStatus] = useState(false)
 
-    const [postSet, setPostSet] = useState([]);
-    const [likeSet, setLikeSet] = useState([]);
-    const [replySet, setReplySet] = useState([]);
-
     const navStyle = "border-t-2 border-gray-600 relative -top-0.5"
-
 
     const [profileData, setProfileData] = useState(null);
 
@@ -205,8 +200,8 @@ function Profile() {
                     <div className="profile_navmx-auto">
                         {/* 게시물, 좋아요, 댓글 디테일 */}
                         {postClickStatus ? <ProfilePosts user_id={profileData.user_id} /> : null}
-                        {likeClickStatus ? <ProfileLikes /> : null}
-                        {replyClickStatus ? <ProfileReplys /> : null}
+                        {likeClickStatus ? <ProfileLikes user_id={profileData.user_id} /> : null}
+                        {replyClickStatus ? <ProfileReplys user_id={profileData.user_id} /> : null}
                     </div>
                 </>
             )

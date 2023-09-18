@@ -11,4 +11,6 @@ class ResponseMessages():
     POST_NOT_UPDATE = 'NOT UPDATE: 요청한 게시물 업데이트 내용이 전과 다르지 않아 업데이트를 진행하지 않았습니다.'
     POST_NO_POSTS_TO_DISPLAY = 'NO POSTS TO DISPLAY: 보여줄 게시물이 없습니다.'
 
+    REPLY_NO_POSTS_TO_DISPLAY = 'NO REPLYS TO DISPLAY: 보여줄 댓글이 없습니다.'
+
     MANAGERS_NO_POSTS_TO_DISPLAY = 'NO MANAGERS TO DISPLAY: 보여줄 매니저가 없습니다.'

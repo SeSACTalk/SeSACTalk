@@ -1,4 +1,4 @@
-from django.db.models import Count, Subquery, OuterRef
+from django.db.models import Count, Subquery, OuterRef, F
 from django.shortcuts import render
 from django.http import HttpRequest
 from rest_framework.response import Response
@@ -7,8 +7,8 @@ from rest_framework import status
 from django.contrib.sessions.models import Session
 
 from post.constants import ResponseMessages
-from post.models import Post
-from post.serializers import PostSetSerializer
+from post.models import Post, Reply
+from post.serializers import PostSetSerializer, ReplysSetSerializer
 from profiles.models import Profile
 # from user.models import User
 from accounts.models import Campus, Course, User
@@ -151,4 +151,18 @@ class ProfileLike(APIView, SessionDecoderMixin):
 
 class ProfileReply(APIView, SessionDecoderMixin):
     def get(self, request:HttpRequest, user_pk: int) -> Response:
-        pass
+        # Reply 쿼리
+        replys = Reply.objects.filter(user=user_pk) \
+            .select_related('user', 'post')\
+            .annotate(post_user_username=F('post__user__username'), post_user_name=F('post__user__name')) \
+            .order_by('-date')
+
+        replysSetSerializer = ReplysSetSerializer(replys, many=True)
+
+        # QuerySet이 비어있을 경우
+        if not bool(replys):
+            return Response({'message': ResponseMessages.REPLY_NO_POSTS_TO_DISPLAY}, status=status.HTTP_200_OK)
+
+        print(replysSetSerializer.data)
+
+        return Response(replysSetSerializer.data, status=status.HTTP_200_OK)

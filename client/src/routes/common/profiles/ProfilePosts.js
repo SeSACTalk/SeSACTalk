@@ -6,15 +6,14 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { getCookie } from "../../../modules/handle_cookie";
 import { changeOptionModal } from "../../../store/modalSlice";
+
 /* components */
-import StaffProfile from "../../general/StaffProfile";
 import PostOption from "../post/PostOption";
 import ReportPost from "../post/ReportPost";
 import PostDetail from "../post/PostDetail";
 
 
 // cookie
-let username = getCookie('username')
 let session_key = getCookie('session_key')
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
@@ -60,7 +59,7 @@ function ProfilePosts({user_id}){ // states
     return (
       <div className='main_content_container'>
         <section className='post mt-8 mx-24 '>
-          <h2 className='hidden'>게시글</h2>
+          <h2 className='hidden'>프로필 게시글</h2>
           {
             postList.length === 0
               ? <p className="text-center">아직 등록된 게시물이 없어요!</p>
@@ -87,12 +86,12 @@ function ProfilePosts({user_id}){ // states
                       <li className='flex flex-row items-center'>
                         <span className='hidden'>좋아요</span>
                         <i className="fa fa-gratipay mr-1 text-rose-500" aria-hidden="true"></i>
-                        <span className='text-sm'>1</span>
+                        <span className='text-sm'>{element.like_set.length}</span>
                       </li>
                       <li className='flex flex-row items-center'>
                         <span className='hidden'>댓글</span>
                         <i className="fa fa-comment-o mr-1" aria-hidden="true"></i>
-                        <span className='text-sm'>20</span>
+                        <span className='text-sm'>{element.reply_set.length}</span>
                       </li>
                     </ul>
                     <button className='absolute right-5 top-8' onClick={async () => {
