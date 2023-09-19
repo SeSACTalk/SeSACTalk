@@ -10,8 +10,3 @@ def connect_with_tags(sender, instance, created, **kwargs):
         content = instance.content
 
         ChatRoom.objects.filter(id = chat_room).update(latest_content = content)
-
-
-        
-        
-        

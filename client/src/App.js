@@ -41,7 +41,7 @@ function App() {
         {/* 일반 사용자 */}
         <Route path='/' element={<Main />}></Route>
         <Route path='/chat' element={<Chat />}>
-          <Route path=':chatRoom/' element={<ChatDetail />} />
+          <Route path=':chatRoom' element={<ChatDetail />} />
         </Route>
         {/* 관리자 */}
         <Route path='/admin' element={<Admin />}></Route>

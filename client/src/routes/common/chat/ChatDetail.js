@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams } from 'react-router-dom';
 import { getCookie } from "../../../modules/handle_cookie";
 
-
 const ChatDetail = function () {
     // DOM
     const chatInput = useRef();
@@ -25,7 +24,7 @@ const ChatDetail = function () {
     let ws = useRef(null);
 
     // 상태 선언
-    const [socketConnected, setSocketConnected] = useState(false);
+    const [socketConnected, setSocketConnected] = useState(true);
     const [sendMsg, setSendMsg] = useState(false);
     const [chat, setChat] = useState('');
     const [sender, setSender] = useState('');
@@ -56,15 +55,26 @@ const ChatDetail = function () {
 
     // 소켓 객체 생성
     useEffect(() => {
-        if (!ws.current) {
+        if (socketConnected) {
             ws.current = new WebSocket(SERVER_CHAT);
+            
             ws.current.onopen = () => {
                 setSocketConnected(true)
-                console.log(SERVER_CHAT_DETAIL)
-                console.log(chatRoom)
             }
+
+            ws.current.onclose = (error) => {
+                console.log("Disconnected from " + SERVER_CHAT);
+                setSocketConnected(false)
+                console.log(error);
+            };
         }
-    }, [])
+
+        return () => {
+            // if (ws.current) {
+            setSocketConnected(false)
+            // }
+        }
+    }, [chatRoom])
 
     // send 후에 onmessage로 데이터 가져오기
     useEffect(() => {

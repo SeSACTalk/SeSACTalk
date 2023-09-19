@@ -20,7 +20,6 @@ def connect_with_tags(sender, instance, created, **kwargs):
         hash_tags = [] # 해시태그들
         content = '' # 저장해야할 content
         
-        # 띄어쓰기를 다 붙여버리는 문제가 있음
         for origin_content in origin_contents:
             if origin_content.startswith('#'):
                 hash_tags.append(origin_content[1:])
