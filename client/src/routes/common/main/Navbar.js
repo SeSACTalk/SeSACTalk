@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 
 import { changeWirteModal } from "../../../store/modalSlice";
 import { getCookie } from "../../../modules/handle_cookie";
+import { showExploreNav, showMinNav } from "../../../store/navSlice";
 
 const username = getCookie('username')
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
@@ -11,10 +12,12 @@ const SERVER = process.env.REACT_APP_BACK_BASE_URL;
 const Navbar = function () {
     // states
     let writeModal = useSelector((state) => state.wirteModal)
+    let minNav = useSelector((state) => state.minNav)
+
     let dispatch = useDispatch();
 
     return (
-        <nav className="nav_wrap w-1/5 p-3 h-screen sticky top-0 border-solid border-x border-gray-300">
+        <nav className={`nav_wrap w-1/5 p-3 h-screen sticky top-0 border-solid border-x border-gray-300 ${minNav ? 'animate-hide' : ''}`}>
             <div className="nav_profile flex justify-center">
                 <div className="profile_wrap p-4">
                     <div className='logo_wrap w-20 m-auto'>
@@ -37,13 +40,18 @@ const Navbar = function () {
                     </Link>
                 </li>
                 <li>
-                    <Link to='#'>
+                    <Link to='#' onClick={(e) => {
+                        e.preventDefault();
+                        dispatch(showMinNav(minNav))
+                    }}>
                         <i className="fa fa-search mr-3" aria-hidden="true"></i>
                         <span>검색</span>
                     </Link>
                 </li>
                 <li>
-                    <Link to='/chat'>
+                    <Link to='/chat' onClick={(e) => {
+                        dispatch(showMinNav(minNav))
+                    }}>
                         <i className="fa fa-comments-o mr-3" aria-hidden="true"></i>
                         <span>메시지</span>
                     </Link>
@@ -55,7 +63,10 @@ const Navbar = function () {
                     </Link>
                 </li>
                 <li>
-                    <Link to='#' onClick={(e) => { dispatch(changeWirteModal(writeModal)) }}>
+                    <Link to='#' onClick={(e) => {
+                        e.preventDefault();
+                        dispatch(changeWirteModal(writeModal))
+                    }}>
                         <i className="fa fa-pencil-square-o mr-3" aria-hidden="true"></i>
                         <span>글쓰기</span>
                     </Link>

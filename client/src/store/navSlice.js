@@ -1,5 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+let minNav = createSlice({
+    name: 'minNav',
+    initialState: false,
+    reducers: {
+        showMinNav(state, action) {
+            return !state
+        }
+    }
+})
+
 let exploreNav = createSlice({
     name: 'exploreNav',
     initialState: false,
@@ -10,5 +20,6 @@ let exploreNav = createSlice({
     }
 })
 
-export { exploreNav };
+export { minNav, exploreNav };
+export let { showMinNav } = minNav.actions;
 export let { showExploreNav } = exploreNav.actions;

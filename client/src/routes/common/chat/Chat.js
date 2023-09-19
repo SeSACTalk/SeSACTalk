@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
 
 /* components */
-import ChatNavbar from '../chat/ChatNavbar'
+import MinNavbar from "../main/MinNavbar";
 import ChatList from '../chat/ChatList'
 import WritePost from '../post/WritePost';
 
@@ -12,7 +12,7 @@ const Chat = function () {
 
     return (
         <div className="chat flex">
-            <ChatNavbar />
+            <MinNavbar />
             <ChatList />
             <Outlet></Outlet>
             {/* Modals */}
