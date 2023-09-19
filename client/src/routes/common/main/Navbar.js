@@ -13,11 +13,12 @@ const Navbar = function () {
     // states
     let writeModal = useSelector((state) => state.wirteModal)
     let minNav = useSelector((state) => state.minNav)
+    let exploreNav = useSelector((state) => state.exploreNav)
 
     let dispatch = useDispatch();
 
     return (
-        <nav className={`nav_wrap w-1/5 p-3 h-screen sticky top-0 border-solid border-x border-gray-300 ${minNav ? 'animate-hide' : ''}`}>
+        <nav className={`nav_wrap w-1/5 p-3 h-screen sticky top-0 border-solid border-x border-gray-300 ${minNav ? 'animate-hide pointer-events-none' : ''}`}>
             <div className="nav_profile flex justify-center">
                 <div className="profile_wrap p-4">
                     <div className='logo_wrap w-20 m-auto'>
@@ -43,6 +44,7 @@ const Navbar = function () {
                     <Link to='#' onClick={(e) => {
                         e.preventDefault();
                         dispatch(showMinNav(minNav))
+                        dispatch(showExploreNav(exploreNav))
                     }}>
                         <i className="fa fa-search mr-3" aria-hidden="true"></i>
                         <span>검색</span>

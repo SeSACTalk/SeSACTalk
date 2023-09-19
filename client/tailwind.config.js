@@ -16,7 +16,7 @@ module.exports = {
         },
         hide: {
           from: { opacity: "1", transform: "translateX(0)" },
-          to: { opacity: "0", transform: "translateX(-20%)", PointerEvent: "none" }
+          to: { opacity: "0", transform: "translateX(-20%)" }
         },
       },
       animation: {

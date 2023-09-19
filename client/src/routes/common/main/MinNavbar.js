@@ -1,18 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 
 import { changeWirteModal } from "../../../store/modalSlice";
 import { showMinNav } from "../../../store/navSlice";
 
+import Explore from "../../general/Explore";
 
 const MinNavbar = function () {
     // states
     let writeModal = useSelector((state) => state.wirteModal)
     let minNav = useSelector((state) => state.minNav)
+    let exploreNav = useSelector((state) => state.exploreNav)
 
     let dispatch = useDispatch();
-
+    useEffect(() => {
+        dispatch(showMinNav(true))
+        return () => {
+            dispatch(showMinNav(false))
+        }
+    })
     return (
         <>
             <nav className={`nav_wrap w-24 px-3 py-14 sticky top-0 z-10 h-screen  border-solid border-x border-gray-300 ${minNav ? 'animate-intro' : 'hidden'}`}>
@@ -67,6 +74,7 @@ const MinNavbar = function () {
                     </li>
                 </ul>
             </nav>
+            {exploreNav && <Explore />}
         </>
     )
 }
