@@ -1,12 +1,10 @@
 import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import { getCookie } from "../../../modules/handle_cookie";
-import { useNavigate } from "react-router-dom";
 
 const ChatExplore = function (props) {
     const SERVER = process.env.REACT_APP_BACK_BASE_URL;
     const session_key = getCookie('session_key')
-    const navigate = useNavigate()
 
     /* DOM */
     const modalPopup = useRef()

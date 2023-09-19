@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
+import { useSelector } from "react-redux";
 
 import { getCookie } from "../../../modules/handle_cookie";
 import ChatExplore from "./ChatExplore";
@@ -12,9 +13,11 @@ const username = getCookie('username')
 
 const ChatList = function () {
     // states
-    const [target, setTarget] = useState([])
-    const [chatExploreModal, setChatExplore] = useState(false)
+    const [target, setTarget] = useState([]);
+    const [chatExploreModal, setChatExplore] = useState(false);
+    let chatStatus = useSelector((state) => state.chatStatus);
 
+    // TODO: 특정 조건을 걸어서 채팅내용이 업데이트 되면 여기도 같이 업데이트 되어야 함
     useEffect(() => {
         axios.get(SERVER_CHAT_LIST, {
             headers: {
@@ -32,7 +35,7 @@ const ChatList = function () {
                     console.error(error)
                 }
             )
-    }, [])
+    }, [chatStatus])
 
     return (
         <div className="main_content_container w-1/4 h-screen border-r border-gray-300">

@@ -1,7 +1,11 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
+
+
 import { getCookie } from "../../../modules/handle_cookie";
+import { changeStatus } from "../../../store";
 
 const ChatDetail = function () {
     // DOM
@@ -30,6 +34,9 @@ const ChatDetail = function () {
     const [sender, setSender] = useState('');
     const [chatDetail, setChatDetail] = useState([]);
     const [profile, setProfile] = useState({})
+    let chatStatus = useSelector((state) => state.chatStatus);
+
+    let dispatch = useDispatch();
 
     // 이전 대화내용 DB로부터 가져오기
     useEffect(() => {
@@ -57,7 +64,7 @@ const ChatDetail = function () {
     useEffect(() => {
         if (socketConnected) {
             ws.current = new WebSocket(SERVER_CHAT);
-            
+
             ws.current.onopen = () => {
                 setSocketConnected(true)
             }
@@ -96,6 +103,7 @@ const ChatDetail = function () {
                 })
             )
             setSendMsg(!sendMsg)
+            dispatch(changeStatus(chatStatus))
         }
     }
 
@@ -131,7 +139,7 @@ const ChatDetail = function () {
                 <ul>
                     {
                         chatDetail.map((element, i) => {
-                            if (element.sender != sender) {
+                            if (element.sender !== sender) {
                                 return (
                                     <li key={i} className="flex items-center gap-4 mb-3">
                                         <p className="text-start">

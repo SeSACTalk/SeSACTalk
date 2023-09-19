@@ -2,18 +2,22 @@ import { configureStore, createSlice } from '@reduxjs/toolkit'
 import user from './store/userSlice'
 import { writeModal, optionModal, reportModal, detailModal, postEditModal } from './store/modalSlice'
 
-let server = createSlice({
-    name: 'server',
-    initialState: process.env.REACT_APP_BACK_BASE_URL,
+let chatStatus = createSlice({
+    name: 'chatStatus',
+    initialState: false,
     reducers: {
-
+        changeStatus(state, acition) {
+            return !state
+        }
     }
 })
+
+export let { changeStatus } = chatStatus.actions;
 
 export default configureStore({
     reducer: {
         user: user.reducer,
-        server: server.reducer,
+        chatStatus: chatStatus.reducer,
         writeModal: writeModal.reducer,
         optionModal: optionModal.reducer,
         reportModal: reportModal.reducer,
