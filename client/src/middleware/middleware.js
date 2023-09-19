@@ -34,7 +34,7 @@ const checkInfoMiddleware = async () => {
     const session_key = getCookie('session_key');
 
     try {
-        const response = await axios.post(SERVER_ACCOUNTS_INFO, null, {
+        const response = await axios.get(SERVER_ACCOUNTS_INFO, {
             headers: {
                 'Authorization': session_key
             }

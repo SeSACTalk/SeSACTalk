@@ -18,7 +18,7 @@ class Like(models.Model):
     post = models.ForeignKey(Post, on_delete = models.CASCADE)
 
 class View(models.Model):
-    view_count = models.BigIntegerField()
+    view_count = models.BigIntegerField(default = 1)
     post = models.OneToOneField(Post, on_delete = models.CASCADE)
 
 class Reply(models.Model):

@@ -2,7 +2,7 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
 from user.utils import send_fcm_notification
-from chat.models import Chat
+from chat.models import Chat, ChatRoom
 from user.models import UserRelationship
 from post.models import Reply, Like, Report
 
@@ -64,17 +64,29 @@ def send_fcm_on_new_follow(sender, instance, created, **kwargs):
 @receiver(post_save, sender = Chat) # 채팅 알림
 def send_fcm_on_new_chat(sender, instance, created, **kwargs):
     if created:
-        sender = instance.sender.name
+        chat_room_id = instance.chat_room.id
+        sender_id = instance.sender.id
+        sender_name = instance.sender.name
         
+        # 조건에 따른 받는 사용자 조회
+        target = None
+
+        chat_room = ChatRoom.objects.get(id = chat_room_id)
+
+        if chat_room.user_one.id == sender_id:
+            target = chat_room.user_two.id
+        elif chat_room.user_two.id == sender_id:
+            target = chat_room.user_one.id
+
         try:
-            receiver_token = instance.receiver.fcmtoken.token
+            receiver_token = target.fcmtoken.token
         except:
-                receiver_token = None
+            receiver_token = None
 
         message_title = "새 메시지"
-        message_body = f"{sender}님이 회원님에게 메시지를 보냈습니다.."
+        message_body = f"{sender_name}님이 회원님에게 메시지를 보냈습니다.."
         data_message = {
-            'sender_id': str(instance.id),
+            'sender_id': str(instance.sender.id),
         }
 
         send_fcm_notification(receiver_token, message_title, message_body, data_message)

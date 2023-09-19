@@ -1,7 +1,8 @@
 import os
-
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
+
+
 from post.models import Post, HashTag
 
 @receiver(post_delete, sender = Post)
@@ -19,7 +20,6 @@ def connect_with_tags(sender, instance, created, **kwargs):
         hash_tags = [] # 해시태그들
         content = '' # 저장해야할 content
         
-        # 띄어쓰기를 다 붙여버리는 문제가 있음
         for origin_content in origin_contents:
             if origin_content.startswith('#'):
                 hash_tags.append(origin_content[1:])

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from profiles.models import Profile
-from accounts.models import Course, Campus
+from accounts.models import User, Course, Campus
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,7 +18,6 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = '__all__'  
         
-
 class EditProfileSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source = 'user.id')
     username = serializers.CharField(source = 'user.username')

@@ -1,18 +1,13 @@
-from channels.generic.websocket import AsyncWebsocketConsumer
-from django.contrib.sessions.models import Session
-
 import json
+from channels.generic.websocket import AsyncWebsocketConsumer
 
-from chat.models import Chat
-from chat.serializers import ChatSerializers
-
+from chat.serializers import ChatSerializer
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.sender_id = self.scope['url_route']['kwargs']['sender_id']
-        self.receiver_id = self.scope['url_route']['kwargs']['receiver_id']
+        chat_room = self.scope['url_route']['kwargs']['chat_room']
         
-        self.room_group_name = f"chat_{self.sender_id}{self.receiver_id}"
+        self.room_group_name = f"chat_{chat_room}"
 
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -28,21 +23,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
     async def receive(self, text_data):
+        chat_room = self.scope['url_route']['kwargs']['chat_room']
         data = json.loads(text_data)
         content = data['content']
+        data['chat_room'] = chat_room
 
-        sender_id = self.scope['url_route']['kwargs']['sender_id']
-        receiver_id = self.scope['url_route']['kwargs']['receiver_id']
         
-        data = {
-            'sender': sender_id,
-            'receiver': receiver_id,
-            'content': content
-        }
-        # DB에 저장
-        serializer = ChatSerializers(data = data)
+        # 채팅 내역 생성
+        serializer = ChatSerializer(data = data)
+
         if serializer.is_valid():
             serializer.save()
+
         await self.channel_layer.group_send(
             self.room_group_name,
             {

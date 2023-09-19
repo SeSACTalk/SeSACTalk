@@ -10,39 +10,40 @@ const SERVER = process.env.REACT_APP_BACK_BASE_URL;
 let session_key = getCookie('session_key')
 
 const PostDetail = function ({ detailPath, isPostMine }) {
-    /* DOM */
+    // DOM
     const modalPopup = useRef()
 
-    /* states */
+    // State
     const [scroll, setScroll] = useState()
-    const [post, setPost] = useState()
-    const [imgPath, setImgPath] = useState()
+    const [post, setPost] = useState([])
     let detailModal = useSelector((state) => state.detailModal)
     let dispatch = useDispatch()
 
-    /* SERVER */
+    // SERVER
     const SERVER_DETAIL_POST = `${SERVER}/post/${detailPath}?request_post`
 
+    // 스크롤 위치 추적
     useEffect(() => {
         setScroll(window.scrollY)
         document.body.style.overflow = 'hidden';
         return () => { document.body.style.overflow = 'unset'; }
     }, [scroll])
 
-    useEffect(() => { // TODO: 데이터 바인딩해야함
+    // 게시글 불러오기
+    useEffect(() => {
         axios.get(SERVER_DETAIL_POST, {
             headers: {
                 'Authorization': session_key
             }
         }).then((response) => {
-            let copy = { ...response.data.post }
+            let copy = [{ ...response.data.post }]
             setPost(copy)
-            setImgPath(copy.img_path)
         }).catch((error) => {
             console.error(error)
         })
     }, [])
 
+    // 검은배경 클릭시 모달창 닫기
     const closeModal = (e) => {
         if (modalPopup.current === e.target) {
             dispatch(changeDetailModal(detailModal))
@@ -52,16 +53,25 @@ const PostDetail = function ({ detailPath, isPostMine }) {
     return (
         <div className="modal detail_modal flex justify-center items-center absolute left-0 w-full h-screen" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>
             <div className="detail_container flex gap-5 rounded-lg w-4/5 h-4/5 p-5 bg-zinc-50">
-                <div className="content_container flex flex-col justify-between w-1/2">
+                {/* 게시글 내용 */}
+                <div className="content_container flex flex-col justify-between gap-2 w-1/2">
                     {
-                        imgPath != null &&
-                        <div className="img_wrap h-full rounded-xl bg-gray-100">
-                            <img src="" alt="이미지 경로" />
-                        </div>
+                        post.map((element, i) => {
+                            return (
+                                <>
+                                    {
+                                        element.img_path != null &&
+                                        <div className="img_wrap flex justify-center h-full rounded-xl bg-gray-100 overflow-hidden">
+                                            <img className="w-auto" src={SERVER + element.img_path} alt="첨부 이미지" />
+                                        </div>
+                                    }
+                                    <div className="text_container h-full rounded-xl bg-gray-100 p-5 text-gray-600" key={i}>
+                                        <p className="text">{element.content}</p>
+                                    </div>
+                                </>
+                            )
+                        })
                     }
-                    <div className="text_container h-full rounded-xl bg-gray-100 p-5 text-gray-600">
-                        <p className="text">아마 게시글이겠지</p>
-                    </div>
                     {/* TODO 데이터 바인딩하기 */}
                     <div className="content_option">
                         <h3 className='hidden'>좋아요, 댓글</h3>
@@ -79,6 +89,7 @@ const PostDetail = function ({ detailPath, isPostMine }) {
                         </ul>
                     </div>
                 </div>
+                {/* 여기까지가 */}
                 <div className="reply_container flex flex-col w-1/2">
                     <div className="h-full overflow-y-scroll">
                         {/* 댓글map 돌린거 조건에 따라 신고하기, 더보기로 변경되야함 */}
@@ -120,7 +131,7 @@ const PostDetail = function ({ detailPath, isPostMine }) {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 

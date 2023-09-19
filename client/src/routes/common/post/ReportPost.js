@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { getCookie } from "../../../modules/handle_cookie";
-import { changeReportModal } from "../../../store/modalSlice";
-import '../../../css/modal.css'
+import { changeReportModal } from "../../../store/modalSlice"
 import axios from "axios";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL

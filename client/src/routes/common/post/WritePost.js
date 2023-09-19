@@ -4,30 +4,29 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { changeWirteModal } from "../../../store/modalSlice";
 import { getCookie } from "../../../modules/handle_cookie";
-import '../../../css/modal.css'
-
-const SERVER = process.env.REACT_APP_BACK_BASE_URL;
-let username = getCookie('username')
 
 const WritePost = function () {
-  /* variables */
+  let username = getCookie('username');
+  let session_key = getCookie('session_key');
+  const SERVER = process.env.REACT_APP_BACK_BASE_URL;
   const SERVER_POST_WRITE = `${SERVER}/post/${username}/`;
-  const session_key = getCookie('session_key')
 
-  /* DOM */
+  // DOM
   const textLength = useRef();
   const modalPopup = useRef();
 
-  /* states */
-  const [scroll, setScroll] = useState()
+  // State
+  const [scroll, setScroll] = useState();
   const [content, setContent] = useState([]);
   const [imgPath, setImgPath] = useState(null);
-  let writeModal = useSelector((state) => state.wirteModal)
+  const [tumbnailWrap, setTumbnailWrap] = useState('invisible')
+  const [tumbnail, setTumbnail] = useState()
+  let writeModal = useSelector((state) => state.wirteModal);
 
   let dispatch = useDispatch();
 
+  // 게시글 작성
   const uploadPost = async (e) => {
-    /* 포스팅 처리 */
     e.preventDefault();
     const formData = new FormData();
     formData.append("content", content);
@@ -40,24 +39,26 @@ const WritePost = function () {
         data: formData,
         headers: {
           'Content-Type': "multipart/form-data",
-          'Authorization': `${session_key}`
+          'Authorization': session_key
         },
       });
-      dispatch(changeWirteModal(writeModal))
-    } catch (error) {
+    }
+    catch (error) {
       console.log(error.response.data);
+    }
+    finally {
+      window.location.reload();
     }
   };
 
+  // 스크롤 위치 추적
   useEffect(() => {
     setScroll(window.scrollY)
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = 'unset'; }
-  }, [scroll])
-  
-  /* Functions */
-  const onFileChange = (event) => setImgPath(event.target.files[0]);
+  }, [scroll]);
 
+  // 글자수 제한
   const limitText = (e) => {
     let text = e.target.value
     textLength.current.innerHTML = text.length;
@@ -65,23 +66,32 @@ const WritePost = function () {
       text = text.substring(0, 500);
       textLength.current.innerHTML = 500
     }
-  }
+  };
 
+  // 검은배경 클릭시 모달창 닫기
   const closeModal = (e) => {
     if (modalPopup.current === e.target) {
       dispatch(changeWirteModal(writeModal))
     }
   }
 
-  const closeModalbutton = (e) => {
-    dispatch(changeWirteModal(writeModal))
+  // 이미지 미리보기
+  const PreviewTumbnail = (e) => {
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      setTumbnail(e.target.result)
+      setTumbnailWrap('')
+    }
+
+    reader.readAsDataURL(e.target.files[0]);
   }
 
   return (
     <div className="modal post_modal absolute w-full h-screen" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>
       <form className='w-1/2 h-96 bg-zinc-50 rounded-xl translate-x-1/2 translate-y-1/2' onSubmit={uploadPost}>
         <div className="text_container relative h-3/4 rounded-xl pt-12 px-8 box-border">
-          <textarea className="w-full h-full rounded-xl p-7 bg-gray-100 outline-0"
+          <textarea className="w-full h-full rounded-xl p-7 bg-gray-100 resize-none outline-none"
             placeholder="무슨 일이 있었나요?"
             name="content"
             onChange={(e) => setContent(e.target.value.trim())}
@@ -97,7 +107,10 @@ const WritePost = function () {
               className="hidden"
               type="file"
               accept="image/png, image/jpeg, image/jpg"
-              onChange={(event) => onFileChange(event)}
+              onChange={(e) => {
+                setImgPath(e.target.files[0])
+                PreviewTumbnail(e)
+              }}
             />
             <span className="text-gray-400">
               <span className="current_length" ref={textLength}>0 </span>/
@@ -105,14 +118,13 @@ const WritePost = function () {
             </span>
           </div>
         </div>
-        <div className="text-end mt-9 mr-8">
+        <div className="flex items-center justify-between mt-5 px-8">
+          <div className={`tumbnail w-16 h-16 rounded-xl border border-solid border-gray-200 overflow-hidden ${tumbnailWrap}`} >
+            <img src={tumbnail} alt="미리보기 이미지" />
+          </div>
           <button className="w-36 h-11 border border-solid rounded-xl bg-sesac-green text-slate-100 text-lg" type="submit">완료</button>
         </div>
       </form>
-      <button className="absolute top-4 right-4 text-4xl text-gray-200" type="button" onClick={closeModalbutton}>
-        <i className="fa fa-times" aria-hidden="true"></i>
-        <span className="hidden">닫기</span>
-      </button>
     </div>
   );
 };

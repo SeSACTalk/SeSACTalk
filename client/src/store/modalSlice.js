@@ -40,9 +40,20 @@ let detailModal = createSlice({
     }
 })
 
-export { writeModal, optionModal, reportModal, detailModal };
+let postEditModal = createSlice({
+    name: 'postEditModal',
+    initialState: false,
+    reducers: {
+        changePostEditModal(state, action) {
+            return !state
+        }
+    }
+})
+
+export { writeModal, optionModal, reportModal, detailModal, postEditModal };
 
 export let { changeWirteModal } = writeModal.actions;
 export let { changeOptionModal } = optionModal.actions;
 export let { changeReportModal } = reportModal.actions;
 export let { changeDetailModal } = detailModal.actions;
+export let { changePostEditModal } = postEditModal.actions;
