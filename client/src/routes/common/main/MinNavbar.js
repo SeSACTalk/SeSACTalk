@@ -25,12 +25,19 @@ const MinNavbar = function () {
         }
     }, [])
 
+    const handleSubNav = () => {
+        dispatch(showMinNav(minNav)) // MinNav 닫기
+        if (minNav && exploreNav) { // minNav가 true일때만 같이 보여야하고, false이면 false로
+            dispatch(showExploreNav(exploreNav))
+        }
+    }
+
     return (
-        <>
-            <nav className={`nav_wrap w-24 px-3 py-14 sticky top-0 z-10 h-screen border-x border-gray-300 ${minNav ? 'animate-intro' : 'hidden'}`}>
+        <div className={location.pathname.includes('chat') ? '' : 'w-1/5'}>
+            <nav className={`nav_wrap w-24 px-3 py-14 sticky top-0 z-10 h-screen border-x border-gray-300 ${location.pathname.includes('chat') ? '' : minNav ? 'animate-intro' : 'hidden'}`}>
                 <div className='logo_wrap w-10 mx-auto'>
                     <Link to='/' onClick={(e) => {
-                        dispatch(showMinNav(minNav))
+                        handleSubNav()
                     }}>
                         <img src={`${process.env.PUBLIC_URL}/img/logo.png`} alt='청년취업사관학교' />
                     </Link>
@@ -39,7 +46,7 @@ const MinNavbar = function () {
                 <ul className="nav mt-8 flex flex-col items-center gap-7 text-2xl">
                     <li>
                         <Link to='/' onClick={(e) => {
-                            dispatch(showMinNav(minNav))
+                            handleSubNav()
                         }}>
                             <i className="fa fa-home" aria-hidden="true"></i>
                             <span className="hidden">홈</span>
@@ -48,8 +55,7 @@ const MinNavbar = function () {
                     <li>
                         <Link to='#' onClick={(e) => {
                             e.preventDefault();
-                            dispatch(showMinNav(minNav))
-                            dispatch(showExploreNav(exploreNav))
+                            handleSubNav()
                         }}>
                             <i className="fa fa-search" aria-hidden="true"></i>
                             <span className="hidden">검색</span>
@@ -86,7 +92,7 @@ const MinNavbar = function () {
                 {/* SubNavbar */}
                 {exploreNav && <Explore />}
             </nav>
-        </>
+        </div>
     )
 }
 

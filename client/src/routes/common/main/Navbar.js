@@ -68,7 +68,7 @@ const Navbar = function () {
                 <li>
                     <Link to='#' onClick={(e) => {
                         e.preventDefault();
-                        dispatch(changeWirteModal(writeModal));
+                        dispatch(changeWirteModal(writeModal))
                     }}>
                         <i className="fa fa-pencil-square-o mr-3" aria-hidden="true"></i>
                         <span>글쓰기</span>

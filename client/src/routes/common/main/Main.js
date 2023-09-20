@@ -10,11 +10,13 @@ import MinNavbar from './MinNavbar';
 const Main = function () {
     // States
     let writeModal = useSelector((state) => state.writeModal)
+    let minNav = useSelector((state) => state.minNav)
 
     return (
         <div className='main_container flex relative'>
-            <MinNavbar />
-            <Navbar />
+            {/* <MinNavbar /> */}
+            {/* <Navbar /> */}
+            {minNav ? <MinNavbar /> : <Navbar/>}
             <Posts />
             {/* Modals */}
             {writeModal && <WritePost />}
