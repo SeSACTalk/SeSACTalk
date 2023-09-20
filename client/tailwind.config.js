@@ -9,6 +9,9 @@ module.exports = {
         "sesac-green": "rgba(24,123,70,0.7)",
         "sesac-sub": "#B3E56A"
       },
+      boxShadow: {
+        "min-nav": "8px 0px 5px 1px rgba(0,0,0,0.15)"
+      },
       keyframes: {
         intro: {
           from: { opacity: "0", transform: "translateX(-20%)" },

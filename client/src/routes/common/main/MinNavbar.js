@@ -1,28 +1,34 @@
 import React, { useEffect } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 
 import { changeWirteModal } from "../../../store/modalSlice";
-import { showMinNav } from "../../../store/navSlice";
+import { showMinNav, showExploreNav } from "../../../store/navSlice";
 
 import Explore from "../../general/Explore";
 
 const MinNavbar = function () {
+    const location = useLocation()
+
     // states
     let writeModal = useSelector((state) => state.wirteModal)
     let minNav = useSelector((state) => state.minNav)
     let exploreNav = useSelector((state) => state.exploreNav)
 
     let dispatch = useDispatch();
+
     useEffect(() => {
-        dispatch(showMinNav(true))
-        return () => {
-            dispatch(showMinNav(false))
+        // chat일때 실행, 새로고침시 실행되게 하려고..
+        if (location.pathname.includes('chat')) {
+            console.log('condition', minNav)
+            console.log(location)
+            dispatch(showMinNav(minNav))
         }
-    })
+    }, [])
+
     return (
         <>
-            <nav className={`nav_wrap w-24 px-3 py-14 sticky top-0 z-10 h-screen  border-solid border-x border-gray-300 ${minNav ? 'animate-intro' : 'hidden'}`}>
+            <nav className={`nav_wrap w-24 px-3 py-14 sticky top-0 z-10 h-screen border-x border-gray-300 ${minNav ? 'animate-intro' : 'hidden'}`}>
                 <div className='logo_wrap w-10 mx-auto'>
                     <Link to='/' onClick={(e) => {
                         dispatch(showMinNav(minNav))
@@ -30,6 +36,7 @@ const MinNavbar = function () {
                         <img src={`${process.env.PUBLIC_URL}/img/logo.png`} alt='청년취업사관학교' />
                     </Link>
                 </div>
+                <h2 className="hidden">서브메뉴</h2>
                 <ul className="nav mt-8 flex flex-col items-center gap-7 text-2xl">
                     <li>
                         <Link to='/' onClick={(e) => {
@@ -40,7 +47,11 @@ const MinNavbar = function () {
                         </Link>
                     </li>
                     <li>
-                        <Link to='#'>
+                        <Link to='#' onClick={(e) => {
+                            e.preventDefault();
+                            dispatch(showMinNav(minNav))
+                            dispatch(showExploreNav(exploreNav))
+                        }}>
                             <i className="fa fa-search" aria-hidden="true"></i>
                             <span className="hidden">검색</span>
                         </Link>
@@ -73,8 +84,9 @@ const MinNavbar = function () {
                         </Link>
                     </li>
                 </ul>
+                {/* SubNavbar */}
+                {exploreNav && <Explore />}
             </nav>
-            {exploreNav && <Explore />}
         </>
     )
 }

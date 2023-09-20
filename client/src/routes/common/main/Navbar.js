@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 
 import { changeWirteModal } from "../../../store/modalSlice";
 import { getCookie } from "../../../modules/handle_cookie";
-import { showExploreNav, showMinNav } from "../../../store/navSlice";
+import { showMinNav, showExploreNav } from "../../../store/navSlice";
 
 const username = getCookie('username')
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
@@ -18,7 +18,7 @@ const Navbar = function () {
     let dispatch = useDispatch();
 
     return (
-        <nav className={`nav_wrap w-1/5 p-3 h-screen sticky top-0 border-solid border-x border-gray-300 ${minNav ? 'animate-hide pointer-events-none' : ''}`}>
+        <nav className={`nav_wrap w-1/5 p-3 h-screen sticky top-0 border-solid border-x border-gray-300 ${minNav ? 'animate-hide pointer-events-none' : 'animate-intro'}`}>
             <div className="nav_profile flex justify-center">
                 <div className="profile_wrap p-4">
                     <div className='logo_wrap w-20 m-auto'>
@@ -33,6 +33,7 @@ const Navbar = function () {
                     </div>
                 </div>
             </div>
+            <h2 className="hidden">메인메뉴</h2>
             <ul className="nav mt-8 px-8 flex flex-col gap-7 text-2xl">
                 <li>
                     <Link to='/'>

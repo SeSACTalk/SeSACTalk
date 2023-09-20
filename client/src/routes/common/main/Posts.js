@@ -25,7 +25,6 @@ const Posts = function () {
   const [detailPath, setDetailPath] = useState('')
   const [postId, setPostId] = useState('')
   const [isPostMine, setIsPostMine] = useState(false)
-  const [hashTag, setHashTag] = useState()
   let optionModal = useSelector((state) => state.optionModal)
   let reportModal = useSelector((state) => state.reportModal)
   let detailModal = useSelector((state) => state.detailModal)
@@ -61,7 +60,7 @@ const Posts = function () {
     }
   }, [post.data])
 
-
+// TODO : post에 get요청하면 댓글갯수랑 좋아요 갯수도 같이 보내주면 좋을듯?
   return (
     <div className='main_content_container w-4/5 px-10'>
       <StaffProfile />
