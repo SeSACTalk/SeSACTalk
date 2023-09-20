@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { changeWirteModal } from "../../../store/modalSlice";
 import { showMinNav, showExploreNav } from "../../../store/navSlice";
-
 import Explore from "../../general/Explore";
 
 const MinNavbar = function () {

@@ -19,8 +19,8 @@ const WritePost = function () {
   const [scroll, setScroll] = useState();
   const [content, setContent] = useState([]);
   const [imgPath, setImgPath] = useState(null);
-  const [tumbnailWrap, setTumbnailWrap] = useState('invisible')
-  const [tumbnail, setTumbnail] = useState()
+  const [tumbnailWrap, setTumbnailWrap] = useState('invisible');
+  const [tumbnail, setTumbnail] = useState();
   let writeModal = useSelector((state) => state.wirteModal);
 
   let dispatch = useDispatch();
@@ -88,8 +88,8 @@ const WritePost = function () {
   }
 
   return (
-    <div className="modal post_modal absolute w-full h-screen" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>
-      <form className='w-1/2 h-96 bg-zinc-50 rounded-xl translate-x-1/2 translate-y-1/2' onSubmit={uploadPost}>
+    <div className="modal post_modal flex justify-center items-center absolute w-full h-screen" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>
+      <form className='w-1/2 h-96 bg-zinc-50 rounded-xl' onSubmit={uploadPost}>
         <div className="text_container relative h-3/4 rounded-xl pt-12 px-8 box-border">
           <textarea className="w-full h-full rounded-xl p-7 bg-gray-100 resize-none outline-none"
             placeholder="무슨 일이 있었나요?"

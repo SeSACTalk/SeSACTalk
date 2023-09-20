@@ -28,20 +28,21 @@ class ExploreUsers(APIView):
         return Response(serializer.data, status = status.HTTP_200_OK)
 
 class ExploreTags(APIView):
-    def get(self, request: HttpRequest, h_name) -> Response:
-        # 태그명
+    def get(self, request: HttpRequest) -> Response:
         tag_name = request.query_params.get('name')
+
+        hashtag_queryset = HashTag.objects.filter(name__startswith = tag_name).annotate(count_post=Count('post'))
+        serializer = HashTagExploreResultSerializer(hashtag_queryset, many = True)
+
+        return Response(serializer.data, status = status.HTTP_200_OK)
+    
+class TagsResult(APIView):
+    def get(self, request: HttpRequest, tag_name) -> Response:
         post_queryset = Post.objects.filter(tags__name = tag_name)\
             .select_related('user')\
             .order_by('-date')\
-            .annotate(hashtag_name=F('tags__name'), username=F('user__username'))
+            .annotate(hashtag_name = F('tags__name'), username = F('user__username'))
         
         serializer = HashTagExploreResultDetailSerializer(post_queryset, many = True)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def post(self, request: HttpRequest, h_name) -> Response:
-        hashtag_queryset = HashTag.objects.filter(name__startswith=h_name).annotate(count_post=Count('post'))
-        serializer = HashTagExploreResultSerializer(hashtag_queryset, many = True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status = status.HTTP_200_OK)
