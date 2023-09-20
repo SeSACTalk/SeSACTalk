@@ -8,8 +8,10 @@ import './firebase-messaging-sw'
 
 import { checkAuthMiddleware, checkInfoMiddleware } from './middleware/middleware';
 /* Components */
-import Main from './routes/common/main/Main'
 import Login from './routes/accounts/Login';
+import Main from './routes/common/main/Main';
+import Posts from './routes/common/main/Posts';
+import ExploreResult from './routes/general/ExploreResult';
 import Admin from './routes/admin/Admin';
 import Chat from './routes/common/chat/Chat'
 import ChatDetail from './routes/common/chat/ChatDetail';
@@ -39,14 +41,17 @@ function App() {
         {/* 계정관련 */}
         <Route path='/accounts/login' element={<Login />}></Route>
         {/* 일반 사용자 */}
-        <Route path='/' element={<Main />}></Route>
+        <Route path='/' element={<Main />}>
+          <Route index element={<Posts />} />
+          <Route path='explore/:tagName' element={<ExploreResult />} />
+        </Route>
         <Route path='/chat' element={<Chat />}>
           <Route path=':chatRoom' element={<ChatDetail />} />
         </Route>
         {/* 관리자 */}
         <Route path='/admin' element={<Admin />}></Route>
+        <Route path='*' element={<div>없는 페이지에요</div>}></Route>
       </Routes>
-
 
     </div >
   )

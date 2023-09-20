@@ -1,4 +1,5 @@
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 import { useSelector } from "react-redux";
 
 // Components
@@ -14,10 +15,9 @@ const Main = function () {
 
     return (
         <div className='main_container flex relative'>
-            {/* <MinNavbar /> */}
-            {/* <Navbar /> */}
-            {minNav ? <MinNavbar /> : <Navbar/>}
-            <Posts />
+            {minNav ? <MinNavbar /> : <Navbar />}
+            {/* <Posts /> */}
+            <Outlet />
             {/* Modals */}
             {writeModal && <WritePost />}
         </div >

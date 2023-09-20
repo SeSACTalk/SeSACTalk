@@ -16,18 +16,11 @@ const MinNavbar = function () {
 
     let dispatch = useDispatch();
 
-    useEffect(() => {
-        // chat일때 실행, 새로고침시 실행되게 하려고..
-        if (location.pathname.includes('chat')) {
-            console.log('condition', minNav)
-            console.log(location)
-            dispatch(showMinNav(minNav))
-        }
-    }, [])
-
     const handleSubNav = () => {
-        dispatch(showMinNav(minNav)) // MinNav 닫기
-        if (minNav && exploreNav) { // minNav가 true일때만 같이 보여야하고, false이면 false로
+        // minNav이 활성화상태일때만 닫혀야함
+        minNav && dispatch(showMinNav(minNav)) 
+        // minNav가 true일때만 같이 보여야하고, false이면 false로
+        if (minNav && exploreNav) { 
             dispatch(showExploreNav(exploreNav))
         }
     }
@@ -55,7 +48,11 @@ const MinNavbar = function () {
                     <li>
                         <Link to='#' onClick={(e) => {
                             e.preventDefault();
-                            handleSubNav()
+                            if (!location.pathname.includes('chat')) {
+                                handleSubNav()
+                            } else {
+                                dispatch(showExploreNav(exploreNav))
+                            }
                         }}>
                             <i className="fa fa-search" aria-hidden="true"></i>
                             <span className="hidden">검색</span>

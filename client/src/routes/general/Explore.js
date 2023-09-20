@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom"
 import axios from "axios";
+import { exploreNav } from "../../store/navSlice";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
 
@@ -59,7 +60,7 @@ const Explore = function () {
     }, [explore])
 
     return (
-        <div className="w-[350%] h-screen absolute z-20 top-0 left-[100%] border border-gray-300 p-5 rounded-r-2xl bg-white shadow-min-nav">
+        <div className={`w-[350%] h-screen absolute z-20 top-0 left-[100%] border border-gray-300 p-5 rounded-r-2xl bg-white shadow-min-nav ${exploreNav ? 'animate-intro' : 'hidden'}`}>
             <h2 className="text-2xl my-5">검색</h2>
             <div className="search_wrap relative">
                 <input
