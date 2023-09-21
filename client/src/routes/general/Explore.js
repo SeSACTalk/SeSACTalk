@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom"
 import axios from "axios";
-import { exploreNav } from "../../store/navSlice";
+import { useDispatch, useSelector } from "react-redux";
+
+import { showMinNav, showExploreNav } from "../../store/navSlice";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
 
@@ -9,6 +11,10 @@ const Explore = function () {
     // 상태
     const [explore, setExplore] = useState('');
     const [exploreResult, setExploreResult] = useState([]);
+    let minNav = useSelector((state) => state.minNav);
+    let exploreNav = useSelector((state) => state.exploreNav);
+
+    let dispatch = useDispatch();
 
     // DOM
     const input = useRef();
@@ -59,6 +65,16 @@ const Explore = function () {
         }
     }, [explore])
 
+    // 모달창 제어
+    const handleSubNav = () => {
+        // minNav이 활성화상태일때만 닫혀야함
+        minNav && dispatch(showMinNav(minNav));
+        // minNav가 true일때만 같이 보여야하고, false이면 false로
+        if (minNav && exploreNav) {
+            dispatch(showExploreNav(exploreNav))
+        }
+    }
+
     return (
         <div className={`w-[350%] h-screen absolute z-20 top-0 left-[100%] border border-gray-300 p-5 rounded-r-2xl bg-white shadow-min-nav ${exploreNav ? 'animate-intro' : 'hidden'}`}>
             <h2 className="text-2xl my-5">검색</h2>
@@ -86,7 +102,7 @@ const Explore = function () {
                     exploreResult.length > 0 ?
                         exploreResult.map((element, i) => {
                             if (element.campus_name) {
-                                return (
+                                return ( // 사용자 검색
                                     <ul key={i}>
                                         <li className="mb-1">
                                             <Link
@@ -107,12 +123,15 @@ const Explore = function () {
                                     </ul>
                                 )
                             } else {
-                                return (
+                                return ( // 태그검색
                                     <ul key={i}>
                                         <li className="mb-1">
                                             <Link
                                                 to={`/explore/${element.name}`}
-                                                className="chat_user_info flex items-center h-20 p-1 gap-5">
+                                                className="chat_user_info flex items-center h-20 p-1 gap-5"
+                                                onClick={(e) => {
+                                                    handleSubNav()
+                                                }}>
                                                 <div className="flex justify-center items-center w-16 h-16 rounded-full overflow-hidden border border-gray-300  bg-gray-200 p-1">
                                                     <i className="fa fa-hashtag text-xl" aria-hidden="true"></i>
                                                 </div>

@@ -2,8 +2,9 @@ from rest_framework import serializers
 
 from profiles.models import Profile
 from post.models import HashTag, Post
+from post.serializers import LikeSerializer
 
-class UserExploreResultSerializer(serializers.ModelSerializer):
+class UserExploreSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source='user.id', read_only = True)
     name = serializers.CharField(source='user.name', read_only = True)
     username = serializers.CharField(source='user.username', read_only = True)
@@ -35,7 +36,7 @@ class UserExploreResultSerializer(serializers.ModelSerializer):
         return profile_img_path
 
 
-class HashTagExploreResultSerializer(serializers.ModelSerializer):
+class HashTagExploreSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(read_only=True)
     count_post = serializers.IntegerField(read_only=True)
@@ -46,12 +47,20 @@ class HashTagExploreResultSerializer(serializers.ModelSerializer):
             'id', 'name', 'count_post',
         )
 
-class HashTagExploreResultDetailSerializer(serializers.ModelSerializer):
+class HashTagExploreResultSerializer(serializers.ModelSerializer):
     hashtag_name = serializers.CharField(read_only=True)
     username =  serializers.CharField(read_only=True)
+
+    like_set = serializers.SerializerMethodField()
+
     class Meta:
         model = Post
         fields = (
             'hashtag_name', 'id', 'content', 'date', 'img_path', 'user',
-            'tags', 'report_status', 'uuid', 'username'
+            'tags', 'report_status', 'uuid', 'username', 'like_set'
         )
+
+    def get_like_set(self, obj):
+        likes = obj.like_set.all()
+        serializer = LikeSerializer(likes, many = True)
+        return serializer.data

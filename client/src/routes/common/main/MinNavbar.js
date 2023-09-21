@@ -7,18 +7,19 @@ import { showMinNav, showExploreNav } from "../../../store/navSlice";
 import Explore from "../../general/Explore";
 
 const MinNavbar = function () {
-    const location = useLocation()
+    const location = useLocation();
 
     // states
-    let writeModal = useSelector((state) => state.wirteModal)
-    let minNav = useSelector((state) => state.minNav)
-    let exploreNav = useSelector((state) => state.exploreNav)
+    let writeModal = useSelector((state) => state.wirteModal);
+    let minNav = useSelector((state) => state.minNav);
+    let exploreNav = useSelector((state) => state.exploreNav);
 
     let dispatch = useDispatch();
 
+    // 모달창 제어
     const handleSubNav = () => {
         // minNav이 활성화상태일때만 닫혀야함
-        minNav && dispatch(showMinNav(minNav)) 
+        minNav && dispatch(showMinNav(minNav));
         // minNav가 true일때만 같이 보여야하고, false이면 false로
         if (minNav && exploreNav) { 
             dispatch(showExploreNav(exploreNav))

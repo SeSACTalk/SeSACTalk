@@ -51,6 +51,7 @@ const ExploreResult = function () {
         <article>
           {
             result.map((element, i) => {
+              console.log(element)
               return (
                 <ul key={i}>
                   <li>element</li>
