@@ -4,7 +4,7 @@ from explore.views import ExploreUsers, ExploreTags, TagsResult
 
 urlpatterns = [
     path('tag/', ExploreTags.as_view(), name = 'ExploreTags'),
-    path('tag/<str:tag_name>', TagsResult.as_view(), name = 'TagsResult'),
+    path('tag/<str:tag_name>/', TagsResult.as_view(), name = 'TagsResult'),
     path('user/', ExploreUsers.as_view(), name = 'ExploreUsers'),
 ]
 

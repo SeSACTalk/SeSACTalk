@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 
 import { changeWirteModal } from "../../../store/modalSlice";
@@ -10,6 +10,8 @@ const username = getCookie('username')
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
 
 const Navbar = function () {
+    const location = useLocation();
+
     // states
     let writeModal = useSelector((state) => state.wirteModal)
     let minNav = useSelector((state) => state.minNav)
@@ -18,7 +20,8 @@ const Navbar = function () {
     let dispatch = useDispatch();
 
     return (
-        <nav className={`nav_wrap w-1/5 p-3 h-screen sticky top-0 border-solid border-x border-gray-300 ${minNav ? 'animate-hide pointer-events-none' : 'animate-intro'}`}>
+        <nav className={`nav_wrap w-1/5 p-3 h-screen sticky top-0 border-solid border-x border-gray-300 ${location.pathname === '/' ? '' : minNav ? 'animate-hide pointer-events-none' : 'animate-intro'}`
+        } >
             <div className="nav_profile flex justify-center">
                 <div className="profile_wrap p-4">
                     <div className='logo_wrap w-20 m-auto'>
