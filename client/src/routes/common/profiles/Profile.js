@@ -8,6 +8,7 @@ import { getCookie } from "../../../modules/handle_cookie";
 
 import React from 'react';
 import { Link, Outlet } from 'react-router-dom'
+import { useDispatch, useSelector } from "react-redux";
 
 import ProfilePosts from "./ProfilePosts";
 import ProfileLikes from "./ProfileLikes";
@@ -15,6 +16,9 @@ import ProfileReplys from "./ProfileReplys";
 
 // Components
 import Navbar from '../main/Navbar';
+import { changeVerifyPasswordModal } from "../../../store/modalSlice";
+import VerifyPasswordModal from "./VerifyPasswordModal";
+
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
 const session_key = getCookie('session_key')
 
@@ -47,6 +51,8 @@ function Profile() {
     const SERVER_USER_PROFILE = `${SERVER}/profile/${username}`
     const navigate = useNavigate()
 
+    let verifyPasswordModal = useSelector((state) => state.verifyPasswordModal)
+
     // state 
     const [postClickStatus, setPostClickStatus] = useState(true)
     const [likeClickStatus, setLikeClickStatus] = useState(false)
@@ -78,12 +84,15 @@ function Profile() {
         }
         fetchData();
     }, [username]); // username을 종속성 배열에 추가
-    function renderMyProfileBtn() {
+    function MyProfileBtn() {
+        let dispatch = useDispatch();
+
         return (
             <>
                 <button className="inline-block">
                     <i className="fa fa-pencil-square-o text-2xl" aria-hidden="true" onClick={() => {
-                        navigate('edit');
+                        dispatch(changeVerifyPasswordModal(verifyPasswordModal))
+                        // navigate('edit');
                     }}></i>
                 </button>
                 <button className="inline-block">
@@ -92,7 +101,7 @@ function Profile() {
             </>
         )
     }
-    function renderOtherProfileBtn() {
+    function OtherProfileBtn() {
         return (
             <>
                 <button className="inline-block">
@@ -133,7 +142,7 @@ function Profile() {
                                         <span className="inline-block text-sesac-green font-semibold text-sm">{profileData.user_campusname} 캠퍼스</span>
                                     </div>
                                     <div className=" ml-auto flex gap-3">
-                                        {profileData.isProfileMine ? renderMyProfileBtn() : renderOtherProfileBtn()}
+                                        {profileData.isProfileMine ? <MyProfileBtn /> : <OtherProfileBtn />}
                                     </div>
                                 </div>
                                 <ul className="profile_user_stats flex gap-12 text-slate-600">
@@ -203,6 +212,9 @@ function Profile() {
                         {likeClickStatus ? <ProfileLikes user_id={profileData.user_id} /> : null}
                         {replyClickStatus ? <ProfileReplys user_id={profileData.user_id} /> : null}
                     </div>
+
+                    {/* Modals */}
+                    {verifyPasswordModal && <VerifyPasswordModal url = {`/profile/${username}/edit`}/>}
                 </>
             )
                 : (

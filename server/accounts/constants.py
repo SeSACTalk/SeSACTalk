@@ -10,3 +10,6 @@ class ResponseMessages():
     AVAILABLE_ID = 'AVAILABLE ID: 사용 가능한 아이디입니다.'
     ID_NOT_FIND = 'ID NOT FIND: 주어진 정보와 일치하는 아이디를 찾을 수 없습니다.'
     USER_NOT_FIND = 'USER NOT FIND: 주어진 정보와 일치하는 회원을 찾을 수 없습니다.'
+    
+    PASSWORD_MATCH = 'PASSWORD MATCH: 올바른 비밀번호입니다.'
+    PASSWORD_NOT_MATCH = 'PASSWORD NOT MATCH: 회원 정보와 다른 비밀번호입니다.'

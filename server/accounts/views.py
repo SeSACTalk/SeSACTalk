@@ -1,7 +1,10 @@
+import http
+
 from django.contrib.auth import login, authenticate
 from django.contrib.sessions.models import Session
+from django.db.models import Q
 from django.http import HttpRequest
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -141,3 +144,15 @@ class FindPasswordView(APIView): # 비밀번호 찾기
         send_email_to_send_temporary_password(username, email, temp_password)
 
         return Response({'message': ResponseMessages.SEND_EMAIL_SUCCESS}, status=status.HTTP_200_OK)
+
+class VerifyPassword(APIView, SessionDecoderMixin):
+    def post(self, request: HttpRequest)-> Response:
+        user = self.get_user_by_pk(request.META.get('HTTP_AUTHORIZATION'))
+
+        # 비밀번호 확인
+        password_matched = check_password(request.data['password'], user.password)
+
+        if not password_matched:
+            return Response({'message' : ResponseMessages.PASSWORD_NOT_MATCH}, status = status.HTTP_400_BAD_REQUEST)
+
+        return Response({'message' : ResponseMessages.PASSWORD_MATCH}, status = status.HTTP_200_OK)

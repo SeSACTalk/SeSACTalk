@@ -36,7 +36,7 @@ const Posts = function () {
     return axios.get(SERVER_POST_POSTS, {
       headers: {
         'Authorization': session_key
-      }
+      },
     })
       .then(
         response => {

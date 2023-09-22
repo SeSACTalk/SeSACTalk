@@ -40,9 +40,20 @@ let detailModal = createSlice({
     }
 })
 
-export { writeModal, optionModal, reportModal, detailModal };
+let verifyPasswordModal = createSlice({
+    name: 'verifyPasswordModal',
+    initialState: false,
+    reducers: {
+        changeVerifyPasswordModal(state, action) {
+            return !state
+        }
+    }
+})
+
+export { writeModal, optionModal, reportModal, detailModal, verifyPasswordModal };
 
 export let { changeWirteModal } = writeModal.actions;
 export let { changeOptionModal } = optionModal.actions;
 export let { changeReportModal } = reportModal.actions;
 export let { changeDetailModal } = detailModal.actions;
+export let { changeVerifyPasswordModal } = verifyPasswordModal.actions;
