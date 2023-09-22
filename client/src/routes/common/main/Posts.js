@@ -22,13 +22,13 @@ const SERVER = process.env.REACT_APP_BACK_BASE_URL
 const Posts = function () {
   // states
   const [postList, setPostList] = useState([]);
-  const [detailPath, setDetailPath] = useState('')
-  const [postId, setPostId] = useState('')
-  const [isPostMine, setIsPostMine] = useState(false)
-  let optionModal = useSelector((state) => state.optionModal)
-  let reportModal = useSelector((state) => state.reportModal)
-  let detailModal = useSelector((state) => state.detailModal)
-  let postEditModal = useSelector((state) => state.postEditModal)
+  const [detailPath, setDetailPath] = useState('');
+  const [postId, setPostId] = useState('');
+  const [isPostMine, setIsPostMine] = useState(false);
+  let optionModal = useSelector((state) => state.optionModal);
+  let reportModal = useSelector((state) => state.reportModal);
+  let detailModal = useSelector((state) => state.detailModal);
+  let postEditModal = useSelector((state) => state.postEditModal);
   let dispatch = useDispatch();
 
   const SERVER_POST_POSTS = `${SERVER}/post/${username}/`;
@@ -60,7 +60,7 @@ const Posts = function () {
     }
   }, [post.data])
 
-// TODO : post에 get요청하면 댓글갯수랑 좋아요 갯수도 같이 보내주면 좋을듯?
+  // TODO : post에 get요청하면 댓글갯수랑 좋아요 갯수도 같이 보내주면 좋을듯?
   return (
     <div className='main_content_container w-4/5 px-10'>
       <StaffProfile />
@@ -119,21 +119,22 @@ const Posts = function () {
                       </li>
                     </ul>
                   </div>
-                  <button className='absolute right-5 top-8' onClick={async () => {
-                    try {
-                      const response = await axios.get(`${SERVER}/post/${element.username}/${element.id}`, {
-                        headers: {
-                          'Authorization': session_key
-                        }
-                      })
-                      setIsPostMine(response.data.isPostMine)
-                    } catch (error) {
-                      console.error(error)
-                    }
-                    setDetailPath(`${element.username}/${element.id}`)
-                    setPostId(element.id)
-                    dispatch(changeOptionModal(optionModal))
-                  }}>
+                  <button className='absolute right-5 top-8' onClick={
+                    async () => {
+                      try {
+                        const response = await axios.get(`${SERVER}/post/${element.username}/${element.id}`, {
+                          headers: {
+                            'Authorization': session_key
+                          }
+                        })
+                        setIsPostMine(response.data.isPostMine)
+                      } catch (error) {
+                        console.error(error)
+                      }
+                      setDetailPath(`${element.username}/${element.id}`)
+                      setPostId(element.id)
+                      dispatch(changeOptionModal(optionModal))
+                    }}>
                     <span className='hidden'>게시글 세부설정</span>
                     <i className="fa fa-ellipsis-h text-gray-300 text-2xl" aria-hidden="true"></i>
                   </button>

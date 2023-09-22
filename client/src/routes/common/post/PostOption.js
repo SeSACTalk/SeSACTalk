@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { getCookie } from "../../../modules/handle_cookie";
-import { changeOptionModal, changeReportModal, changeDetailModal,changePostEditModal } from "../../../store/modalSlice";
+import { changeOptionModal, changeReportModal, changeDetailModal, changePostEditModal } from "../../../store/modalSlice";
 import axios from "axios";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
@@ -82,7 +81,10 @@ const PostOption = function ({ detailPath, isPostMine }) {
                 <div className="absolute flex justify-center items-center rounded-lg w-1/4 h-80 bg-zinc-50">
                     <ul className="post_option flex-row gap-2 w-5/6 h-4/5 bg-zinc-50 border border-solid border-black text-xl">
                         <li className="border-b border-black h-1/4">
-                            <Link className="flex justify-center items-center w-full h-full" to={`/post/${detailPath}`}>상세보기</Link>
+                            <button className="block w-full h-full" type="button" onClick={() => {
+                                dispatch(changeOptionModal(optionModal))
+                                dispatch(changeDetailModal(detailModal))
+                            }}>상세보기</button>
                         </li>
                         <li className="border-b border-black h-1/4">
                             <button className="block w-full h-full" type="button" onClick={() => {

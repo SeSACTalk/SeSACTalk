@@ -22,8 +22,6 @@ from profiles.serializers import EditProfileSerializer
 from accounts.serializers import UserSerializer, CampusSerializer, CourseSerializer
 from sesactalk.mixins import SessionDecoderMixin
 
-import uuid
-
 class Main(APIView):
     def get(self, request: HttpRequest) -> Response:
         # 캠퍼스 매니저의 pk를 가져오기
