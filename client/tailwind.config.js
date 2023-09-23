@@ -18,6 +18,9 @@ module.exports = {
       animation: {
         'spin-shake': 'shake 0.5s ease-in-out forwards',
       }
+      , maxHeight: {
+        '1/2': '50%',
+      },
     },
   },
   plugins: [],

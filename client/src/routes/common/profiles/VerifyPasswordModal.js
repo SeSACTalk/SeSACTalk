@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import CryptoJS from 'crypto-js'
 
 import { changeVerifyPasswordModal } from "../../../store/modalSlice";

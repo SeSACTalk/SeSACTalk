@@ -16,8 +16,9 @@ import ProfileReplys from "./ProfileReplys";
 
 // Components
 import Navbar from '../main/Navbar';
-import { changeVerifyPasswordModal } from "../../../store/modalSlice";
+import { changeVerifyPasswordModal, changeFollowModal, changeFollowerModal } from "../../../store/modalSlice";
 import VerifyPasswordModal from "./VerifyPasswordModal";
+import { FollowModal, FollowerModal } from "./UserRelationshipModal";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
 const session_key = getCookie('session_key')
@@ -49,9 +50,11 @@ const ProfileLayout = function () {
 function Profile() {
     const { username } = useParams()
     const SERVER_USER_PROFILE = `${SERVER}/profile/${username}`
-    const navigate = useNavigate()
 
+    let dispatch = useDispatch();
     let verifyPasswordModal = useSelector((state) => state.verifyPasswordModal)
+    let followModal = useSelector((state) => state.followModal)
+    let followerModal = useSelector((state) => state.followerModal)
 
     // state 
     const [postClickStatus, setPostClickStatus] = useState(true)
@@ -92,7 +95,6 @@ function Profile() {
                 <button className="inline-block">
                     <i className="fa fa-pencil-square-o text-2xl" aria-hidden="true" onClick={() => {
                         dispatch(changeVerifyPasswordModal(verifyPasswordModal))
-                        // navigate('edit');
                     }}></i>
                 </button>
                 <button className="inline-block">
@@ -104,9 +106,7 @@ function Profile() {
     function OtherProfileBtn() {
         return (
             <>
-                <button className="inline-block">
-                    <i className="fa fa-user-plus text-2xl" aria-hidden="true"></i>
-                </button>
+                <button class="inline-block px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm">팔로잉</button>
                 <button className="inline-block">
                     <i className="fa fa-envelope-o text-2xl" aria-hidden="true"></i>
                     {/* 팔로우 취소 일 때 -> <i class="fa fa-user-times" aria-hidden="true"></i> */}
@@ -150,13 +150,17 @@ function Profile() {
                                         <span>게시물</span>
                                         <span className="font-semibold text-black">{profileData.post_count}</span>
                                     </li>
-                                    <li className="flex gap-2">
-                                        <span>팔로워</span>
-                                        <span className="font-semibold text-black">{profileData.follower_count == null ? 0 : profileData.follower_count}</span>
+                                    <li>
+                                        <Link className="flex gap-2" to='#' onClick={(e) => { dispatch(changeFollowerModal(followerModal)) }}>
+                                            <span>팔로워</span>
+                                            <span className="font-semibold text-black">{profileData.follower_count == null ? 0 : profileData.follower_count}</span>
+                                        </Link>
                                     </li>
-                                    <li className="flex gap-2">
-                                        <span>팔로우</span>
-                                        <span className="font-semibold text-black">{profileData.follow_count == null ? 0 : profileData.follow_count}</span>
+                                    <li>
+                                        <Link className="flex gap-2" to='#' onClick={(e) => { dispatch(changeFollowModal(followModal)) }}>
+                                            <span>팔로우</span>
+                                            <span className="font-semibold text-black">{profileData.follow_count == null ? 0 : profileData.follow_count}</span>
+                                        </Link>
                                     </li>
                                 </ul>
                             </div>
@@ -215,6 +219,8 @@ function Profile() {
 
                     {/* Modals */}
                     {verifyPasswordModal && <VerifyPasswordModal url = {`/profile/${username}/edit`}/>}
+                    {followModal && <FollowModal user_pk = {profileData.user_id}/>}
+                    {followerModal && <FollowerModal user_pk = {profileData.user_id}/>}
                 </>
             )
                 : (

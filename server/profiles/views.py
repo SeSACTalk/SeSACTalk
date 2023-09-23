@@ -34,15 +34,15 @@ class ProfileView(APIView, SessionDecoderMixin):
 
         profile = Profile.objects.filter(user=profile_user_id).select_related('user').annotate(
             post_count=Count('user__post'),
-            follower_count=Subquery(
-                UserRelationship.objects.filter(user_follower=OuterRef('user')).values('user_follower').annotate(
-                    follower_count=Count('user_follower')
-                ).values('follower_count')[:1]
-            ),
             follow_count=Subquery(
-                UserRelationship.objects.filter(user_follow=OuterRef('user')).values('user_follow').annotate(
-                    follow_count=Count('user_follow')
+                UserRelationship.objects.filter(user_follower=OuterRef('user')).values('user_follower').annotate(
+                    follow_count=Count('user_follower')
                 ).values('follow_count')[:1]
+            ),
+            follower_count=Subquery(
+                UserRelationship.objects.filter(user_follow=OuterRef('user')).values('user_follow').annotate(
+                    follower_count=Count('user_follow')
+                ).values('follower_count')[:1]
             )
         ).first()
 
