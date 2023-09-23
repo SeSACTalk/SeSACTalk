@@ -20,7 +20,7 @@ const Navbar = function () {
     let dispatch = useDispatch();
 
     return (
-        <nav className={`nav_wrap w-1/5 p-3 h-screen sticky top-0 border-solid border-x border-gray-300 ${location.pathname === '/' ? '' : minNav ? 'animate-hide pointer-events-none' : 'animate-intro'}`
+        <nav className={`w-1/5 p-3 h-screen sticky top-0 border-solid border-x border-gray-300 ${location.pathname === '/' ? '' : minNav ? 'animate-hide pointer-events-none' : 'animate-intro'}`
         } >
             <div className="nav_profile flex justify-center">
                 <div className="profile_wrap p-4">

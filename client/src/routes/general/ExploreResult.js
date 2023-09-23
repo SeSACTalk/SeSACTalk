@@ -48,6 +48,18 @@ const ExploreResult = function () {
     }
   }, [detailPath + isPostMine])
 
+  /**
+   * 랜덤 이미지 주소 출력 함수
+   * @param {number} min - 최솟값
+   * @param {number} max - 최댓값
+   * @returns {string} - 이미지 경로
+   */
+  const rand = (min, max) => {
+    const random_number = Math.floor(Math.random() * (max - min)) + min;
+    const random_img = `${process.env.PUBLIC_URL}/img/thumbnails/000${random_number}.png`
+    return random_img
+  }
+
   return (
     <div className="ExploreTagDetail w-4/5 p-10">
       <header>
@@ -71,9 +83,9 @@ const ExploreResult = function () {
             {
               result.map((element, i) => {
                 return (
-                  <li className="bg-red-100 h-80" key={i}>
+                  <li className="relative border border-black h-80 bg-no-repeat bg-right-bottom bg-green-50 before:block before:w-full before:h-full before:bg-white before:opacity-30" style={{ backgroundImage: `url(${rand(1, 7)})` }} key={i}>
                     <Link
-                      className="flex flex-col justify-center items-center w-full h-full"
+                      className="absolute top-0 left-0 flex flex-col justify-center items-center w-full h-full"
                       to="#"
                       onClick={async (e) => {
                         e.preventDefault();
@@ -89,7 +101,7 @@ const ExploreResult = function () {
                           console.error(error)
                         }
                       }}>
-                      <span>{element.content}</span>
+                      <span className="font-semibold text-xl">{element.content}</span>
                       <span className="font-semibold text-sesac-green">By. {element.username}</span>
                     </Link>
                   </li>
