@@ -1,4 +1,5 @@
 from django.http import QueryDict
+from django.db.models import Count
 from rest_framework import serializers
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
@@ -178,8 +179,8 @@ class ReportSerializer(serializers.ModelSerializer):
 
 class ManagerProfileSerializer(serializers.ModelSerializer):
     campus = serializers.CharField(source = 'first_course.campus.name', read_only = True)
-    manager_id = serializers.IntegerField(source='id', read_only = True)
-    manager_username = serializers.CharField(source='username', read_only = True)
+    manager_id = serializers.IntegerField(source = 'id', read_only = True)
+    manager_username = serializers.CharField(source = 'username', read_only = True)
     profile_img_path = serializers.SerializerMethodField()
 
     class Meta:
@@ -196,3 +197,24 @@ class ManagerProfileSerializer(serializers.ModelSerializer):
             profile_img_path = '/media/profile/default_profile.png'
 
         return profile_img_path
+    
+class RecommendPostSerilaier(serializers.ModelSerializer):
+    name = serializers.CharField(source = 'user.name')
+    campus_name = serializers.SerializerMethodField()
+    like_set = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Post
+        fields = (
+           'id', 'content', 'date', 'img_path', 'user', 'campus_name', 'name', 'like_set'
+        )
+
+    def get_campus_name(self, post):
+        user = post.user
+        if user.second_course:
+            return user.second_course.campus.name
+        return user.first_course.campus.name
+
+    def get_like_set(self, post):
+        likes = post.like_set.aggregate(Count('id'))
+        return likes

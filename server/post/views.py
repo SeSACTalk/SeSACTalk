@@ -1,7 +1,7 @@
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.http import HttpRequest
 from django.contrib.sessions.models import Session
-from datetime import datetime
+from datetime import date
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -12,7 +12,7 @@ from accounts.models import User
 from user.models import UserRelationship
 
 from post.serializers import PostSerializer, LikeSerializer, ViewSerializer, ReplySerializer, HashTagSerializer, \
-    ReportSerializer, ManagerProfileSerializer
+    ReportSerializer, ManagerProfileSerializer, RecommendPostSerilaier
 from post.mixins import OwnerPermissionMixin
 from post.constants import ResponseMessages
 
@@ -143,10 +143,6 @@ class ReportPost(OwnerPermissionMixin, APIView):
     
 class Replys(APIView, SessionDecoderMixin):
     def get(self, request: HttpRequest, p_sq: int)-> Response:
-        # session_key로 user_id get
-        # frontend_session_key = request.META.get('HTTP_AUTHORIZATION', '')
-        # session = Session.objects.get(session_key = frontend_session_key)
-        # user_id = session.get_decoded().get('_auth_user_id')
         user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
 
         response_data=[]
@@ -165,7 +161,6 @@ class Replys(APIView, SessionDecoderMixin):
             data['isReplyMine'] = user_id == reply.user.id
 
             response_data.append(data)
-            # print(response_data)
 
         return Response(data=response_data, status=status.HTTP_200_OK)
     def post(self, request: HttpRequest, p_sq: int)-> Response:
@@ -182,7 +177,6 @@ class Replys(APIView, SessionDecoderMixin):
             if replySerializer.is_valid():
                 replySerializer.save()
             else:
-                # print(replySerializer.data)
                 print(f"댓글 유효성 검사 실패")
                 print(f'<<CHECK INVALID DATA>>\n{replySerializer.errors}')
 
@@ -203,7 +197,6 @@ class ReplyDetail(APIView, SessionDecoderMixin):
         if reply_queryset.user.id == user_id:
             reply_queryset.delete()
         else:
-            print(type(user_id), type(reply_queryset.user.id))
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         return Response(status=status.HTTP_200_OK)
@@ -215,9 +208,16 @@ class ReplyDetail(APIView, SessionDecoderMixin):
         reply_queryset = Reply.objects.get(id = r_sq)
         if reply_queryset.user.id == user_id:
             reply_queryset.content=request.data
-            # print(reply_queryset.content)
             reply_queryset.save()
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status = status.HTTP_400_BAD_REQUEST)
 
-        return Response(status=status.HTTP_200_OK)
+        return Response(status = status.HTTP_200_OK)
+    
+class RecommendPost(APIView):
+    def get(self, request: HttpRequest) -> Response:
+        posts = PostModel.objects.filter(date__startswith = date.today()).prefetch_related('like_set').select_related('user').all()
+
+        serializer = RecommendPostSerilaier(posts, many = True)
+        
+        return Response(serializer.data, status = status.HTTP_200_OK)

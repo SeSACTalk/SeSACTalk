@@ -88,7 +88,7 @@ const WritePost = function () {
   }
 
   return (
-    <div className="modal post_modal flex justify-center items-center absolute w-full h-screen" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>
+    <div className="modal post_modal flex justify-center items-center absolute w-full h-screen z-50" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>
       <form className='w-1/2 h-96 bg-zinc-50 rounded-xl' onSubmit={uploadPost}>
         <div className="text_container relative h-3/4 rounded-xl pt-12 px-8 box-border">
           <textarea className="w-full h-full rounded-xl p-7 bg-gray-100 resize-none outline-none"

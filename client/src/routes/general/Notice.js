@@ -11,13 +11,34 @@ const Notice = function () {
     const [dataResult, setDataResult] = useState([]);
     const [isNotice, setIsNotice] = useState(true);
 
-    // useEffect(() => {
-    //     if (isNotice) { // notice경로로 요청
+    useEffect(() => {
+        const SERVER_NOTICE_LIST = ""; // 나중에 추가해주세요
+        const SERVER_RECOMMEND_POST = `${SERVER}/post/recommend/`
 
-    //     } else { // 추천게시물 경로로 요청
-
-    //     }
-    // }, [isNotice])
+        // if (isNotice) { // notice경로로 요청
+        //     return
+        // } else { // 추천게시물 경로로 요청
+        //     axios.get(SERVER_RECOMMEND_POST)
+        //         .then(
+        //             response => {
+        //                 console.log(response.data)
+        //             }
+        //         )
+        //         .catch(
+        //             error => console.error(error)
+        //         )
+        // }
+        axios.get(SERVER_RECOMMEND_POST)
+            .then(
+                response => {
+                    console.log(response.data)
+                }
+            )
+            .catch(
+                error => console.error(error)
+            )
+            console.log('조건탐')
+    }, [isNotice])
 
     return (
         <div className={`w-[350%] h-screen absolute z-20 left-full top-0 border border-gray-300 p-5 rounded-r-2xl bg-white shadow-min-nav ${noticeNav ? 'animate-intro' : 'hidden'}`}>
@@ -43,7 +64,7 @@ const Notice = function () {
                             </article>
                         </Link>
                     </li>
-                    <li>
+                    {/* <li>
                         <Link className="flex items-center gap-4">
                             <div className="img_wrap w-1/5 h-1/5 rounded-full border border-gray-200 overflow-hidden p-1.5">
                                 <img src="" alt="사용자명" />
@@ -58,7 +79,7 @@ const Notice = function () {
                                 </div>
                             </div>
                         </Link>
-                    </li>
+                    </li> */}
                 </ul>
             </div>
         </div>
