@@ -31,8 +31,8 @@ const VerifyPassword = function ({ url }) {
     useEffect(() => {
         setScroll(window.scrollY)
         document.body.style.overflow = 'hidden';
-        return () => { 
-            document.body.style.overflow = 'unset'; 
+        return () => {
+            document.body.style.overflow = 'unset';
 
         }
     }, [scroll])
@@ -40,6 +40,7 @@ const VerifyPassword = function ({ url }) {
     //  axios
 
     const requestToVerifyPassword = async (e, password) => { /* 비밀번호 확인 */
+        e.preventDefault()
         const hashedPw = CryptoJS.SHA256(password).toString();
         await axios.post(SERVER_VERIFY_PASSWORD_POST, { password: hashedPw, }, {
             headers: {
@@ -64,10 +65,10 @@ const VerifyPassword = function ({ url }) {
     }
 
     return (
-        <div className="modal detail_modal flex justify-center items-center absolute left-0 w-full h-screen" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>
+        <div className="modal verify_password_modal flex justify-center items-center absolute left-0 w-full h-screen" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>
             <div className={`detail_container flex gap-5 justify-center rounded-lg w-3/12 h-2/6 p-5 bg-zinc-50 ${isPasswordMatch ? '' : 'animate-spin-shake'}`}>
                 <div className="w-5/6">
-                    <div className="flex flex-col gap-6 justify-center items-center text-sm">
+                    <div className="flex flex-col gap-12 justify-center items-center text-sm">
                         <span className="text-gray-500 text-base font-semibold">비밀번호 확인</span>
                         <form className="flex flex-col gap-8">
                             <div>
@@ -77,6 +78,12 @@ const VerifyPassword = function ({ url }) {
                                     name="password"
                                     placeholder="비밀번호를 입력해주세요"
                                     onChange={(e) => setPassword(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            requestToVerifyPassword(e, password);
+                                        }
+                                    }
+                                    }
                                 />
                             </div>
                             <button className="px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm" type="button" onClick={

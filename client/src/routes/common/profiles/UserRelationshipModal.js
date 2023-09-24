@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import CryptoJS from 'crypto-js'
+import { Link } from 'react-router-dom'
 
 import { changeFollowerModal, changeFollowModal } from "../../../store/modalSlice";
 import { getCookie } from "../../../modules/handle_cookie";
@@ -54,7 +54,7 @@ const FollowerModal = function ({ user_pk }) {
     }
 
     return (
-        <div className="modal detail_modal flex justify-center items-center absolute left-0 w-full h-screen" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>
+        <div className="modal follower_modal flex justify-center items-center absolute left-0 w-full h-screen" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>
             <div className="detail_container flex flex-col gap-2 justify-items-center items-center rounded-lg w-3/12 h-3/6 max-h-1/2 bg-zinc-50">
                 <div className="flex w-full h-[10%] justify-center items-center text-lg mt-3">
                     <p className="text-slate-600 font-semibold ">팔로워</p>
@@ -65,7 +65,7 @@ const FollowerModal = function ({ user_pk }) {
                             ? <p className="text-center">팔로워가 없습니다.</p>
                             : followerList.map((element, i) => {
                                 return (
-                                    <>
+                                    <Link to={`/profile/${element.follower_user_username}`}>
                                         <div className="flex items-center gap-3 px-4 py-2">
                                             <div className="w-[20%] rounded-full overflow-hidden border-2 border-solid border-gray-200">
                                                 <img className="w-full h-full p-2" src={`${SERVER + element.follower_user_img_path}`} />
@@ -78,7 +78,7 @@ const FollowerModal = function ({ user_pk }) {
                                                 <button class="inline-block px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm">팔로잉</button>
                                             </div>
                                         </div>
-                                    </>
+                                    </Link>
                                 )
                             }
                             )
@@ -133,7 +133,7 @@ const FollowModal = function ({ user_pk }) {
     }
 
     return (
-        <div className="modal detail_modal flex justify-center items-center absolute left-0 w-full h-screen" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>
+        <div className="modal follow_modal flex justify-center items-center absolute left-0 w-full h-screen" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>
             <div className="detail_container flex flex-col gap-2 justify-items-center items-center rounded-lg w-3/12 h-3/6 max-h-1/2 bg-zinc-50">
                 <div className="flex w-full h-[10%] justify-center items-center text-lg mt-3">
                     <p className="text-slate-600 font-semibold ">팔로우</p>
@@ -144,7 +144,7 @@ const FollowModal = function ({ user_pk }) {
                             ? <p className="text-center">팔로우가 없습니다.</p>
                             : followList.map((element, i) => {
                                 return (
-                                    <>
+                                    <Link to={`/profile/${element.follow_user_username}`}>
                                         <div className="flex items-center gap-3 px-4 py-2">
                                             <div className="w-[20%] rounded-full overflow-hidden border-2 border-solid border-gray-200">
                                                 <img className="w-full h-full p-2" src={`${SERVER + element.follow_user_img_path}`} />
@@ -157,7 +157,7 @@ const FollowModal = function ({ user_pk }) {
                                                 <button class="inline-block px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm">팔로잉</button>
                                             </div>
                                         </div>
-                                    </>
+                                    </Link>
                                 )
                             }
                             )
@@ -168,4 +168,4 @@ const FollowModal = function ({ user_pk }) {
     )
 }
 
-export {FollowerModal, FollowModal}
+export { FollowerModal, FollowModal }

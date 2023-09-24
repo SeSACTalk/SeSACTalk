@@ -29,11 +29,12 @@ class UserRelationshipSerializer(serializers.ModelSerializer):
 class FollowSerializer(serializers.ModelSerializer):
     follow_user_img_path = serializers.SerializerMethodField()
     follow_user_name = serializers.CharField(source='user.name')
+    follow_user_username = serializers.CharField(source='user.username')
     follow_user_campusname = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
-        fields = ['follow_user_img_path', 'follow_user_name', 'follow_user_campusname']
+        fields = ['follow_user_img_path', 'follow_user_name', 'follow_user_username', 'follow_user_campusname']
 
     def get_follow_user_img_path(self, profile):
         return get_img_path(profile)
@@ -45,11 +46,12 @@ class FollowSerializer(serializers.ModelSerializer):
 class FollowerSerializer(serializers.ModelSerializer):
     follower_user_img_path = serializers.SerializerMethodField()
     follower_user_name = serializers.CharField(source='user.name')
+    follower_user_username = serializers.CharField(source='user.username')
     follower_user_campusname = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
-        fields = ['follower_user_img_path', 'follower_user_name', 'follower_user_campusname']
+        fields = ['follower_user_img_path', 'follower_user_name', 'follower_user_username', 'follower_user_campusname']
 
     def get_follower_user_img_path(self, profile):
         return get_img_path(profile)
