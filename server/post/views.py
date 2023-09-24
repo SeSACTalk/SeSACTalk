@@ -216,8 +216,8 @@ class ReplyDetail(APIView, SessionDecoderMixin):
     
 class RecommendPost(APIView):
     def get(self, request: HttpRequest) -> Response:
-        posts = PostModel.objects.filter(date__startswith = date.today()).prefetch_related('like_set').select_related('user').all()
-
+        posts = PostModel.objects.filter(date__startswith = date.today()).prefetch_related('like_set').select_related('user').annotate(like_count = Count('like')).order_by('like_count').all()[:10]
+        
         serializer = RecommendPostSerilaier(posts, many = True)
         
         return Response(serializer.data, status = status.HTTP_200_OK)

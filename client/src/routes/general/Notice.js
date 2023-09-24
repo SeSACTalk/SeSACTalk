@@ -15,71 +15,79 @@ const Notice = function () {
         const SERVER_NOTICE_LIST = ""; // 나중에 추가해주세요
         const SERVER_RECOMMEND_POST = `${SERVER}/post/recommend/`
 
-        // if (isNotice) { // notice경로로 요청
-        //     return
-        // } else { // 추천게시물 경로로 요청
-        //     axios.get(SERVER_RECOMMEND_POST)
-        //         .then(
-        //             response => {
-        //                 console.log(response.data)
-        //             }
-        //         )
-        //         .catch(
-        //             error => console.error(error)
-        //         )
-        // }
-        axios.get(SERVER_RECOMMEND_POST)
-            .then(
-                response => {
-                    console.log(response.data)
-                }
-            )
-            .catch(
-                error => console.error(error)
-            )
-            console.log('조건탐')
+        if (isNotice) { // notice경로로 요청
+            return
+        } else { // 추천게시물 경로로 요청
+            axios.get(SERVER_RECOMMEND_POST)
+                .then(
+                    response => {
+                        console.log(response.data)
+                        setDataResult(response.data)
+                    }
+                )
+                .catch(
+                    error => console.error(error)
+                )
+        }
     }, [isNotice])
 
     return (
         <div className={`w-[350%] h-screen absolute z-20 left-full top-0 border border-gray-300 p-5 rounded-r-2xl bg-white shadow-min-nav ${noticeNav ? 'animate-intro' : 'hidden'}`}>
             <h2 className="text-2xl my-5">알림</h2>
             <div className="flex justify-evenly border-b border-black p-2 text-xl">
-                <button className={`${isNotice ? "text-black" : "text-gray-300"}`}>알림</button>
-                <button className={`${isNotice ? "text-gray-300" : "text-black"}`}>추천게시물</button>
+                <button className={`${isNotice ? "text-black" : "text-gray-300"}`} onClick={(e) => {
+                    setIsNotice(!isNotice)
+                }}>알림</button>
+                <button className={`${isNotice ? "text-gray-300" : "text-black"}`} onClick={(e) => {
+                    setIsNotice(!isNotice)
+                }}>추천게시물</button>
             </div>
             <div className="h-4/5 mt-6 overflow-scroll">
+                {console.log(isNotice)}
                 <ul>
-                    <li>
-                        <Link className="flex items-center gap-4">
-                            <span className="text-5xl">1</span>
-                            <article className="text-sm">
-                                <p>
-                                    <span className="text-lg mr-1">사용자명</span>
-                                    <span className="text-sm text-sesac-green">캠퍼스명</span>
-                                </p>
-                                <p>게시글 내용 길면 최대 10자</p>
-                                <p className="text-red-300">
-                                    <i className="fa fa-heart" aria-hidden="true"></i> 좋아요 10개
-                                </p>
-                            </article>
-                        </Link>
-                    </li>
-                    {/* <li>
-                        <Link className="flex items-center gap-4">
-                            <div className="img_wrap w-1/5 h-1/5 rounded-full border border-gray-200 overflow-hidden p-1.5">
-                                <img src="" alt="사용자명" />
-                            </div>
-                            <div className="sender_info">
-                                <p>
-                                    <span className="text-lg mr-1">사용자명</span>
-                                    <span className="text-sm text-gray-500">날짜</span>
-                                </p>
-                                <div className="chat_info flex gap-2">
-                                    <p className="text-sm text-gray-500">내용</p>
-                                </div>
-                            </div>
-                        </Link>
-                    </li> */}
+                    {
+                        dataResult.map((element, i) => {
+                            if (isNotice) {
+                                return (
+                                    <li key={i}>
+                                        <Link to="#" className="flex items-center gap-4">
+                                            <div className="img_wrap w-1/5 h-1/5 rounded-full border border-gray-200 overflow-hidden p-1.5">
+                                                <img src="" alt="사용자명" />
+                                            </div>
+                                            <div className="sender_info">
+                                                <p>
+                                                    <span className="text-lg mr-1">사용자명</span>
+                                                    <span className="text-sm text-gray-500">날짜</span>
+                                                </p>
+                                                <div className="chat_info flex gap-2">
+                                                    <p className="text-sm text-gray-500">내용</p>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    </li>
+                                )
+                            } else {
+                                return (
+                                    <li className="mb-3">
+                                        <Link to="#" className="flex items-center gap-4">
+                                            <span className="text-5xl text-gray-500">{i + 1}</span>
+                                            <article className="text-sm">
+                                                <p>
+                                                    <span className="text-lg mr-1">{element.name}</span>
+                                                    <span className="text-sm text-sesac-green">{element.campus_name} 캠퍼스</span>
+                                                </p>
+                                                <p>{element.content.length > 10 ? element.content.slice(0, 10) : element.content}</p>
+                                                <p className="text-red-300">
+                                                    <i className="fa fa-heart" aria-hidden="true"></i> 좋아요 {element.like}개
+                                                </p>
+                                            </article>
+                                        </Link>
+                                    </li>
+                                )
+                            }
+
+                        })
+                    }
                 </ul>
             </div>
         </div>

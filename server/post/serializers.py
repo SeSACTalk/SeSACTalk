@@ -199,14 +199,15 @@ class ManagerProfileSerializer(serializers.ModelSerializer):
         return profile_img_path
     
 class RecommendPostSerilaier(serializers.ModelSerializer):
+    username = serializers.CharField(source = 'user.username')
     name = serializers.CharField(source = 'user.name')
     campus_name = serializers.SerializerMethodField()
-    like_set = serializers.SerializerMethodField()
+    like = serializers.IntegerField(source = 'like_count')
 
     class Meta:
         model = Post
         fields = (
-           'id', 'content', 'date', 'img_path', 'user', 'campus_name', 'name', 'like_set'
+           'id', 'content', 'date', 'user', 'campus_name','username', 'name', 'like'
         )
 
     def get_campus_name(self, post):
@@ -214,7 +215,3 @@ class RecommendPostSerilaier(serializers.ModelSerializer):
         if user.second_course:
             return user.second_course.campus.name
         return user.first_course.campus.name
-
-    def get_like_set(self, post):
-        likes = post.like_set.aggregate(Count('id'))
-        return likes
