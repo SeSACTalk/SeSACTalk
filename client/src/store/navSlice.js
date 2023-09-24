@@ -20,6 +20,17 @@ let exploreNav = createSlice({
     }
 })
 
-export { minNav, exploreNav };
+let noticeNav = createSlice({
+    name: 'noticeNav',
+    initialState: false,
+    reducers: {
+        showNoticeNav(state, action) {
+            return !state
+        }
+    }
+})
+
+export { minNav, exploreNav, noticeNav };
 export let { showMinNav } = minNav.actions;
 export let { showExploreNav } = exploreNav.actions;
+export let { showNoticeNav } = noticeNav.actions;

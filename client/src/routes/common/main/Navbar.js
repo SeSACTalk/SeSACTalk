@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { changeWirteModal } from "../../../store/modalSlice";
 import { getCookie } from "../../../modules/handle_cookie";
-import { showMinNav, showExploreNav } from "../../../store/navSlice";
+import { showMinNav, showExploreNav, showNoticeNav } from "../../../store/navSlice";
 
 const username = getCookie('username')
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
@@ -13,9 +13,10 @@ const Navbar = function () {
     const location = useLocation();
 
     // states
-    let writeModal = useSelector((state) => state.wirteModal)
-    let minNav = useSelector((state) => state.minNav)
-    let exploreNav = useSelector((state) => state.exploreNav)
+    let writeModal = useSelector((state) => state.wirteModal);
+    let minNav = useSelector((state) => state.minNav);
+    let exploreNav = useSelector((state) => state.exploreNav);
+    let noticeNav = useSelector((state) => state.noticeNav);
 
     let dispatch = useDispatch();
 
@@ -47,8 +48,8 @@ const Navbar = function () {
                 <li>
                     <Link to='#' onClick={(e) => {
                         e.preventDefault();
-                        dispatch(showMinNav(minNav))
-                        dispatch(showExploreNav(exploreNav))
+                        dispatch(showMinNav(minNav));
+                        dispatch(showExploreNav(exploreNav));
                     }}>
                         <i className="fa fa-search mr-3" aria-hidden="true"></i>
                         <span>검색</span>
@@ -63,7 +64,11 @@ const Navbar = function () {
                     </Link>
                 </li>
                 <li>
-                    <Link to='#'>
+                    <Link to='#' onClick={(e) => {
+                        e.preventDefault();
+                        dispatch(showMinNav(minNav));
+                        dispatch(showNoticeNav(noticeNav));
+                    }}>
                         <i className="fa fa-bell-o mr-3" aria-hidden="true"></i>
                         <span>알림</span>
                     </Link>

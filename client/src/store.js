@@ -2,7 +2,7 @@ import { configureStore, createSlice } from '@reduxjs/toolkit'
 
 import user from './store/userSlice'
 import { writeModal, optionModal, reportModal, detailModal, postEditModal } from './store/modalSlice'
-import { exploreNav, minNav } from './store/navSlice'
+import { minNav, exploreNav, noticeNav } from './store/navSlice'
 
 let chatStatus = createSlice({
     name: 'chatStatus',
@@ -28,6 +28,7 @@ export default configureStore({
         postEditModal: postEditModal.reducer,
         // nav
         minNav: minNav.reducer,
-        exploreNav: exploreNav.reducer
+        exploreNav: exploreNav.reducer,
+        noticeNav: noticeNav.reducer
     }
 }) 

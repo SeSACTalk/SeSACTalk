@@ -3,8 +3,10 @@ import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 
 import { changeWirteModal } from "../../../store/modalSlice";
-import { showMinNav, showExploreNav } from "../../../store/navSlice";
+import { showMinNav, showExploreNav, showNoticeNav } from "../../../store/navSlice";
+/* Components */
 import Explore from "../../general/Explore";
+import Notice from "../../general/Notice";
 
 const MinNavbar = function () {
     const location = useLocation();
@@ -13,6 +15,7 @@ const MinNavbar = function () {
     let writeModal = useSelector((state) => state.wirteModal);
     let minNav = useSelector((state) => state.minNav);
     let exploreNav = useSelector((state) => state.exploreNav);
+    let noticeNav = useSelector((state) => state.noticeNav);
 
     let dispatch = useDispatch();
 
@@ -21,8 +24,11 @@ const MinNavbar = function () {
         // minNav이 활성화상태일때만 닫혀야함
         minNav && dispatch(showMinNav(minNav));
         // minNav가 true일때만 같이 보여야하고, false이면 false로
-        if (minNav && exploreNav) { 
-            dispatch(showExploreNav(exploreNav))
+        if (minNav && exploreNav) {
+            dispatch(showExploreNav(exploreNav));
+        }
+        if (minNav && noticeNav) {
+            dispatch(showNoticeNav(noticeNav));
         }
     }
 
@@ -66,7 +72,14 @@ const MinNavbar = function () {
                         </Link>
                     </li>
                     <li>
-                        <Link to='#'>
+                        <Link to='#' onClick={(e) => {
+                            e.preventDefault();
+                            if (!location.pathname.includes('chat')) {
+                                handleSubNav()
+                            } else {
+                                dispatch(showNoticeNav(noticeNav))
+                            }
+                        }}>
                             <i className="fa fa-bell-o" aria-hidden="true"></i>
                             <span className="hidden">알림</span>
                         </Link>
@@ -89,6 +102,7 @@ const MinNavbar = function () {
                 </ul>
                 {/* SubNavbar */}
                 {exploreNav && <Explore />}
+                {noticeNav && <Notice />}
             </nav>
         </div>
     )
