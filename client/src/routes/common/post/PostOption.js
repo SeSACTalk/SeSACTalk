@@ -1,14 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 import { getCookie } from "../../../modules/handle_cookie";
-import { changeOptionModal, changeReportModal, changeDetailModal, changePostEditModal } from "../../../store/modalSlice";
+import { setDetailPath } from "../../../store/postSlice";
+import { changeOptionModal, changeReportModal, changePostEditModal } from "../../../store/modalSlice";
 import axios from "axios";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
 const session_key = getCookie('session_key')
 
-const PostOption = function ({ detailPath, isPostMine }) {
+const PostOption = function ({ isPostMine, postInfo }) {
     /* DOM */
     const modalPopup = useRef()
 
@@ -17,7 +19,8 @@ const PostOption = function ({ detailPath, isPostMine }) {
     let optionModal = useSelector((state) => state.optionModal)
     let reportModal = useSelector((state) => state.reportModal)
     let postEditModal = useSelector((state) => state.postEditModal)
-    let detailModal = useSelector((state) => state.detailModal)
+    let detailPath = useSelector((state) => state.detailPath);
+
     let dispatch = useDispatch();
 
     /* SERVER */
@@ -41,10 +44,10 @@ const PostOption = function ({ detailPath, isPostMine }) {
                 <div className="absolute flex justify-center items-center rounded-lg w-1/4 h-80 bg-zinc-50">
                     <ul className="post_option flex-row gap-2 w-5/6 h-4/5 bg-zinc-50 border border-solid border-black text-xl">
                         <li className="border-b border-black h-1/4">
-                            <button className="block w-full h-full" type="button" onClick={() => {
+                            <Link to={`post/${postInfo.uuid}`} className="flex justify-center items-center w-full h-full" onClick={() => {
                                 dispatch(changeOptionModal(optionModal))
-                                dispatch(changeDetailModal(detailModal))
-                            }}>상세보기</button>
+                                // dispatch(setDetailPath())
+                            }}>상세보기</Link>
                         </li>
                         <li className="border-b border-black h-1/4">
                             <button className="flex justify-center items-center w-full h-full" onClick={() => {
@@ -81,10 +84,9 @@ const PostOption = function ({ detailPath, isPostMine }) {
                 <div className="absolute flex justify-center items-center rounded-lg w-1/4 h-80 bg-zinc-50">
                     <ul className="post_option flex-row gap-2 w-5/6 h-4/5 bg-zinc-50 border border-solid border-black text-xl">
                         <li className="border-b border-black h-1/4">
-                            <button className="block w-full h-full" type="button" onClick={() => {
+                            <Link to={`post/${postInfo.uuid}`} className="flex justify-center items-center w-full h-full" onClick={() => {
                                 dispatch(changeOptionModal(optionModal))
-                                dispatch(changeDetailModal(detailModal))
-                            }}>상세보기</button>
+                            }}>상세보기</Link>
                         </li>
                         <li className="border-b border-black h-1/4">
                             <button className="block w-full h-full" type="button" onClick={() => {

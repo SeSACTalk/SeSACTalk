@@ -1,23 +1,23 @@
 import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-import { changeDetailModal } from "../../../store/modalSlice";
 import { getCookie } from "../../../modules/handle_cookie";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
 let session_key = getCookie('session_key')
 
-const PostDetail = function ({ detailPath, isPostMine }) {
+const PostDetail = function () {
     // DOM
-    const modalPopup = useRef()
+    const modalPopup = useRef();
 
     // State
-    const [scroll, setScroll] = useState()
-    const [post, setPost] = useState([])
-    let detailModal = useSelector((state) => state.detailModal)
-    let dispatch = useDispatch()
+    const [scroll, setScroll] = useState();
+    const [post, setPost] = useState([]);
+    let detailPath = useSelector((state) => state.detailPath);
+
+    let navigate = useNavigate();
 
     // SERVER
     const SERVER_DETAIL_POST = `${SERVER}/post/${detailPath}?request_post`
@@ -37,6 +37,7 @@ const PostDetail = function ({ detailPath, isPostMine }) {
             }
         }).then((response) => {
             let copy = [{ ...response.data.post }]
+            console.log(copy)
             setPost(copy)
         }).catch((error) => {
             console.error(error)
@@ -46,7 +47,7 @@ const PostDetail = function ({ detailPath, isPostMine }) {
     // 검은배경 클릭시 모달창 닫기
     const closeModal = (e) => {
         if (modalPopup.current === e.target) {
-            dispatch(changeDetailModal(detailModal))
+            navigate('/')
         }
     }
 
@@ -111,7 +112,7 @@ const PostDetail = function ({ detailPath, isPostMine }) {
                                 <p className='reply_content mt-5 text-sm py-5'>댓글내용</p>
                             </div>
                             {/* 댓글 작성자 조건에 따라 신고하기/삭제하기 */}
-                            {
+                            {/* {
                                 isPostMine ?
                                     <button className='absolute right-5 top-3'>
                                         <span className='hidden'>댓글 세부설정</span>
@@ -123,7 +124,7 @@ const PostDetail = function ({ detailPath, isPostMine }) {
                                             <img src={`${process.env.PUBLIC_URL}/img/siren.png`} alt="신고" />
                                         </div>
                                     </button>
-                            }
+                            } */}
                         </div>
                     </div>
                     <div className="reply_input_container">

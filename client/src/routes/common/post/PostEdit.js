@@ -6,7 +6,7 @@ import { changePostEditModal } from "../../../store/modalSlice";
 import { getCookie } from "../../../modules/handle_cookie";
 
 
-const PostEdit = function ({ detailPath, isPostMine }) {
+const PostEdit = function () {
     const SERVER = process.env.REACT_APP_BACK_BASE_URL;
     let session_key = getCookie('session_key')
     
@@ -14,10 +14,12 @@ const PostEdit = function ({ detailPath, isPostMine }) {
     const modalPopup = useRef()
 
     // State
-    const [scroll, setScroll] = useState()
-    const [post, setPost] = useState([])
-    const [content, setContent] = useState('')
-    let postEditModal = useSelector((state) => state.postEditModal)
+    const [scroll, setScroll] = useState();
+    const [post, setPost] = useState([]);
+    const [content, setContent] = useState('');
+    let postEditModal = useSelector((state) => state.postEditModal);
+    let detailPath = useSelector((state) => state.detailPath);
+
     let dispatch = useDispatch()
 
     // SERVER

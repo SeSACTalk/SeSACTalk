@@ -5,12 +5,13 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { getCookie } from "../../../modules/handle_cookie";
+import { setDetailPath } from "../../../store/postSlice";
 import { changeOptionModal } from "../../../store/modalSlice";
+
 /* components */
 import StaffProfile from "../../general/StaffProfile";
 import PostOption from "../post/PostOption";
 import ReportPost from "../post/ReportPost";
-import PostDetail from "../post/PostDetail";
 import PostEdit from "../post/PostEdit";
 
 // cookie
@@ -22,13 +23,14 @@ const SERVER = process.env.REACT_APP_BACK_BASE_URL
 const Posts = function () {
   // states
   const [postList, setPostList] = useState([]);
-  const [detailPath, setDetailPath] = useState('');
-  const [postId, setPostId] = useState('');
+  const [postInfo, setPostInfo] = useState({});
   const [isPostMine, setIsPostMine] = useState(false);
+
+  let detailPath = useSelector((state) => state.detailPath);
   let optionModal = useSelector((state) => state.optionModal);
   let reportModal = useSelector((state) => state.reportModal);
-  let detailModal = useSelector((state) => state.detailModal);
   let postEditModal = useSelector((state) => state.postEditModal);
+
   let dispatch = useDispatch();
 
   const SERVER_POST_POSTS = `${SERVER}/post/${username}/`;
@@ -131,8 +133,12 @@ const Posts = function () {
                       } catch (error) {
                         console.error(error)
                       }
-                      setDetailPath(`${element.username}/${element.id}`)
-                      setPostId(element.id)
+                      // 상세경로 저장
+                      dispatch(setDetailPath(`${element.username}/${element.id}`)) 
+                      // 게시글 세부정보 저장
+                      let copy = {...element};
+                      setPostInfo(copy)
+                      // 옵션 모달 띄우기
                       dispatch(changeOptionModal(optionModal))
                     }}>
                     <span className='hidden'>게시글 세부설정</span>
@@ -143,10 +149,9 @@ const Posts = function () {
             })
         }
         {/* Modals */}
-        {optionModal && <PostOption detailPath={detailPath} isPostMine={isPostMine} />}
-        {reportModal && <ReportPost postId={postId} isPostMine={isPostMine} />}
-        {detailModal && <PostDetail detailPath={detailPath} />}
-        {postEditModal && <PostEdit detailPath={detailPath} />}
+        {optionModal && <PostOption isPostMine={isPostMine} postInfo={postInfo} />}
+        {reportModal && <ReportPost isPostMine={isPostMine} postInfo={postInfo} />}
+        {postEditModal && <PostEdit />}
       </section>
     </div >
   )

@@ -3,10 +3,7 @@ import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { changeDetailModal } from "../../store/modalSlice";
 import { getCookie } from "../../modules/handle_cookie";
-/* component */
-import PostDetail from "../common/post/PostDetail";
 
 const ExploreResult = function () {
   const SERVER = process.env.REACT_APP_BACK_BASE_URL;
@@ -17,9 +14,6 @@ const ExploreResult = function () {
   const [result, setResult] = useState([]);
   const [isPostMine, setIsPostMine] = useState(false);
   const [detailPath, setDetailPath] = useState('');
-  let detailModal = useSelector((state) => state.detailModal);
-
-  let dispatch = useDispatch();
 
   // 검색결과 데이터 바인딩
   useEffect(() => {
@@ -41,7 +35,7 @@ const ExploreResult = function () {
   // 조건들 다 변하고 모달창뜨게
   useEffect(() => {
     if (detailPath.length !== 0) {
-      dispatch(changeDetailModal(detailModal))
+      // dispatch(changeDetailModal(detailModal))
     }
     return () => {
       setDetailPath('');
@@ -111,7 +105,6 @@ const ExploreResult = function () {
           </ul>
         </article>
       </main>
-      {detailModal && <PostDetail isPostMine={isPostMine} detailPath={detailPath} />}
     </div>
   );
 };

@@ -11,6 +11,7 @@ import { checkAuthMiddleware, checkInfoMiddleware } from './middleware/middlewar
 import Login from './routes/accounts/Login';
 import Main from './routes/common/main/Main';
 import Posts from './routes/common/main/Posts';
+import PostDetail from './routes/common/post/PostDetail';
 import ExploreResult from './routes/general/ExploreResult';
 import Admin from './routes/admin/Admin';
 import Chat from './routes/common/chat/Chat'
@@ -44,6 +45,7 @@ function App() {
         <Route path='/' element={<Main />}>
           <Route index element={<Posts />} />
           <Route path='explore/:tagName' element={<ExploreResult />} />
+          <Route path='post/:uuid' element={<PostDetail />} />
         </Route>
         <Route path='/chat' element={<Chat />}>
           <Route path=':chatRoom' element={<ChatDetail />} />

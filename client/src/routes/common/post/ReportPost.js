@@ -8,7 +8,7 @@ import axios from "axios";
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
 let session_key = getCookie('session_key')
 
-const ReportPost = function ({ postId }) {
+const ReportPost = function ({ postInfo }) {
     /* DOM */
     const modalPopup = useRef();
 
@@ -18,7 +18,7 @@ const ReportPost = function ({ postId }) {
     let dispatch = useDispatch();
 
     /* SERVER */
-    const SERVER_REPORT_POST = `${SERVER}/post/${postId}/report/`
+    const SERVER_REPORT_POST = `${SERVER}/post/${postInfo.Id}/report/`
 
     useEffect(() => {
         setScroll(window.scrollY)
