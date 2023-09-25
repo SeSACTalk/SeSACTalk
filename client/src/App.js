@@ -20,15 +20,15 @@ import ChatDetail from './routes/common/chat/ChatDetail';
 function App() {
   let navigate = useNavigate()
 
-  useEffect(() => {
-    checkAuthMiddleware()
-      .then(() => {
+  // useEffect(() => {
+  //   checkAuthMiddleware()
+  //     .then(() => {
      
-      })
-      .catch(() => {
-        navigate('/accounts/login');
-      });
-  }, []);
+  //     })
+  //     .catch(() => {
+  //       navigate('/accounts/login');
+  //     });
+  // }, []);
 
   return (
     <div className="App">

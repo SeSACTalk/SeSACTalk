@@ -1,37 +1,30 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import CryptoJS from 'crypto-js'
 import { useDispatch } from 'react-redux';
-import { changeUser } from '../../store/userSlice';
 
-import { useNavigate } from 'react-router-dom'
+import { changeUser } from '../../store/userSlice';
 import { setCookie } from '../../modules/handle_cookie';
 
-const SERVER = process.env.REACT_APP_BACK_BASE_URL
-const SERVER_ACCOUNTS_LOGIN = `${SERVER}/accounts/login/`
-
 const Login = function () {
-    const navigate = useNavigate()
-
     let dispatch = useDispatch();
 
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
 
     const handleLogin = async (e) => {
         e.preventDefault()
         const hashedPw = CryptoJS.SHA256(password).toString()
 
         try {
-            const response = await axios.post(SERVER_ACCOUNTS_LOGIN, { username, hashedPw })
+            const response = await axios.post('/accounts/login/', { username, hashedPw })
             // cookie 저장
-            setCookie('session_key', response.data.session_key, 60)
-            setCookie('username', response.data.username, 60)
+            await setCookie('session_key', response.data.session_key, 60)
+            await setCookie('username', response.data.username, 60)
 
             // 사용자명 저장
             dispatch(changeUser(response.data.username))
-
-            navigate('/')
+            window.location.href = '/'
         } catch (error) {
             console.error('Login failed', error.response)
         }
