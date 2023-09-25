@@ -3,10 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
-import { getCookie } from "../../../modules/handle_cookie";
-
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
-let session_key = getCookie('session_key')
 
 const PostDetail = function () {
     // DOM
@@ -20,9 +17,6 @@ const PostDetail = function () {
 
     let navigate = useNavigate();
 
-    // SERVER
-    const SERVER_DETAIL_POST = `${SERVER}/post/${detailPath}?request_post`
-
     // 스크롤 위치 추적
     useEffect(() => {
         setScroll(window.scrollY)
@@ -32,11 +26,7 @@ const PostDetail = function () {
 
     // 게시글 불러오기
     useEffect(() => {
-        axios.get(SERVER_DETAIL_POST, {
-            headers: {
-                'Authorization': session_key
-            }
-        }).then((response) => {
+        axios.get(`/post/${detailPath}?request_post`).then((response) => {
             let copy = [{ ...response.data.post }]
             setPost(copy)
             setIsPostMine(response.data.isPostMine)

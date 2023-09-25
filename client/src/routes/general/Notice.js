@@ -5,8 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { setDetailPath } from "../../store/postSlice";
 
-const SERVER = process.env.REACT_APP_BACK_BASE_URL
-
 const Notice = function () {
     // 상태
     const [dataResult, setDataResult] = useState([]);
@@ -16,13 +14,10 @@ const Notice = function () {
     let dispatch = useDispatch();
 
     useEffect(() => {
-        const SERVER_NOTICE_LIST = ""; // 나중에 추가해주세요
-        const SERVER_RECOMMEND_POST = `${SERVER}/post/recommend/`
-
         if (isNotice) { // notice경로로 요청
             return
         } else { // 추천게시물 경로로 요청
-            axios.get(SERVER_RECOMMEND_POST)
+            axios.get(`/post/recommend/`)
                 .then(
                     response => {
                         let copy = [...response.data];

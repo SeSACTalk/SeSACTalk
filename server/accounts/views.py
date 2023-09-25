@@ -30,18 +30,14 @@ class CheckSessionPermission(BasePermission, SessionDecoderMixin):
             # 인증되지 않은 사용자에게 403 Forbidden 응답을 반환
             raise PermissionDenied(ResponseMessages.FORBIDDEN_ACCESS)
 
-class VerifyUserView(APIView):
+class UserInfoView(APIView, SessionDecoderMixin):
     permission_classes = [CheckSessionPermission]
 
     def get(self, request: HttpRequest) -> Response:
-        return Response({'message': ResponseMessages.VERIFIED_SESSION_KEY}, status = status.HTTP_200_OK)
-
-class UserInfoView(APIView, SessionDecoderMixin):
-    def post(self, request: HttpRequest) -> Response:
         user = self.get_user_by_pk(request.META.get('HTTP_AUTHORIZATION'))
         if user.is_staff:
-            return Response({'role' : 'STAFF'}, status = status.HTTP_200_OK)
-        return Response({'role' : 'USER'}, status = status.HTTP_200_OK)
+            return Response({'role' : True}, status = status.HTTP_200_OK)
+        return Response({'role' : False}, status = status.HTTP_200_OK)
 
 class LoginView(APIView):
     def post(self, request: HttpRequest) -> Response:

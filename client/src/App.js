@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import './style.css'
 import './firebase-messaging-sw'
 
-import { checkAuthMiddleware, checkInfoMiddleware } from './middleware/middleware';
+import { checkAuthMiddleware } from './middleware/middleware';
 /* Components */
 import Login from './routes/accounts/Login';
 import Main from './routes/common/main/Main';
@@ -20,21 +20,15 @@ import ChatDetail from './routes/common/chat/ChatDetail';
 function App() {
   let navigate = useNavigate()
 
-  // useEffect(() => {
-  //   checkAuthMiddleware()
-  //     .then(() => {
-  //       checkInfoMiddleware()
-  //         .then(() => {
-  //           navigate('/admin')
-  //         })
-  //         .catch(() => {
-  //           navigate('/')
-  //         })
-  //     })
-  //     .catch(() => {
-  //       navigate('/accounts/login');
-  //     });
-  // }, []);
+  useEffect(() => {
+    checkAuthMiddleware()
+      .then(() => {
+     
+      })
+      .catch(() => {
+        navigate('/accounts/login');
+      });
+  }, []);
 
   return (
     <div className="App">

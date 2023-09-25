@@ -4,14 +4,10 @@ import { useParams } from 'react-router-dom';
 
 const AdminUserDetail = function () {
     const { id } = useParams()
-
-    const SERVER = process.env.REACT_APP_BACK_BASE_URL
-    const SERVER_USER_DETAIL = `${SERVER}/admin/user/${id}`
-
     const [user, setUser] = useState({})
 
     useEffect(() => {
-        axios.get(SERVER_USER_DETAIL)
+        axios.get(`/admin/user/${id}`)
             .then(
                 response => {
                     let copy = { ...response.data }
@@ -29,7 +25,7 @@ const AdminUserDetail = function () {
     const handleActiveStatus = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.put(SERVER_USER_DETAIL, {
+            const response = await axios.put(`/admin/user/${id}`, {
                 id: id,
                 is_active: 0
             })

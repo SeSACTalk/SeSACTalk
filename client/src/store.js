@@ -33,5 +33,6 @@ export default configureStore({
         minNav: minNav.reducer,
         exploreNav: exploreNav.reducer,
         noticeNav: noticeNav.reducer
-    }
+    },
+    // devTools: false
 }) 

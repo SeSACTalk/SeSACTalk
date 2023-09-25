@@ -7,9 +7,6 @@ import { getCookie } from "../../../modules/handle_cookie";
 
 const WritePost = function () {
   let username = getCookie('username');
-  let session_key = getCookie('session_key');
-  const SERVER = process.env.REACT_APP_BACK_BASE_URL;
-  const SERVER_POST_WRITE = `${SERVER}/post/${username}/`;
 
   // DOM
   const textLength = useRef();
@@ -35,13 +32,13 @@ const WritePost = function () {
     try {
       const response = await axios({
         method: "post",
-        url: SERVER_POST_WRITE,
+        url: `/post/${username}/`,
         data: formData,
         headers: {
-          'Content-Type': "multipart/form-data",
-          'Authorization': session_key
+          'Content-Type': "multipart/form-data"
         },
       });
+      console.log(response.status)
     }
     catch (error) {
       console.log(error.response.data);

@@ -2,12 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-import { getCookie } from "../../../modules/handle_cookie";
 import { changeOptionModal, changeReportModal, changePostEditModal } from "../../../store/modalSlice";
 import axios from "axios";
-
-const SERVER = process.env.REACT_APP_BACK_BASE_URL;
-const session_key = getCookie('session_key')
 
 const PostOption = function ({ isPostMine, postInfo }) {
     /* DOM */
@@ -21,9 +17,6 @@ const PostOption = function ({ isPostMine, postInfo }) {
     let detailPath = useSelector((state) => state.detailPath);
 
     let dispatch = useDispatch();
-
-    /* SERVER */
-    const SERVER_DETAIL_POST = `${SERVER}/post/${detailPath}`
 
     useEffect(() => {
         setScroll(window.scrollY)
@@ -57,11 +50,7 @@ const PostOption = function ({ isPostMine, postInfo }) {
                             <button className="block w-full h-full" type="button" onClick={async (e) => {
                                 e.preventDefault();
                                 try {
-                                    const response = await axios.delete(SERVER_DETAIL_POST, {
-                                        headers: {
-                                            'Authorization': session_key
-                                        }
-                                    });
+                                    const response = await axios.delete(`/post/${detailPath}`);
                                     dispatch(changeOptionModal(optionModal))
                                     window.location.reload();
                                 } catch (error) {

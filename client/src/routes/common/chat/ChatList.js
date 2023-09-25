@@ -7,8 +7,6 @@ import { getCookie } from "../../../modules/handle_cookie";
 import ChatExplore from "./ChatExplore";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
-const SERVER_CHAT_LIST = `${SERVER}/chat/`
-const session_key = getCookie('session_key')
 const username = getCookie('username')
 
 const ChatList = function () {
@@ -19,11 +17,7 @@ const ChatList = function () {
 
     // TODO: 특정 조건을 걸어서 채팅내용이 업데이트 되면 여기도 같이 업데이트 되어야 함
     useEffect(() => {
-        axios.get(SERVER_CHAT_LIST, {
-            headers: {
-                'Authorization': session_key
-            }
-        })
+        axios.get('/chat')
             .then(
                 response => {
                     let copy = [...response.data]

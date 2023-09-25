@@ -32,15 +32,9 @@ const Posts = function () {
 
   let dispatch = useDispatch();
 
-  const SERVER_POST_POSTS = `${SERVER}/post/${username}/`;
-
   // post 실시간으로 받아오기
   let post = useQuery(['post'], () => {
-    return axios.get(SERVER_POST_POSTS, {
-      headers: {
-        'Authorization': session_key
-      }
-    })
+    return axios.get(`/post/${username}`)
       .then(
         response => {
           return response.data

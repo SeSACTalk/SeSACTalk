@@ -9,7 +9,7 @@ import { getCookie } from "../../../modules/handle_cookie";
 const PostEdit = function () {
     const SERVER = process.env.REACT_APP_BACK_BASE_URL;
     let session_key = getCookie('session_key')
-    
+
     // DOM
     const modalPopup = useRef()
 
@@ -22,9 +22,6 @@ const PostEdit = function () {
 
     let dispatch = useDispatch()
 
-    // SERVER
-    const SERVER_DETAIL_POST = `${SERVER}/post/${detailPath}`
-
     // 스크롤 위치 추적
     useEffect(() => {
         setScroll(window.scrollY)
@@ -34,7 +31,7 @@ const PostEdit = function () {
 
     // 게시글 불러오기
     useEffect(() => {
-        axios.get(`${SERVER_DETAIL_POST}?request_post`, {
+        axios.get(`/post/${detailPath}?request_post`, {
             headers: {
                 'Authorization': session_key
             }
@@ -58,14 +55,10 @@ const PostEdit = function () {
     const updatePost = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.put(`${SERVER_DETAIL_POST}/`, {
+            const response = await axios.put(`/post/${detailPath}/`, {
                 'content': content,
-            }, {
-                headers: {
-                    // 'Content-Type': "multipart/form-data",
-                    'Authorization': session_key
-                }
             });
+            console.log(response.status)
         }
         catch (error) {
             console.log(error);

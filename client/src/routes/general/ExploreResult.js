@@ -3,7 +3,6 @@ import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 
 const ExploreResult = function () {
-  const SERVER = process.env.REACT_APP_BACK_BASE_URL;
   let { tagName } = useParams();
 
   // 상태
@@ -11,8 +10,7 @@ const ExploreResult = function () {
 
   // 검색결과 데이터 바인딩
   useEffect(() => {
-    const SERVER_EXPLORE_TAG_RESULT = `${SERVER}/explore/tag/${tagName}/`;
-    axios.get(SERVER_EXPLORE_TAG_RESULT)
+    axios.get(`/explore/tag/${tagName}/`)
       .then(
         response => {
           let copy = [...response.data]

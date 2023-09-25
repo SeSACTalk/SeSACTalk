@@ -32,7 +32,7 @@ async function requestPermission() {
   const token = await getToken(messaging, {
     vapidKey: process.env.REACT_APP_VAPID_KEY,
   });
-  
+
   const username = getCookie('username')
   if (username) {
     if (token) {
