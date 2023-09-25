@@ -79,7 +79,7 @@ const Notice = function () {
                                                 dispatch(setDetailPath(`${element.username}/${element.id}`))
                                             }}
                                         >
-                                            <span className="text-5xl text-gray-500">{i + 1}</span>
+                                            <span className="flex justify-center w-1/6 text-5xl text-gray-500">{i + 1}</span>
                                             <article className="text-sm">
                                                 <p>
                                                     <span className="text-lg mr-1">{element.name}</span>
