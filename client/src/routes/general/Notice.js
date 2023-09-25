@@ -33,6 +33,9 @@ const Notice = function () {
                     error => console.error(error)
                 )
         }
+        return () => {
+            setDataResult([]);
+        }
     }, [isNotice])
 
     return (
