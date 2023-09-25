@@ -40,50 +40,54 @@ const Navbar = function () {
             <h2 className="hidden">메인메뉴</h2>
             <ul className="nav mt-8 px-8 flex flex-col gap-7 text-2xl">
                 <li>
-                    <Link to='/'>
+                    <Link to='/' className="block w-full h-full">
                         <i className="fa fa-home mr-3" aria-hidden="true"></i>
                         <span>홈</span>
                     </Link>
                 </li>
                 <li>
-                    <Link to='#' onClick={(e) => {
-                        e.preventDefault();
-                        dispatch(showMinNav(minNav));
-                        dispatch(showExploreNav(exploreNav));
-                    }}>
+                    <Link to='#' className="block w-full h-full"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            dispatch(showMinNav(minNav));
+                            dispatch(showExploreNav(exploreNav));
+                        }}>
                         <i className="fa fa-search mr-3" aria-hidden="true"></i>
                         <span>검색</span>
                     </Link>
                 </li>
                 <li>
-                    <Link to='/chat' onClick={(e) => {
-                        dispatch(showMinNav(minNav))
-                    }}>
+                    <Link to='/chat' className="block w-full h-full"
+                        onClick={(e) => {
+                            dispatch(showMinNav(minNav))
+                        }}>
                         <i className="fa fa-comments-o mr-3" aria-hidden="true"></i>
                         <span>메시지</span>
                     </Link>
                 </li>
                 <li>
-                    <Link to='#' onClick={(e) => {
-                        e.preventDefault();
-                        dispatch(showMinNav(minNav));
-                        dispatch(showNoticeNav(noticeNav));
-                    }}>
+                    <Link to='#' className="block w-full h-full"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            dispatch(showMinNav(minNav));
+                            dispatch(showNoticeNav(noticeNav));
+                        }}>
                         <i className="fa fa-bell-o mr-3" aria-hidden="true"></i>
                         <span>알림</span>
                     </Link>
                 </li>
                 <li>
-                    <Link to='#' onClick={(e) => {
-                        e.preventDefault();
-                        dispatch(changeWirteModal(writeModal))
-                    }}>
+                    <Link to='#' className="block w-full h-full"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            dispatch(changeWirteModal(writeModal))
+                        }}>
                         <i className="fa fa-pencil-square-o mr-3" aria-hidden="true"></i>
                         <span>글쓰기</span>
                     </Link>
                 </li>
                 <li>
-                    <Link to='#'>
+                    <Link to='#' className="block w-full h-full">
                         <i className="fa fa-file-text-o mr-3" aria-hidden="true"></i>
                         <span>채용공고</span>
                     </Link>

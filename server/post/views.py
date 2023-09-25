@@ -1,6 +1,5 @@
 from django.db.models import Q, Count
 from django.http import HttpRequest
-from django.contrib.sessions.models import Session
 from datetime import date
 
 from rest_framework import status
@@ -77,7 +76,7 @@ class Post(APIView, OwnerPermissionMixin):
             print(f'<<CHECK INVALID DATA>>\n{postSerializer.errors}')
             return Response({'error': ResponseMessages.INVALID_DATA}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({'message': ResponseMessages.POST_CREATE_SUCCESS}, status=status.HTTP_201_CREATED)
+        return Response({'message': ResponseMessages.POST_CREATE_SUCCESS}, status = status.HTTP_201_CREATED)
 
 class PostDetail(APIView, OwnerPermissionMixin):
     def get(self, request: HttpRequest, **kwargs) -> Response:

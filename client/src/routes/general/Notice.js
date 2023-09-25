@@ -21,7 +21,6 @@ const Notice = function () {
             axios.get(SERVER_RECOMMEND_POST)
                 .then(
                     response => {
-                        console.log(response.data)
                         setDataResult(response.data)
                     }
                 )
@@ -43,7 +42,6 @@ const Notice = function () {
                 }}>추천게시물</button>
             </div>
             <div className="h-4/5 mt-6 overflow-scroll">
-                {console.log(isNotice)}
                 <ul>
                     {
                         dataResult.map((element, i) => {
