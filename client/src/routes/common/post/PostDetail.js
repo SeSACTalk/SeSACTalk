@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
 import { getCookie } from "../../../modules/handle_cookie";
@@ -15,6 +15,7 @@ const PostDetail = function () {
     // State
     const [scroll, setScroll] = useState();
     const [post, setPost] = useState([]);
+    const [isPostMine, setIsPostMine] = useState(true);
     let detailPath = useSelector((state) => state.detailPath);
 
     let navigate = useNavigate();
@@ -37,8 +38,8 @@ const PostDetail = function () {
             }
         }).then((response) => {
             let copy = [{ ...response.data.post }]
-            console.log(copy)
             setPost(copy)
+            setIsPostMine(response.data.isPostMine)
         }).catch((error) => {
             console.error(error)
         })
@@ -47,29 +48,35 @@ const PostDetail = function () {
     // 검은배경 클릭시 모달창 닫기
     const closeModal = (e) => {
         if (modalPopup.current === e.target) {
-            navigate('/')
+            navigate(-1)
         }
     }
 
     return (
-        <div className="modal detail_modal flex justify-center items-center absolute left-0 w-full h-screen" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>
+        <div className="modal detail_modal flex justify-center items-center absolute left-0 z-30 w-full h-screen" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>
             <div className="detail_container flex gap-5 rounded-lg w-4/5 h-4/5 p-5 bg-zinc-50">
                 {/* 게시글 내용 */}
                 <div className="content_container flex flex-col justify-between gap-2 w-1/2">
                     {
                         post.map((element, i) => {
                             return (
-                                <>
+                                <div className="flex flex-col gap-2 h-full" key={i}>
                                     {
-                                        element.img_path != null &&
-                                        <div className="img_wrap flex justify-center h-full rounded-xl bg-gray-100 overflow-hidden">
-                                            <img className="w-auto" src={SERVER + element.img_path} alt="첨부 이미지" />
-                                        </div>
+                                        element.img_path != null ?
+                                            <>
+                                                <div className="img_wrap flex justify-center h-1/2 rounded-xl bg-gray-100 overflow-hidden">
+                                                    <img className="w-auto" src={SERVER + element.img_path} alt="첨부 이미지" />
+                                                </div>
+                                                <div className="text_container h-1/2 rounded-xl bg-gray-100 p-5 text-gray-600">
+                                                    <p className="text">{element.content}</p>
+                                                </div>
+                                            </>
+                                            :
+                                            <div className="text_container h-full rounded-xl bg-gray-100 p-5 text-gray-600">
+                                                <p className="text">{element.content}</p>
+                                            </div>
                                     }
-                                    <div className="text_container h-full rounded-xl bg-gray-100 p-5 text-gray-600" key={i}>
-                                        <p className="text">{element.content}</p>
-                                    </div>
-                                </>
+                                </div>
                             )
                         })
                     }
@@ -112,7 +119,7 @@ const PostDetail = function () {
                                 <p className='reply_content mt-5 text-sm py-5'>댓글내용</p>
                             </div>
                             {/* 댓글 작성자 조건에 따라 신고하기/삭제하기 */}
-                            {/* {
+                            {
                                 isPostMine ?
                                     <button className='absolute right-5 top-3'>
                                         <span className='hidden'>댓글 세부설정</span>
@@ -124,7 +131,7 @@ const PostDetail = function () {
                                             <img src={`${process.env.PUBLIC_URL}/img/siren.png`} alt="신고" />
                                         </div>
                                     </button>
-                            } */}
+                            }
                         </div>
                     </div>
                     <div className="reply_input_container">

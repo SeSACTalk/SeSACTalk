@@ -3,13 +3,17 @@ import axios from "axios";
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 
+import { setDetailPath } from "../../store/postSlice";
+
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
 
 const Notice = function () {
     // 상태
-    let noticeNav = useSelector((state) => state.noticeNav);
     const [dataResult, setDataResult] = useState([]);
     const [isNotice, setIsNotice] = useState(true);
+    let noticeNav = useSelector((state) => state.noticeNav);
+
+    let dispatch = useDispatch();
 
     useEffect(() => {
         const SERVER_NOTICE_LIST = ""; // 나중에 추가해주세요
@@ -21,7 +25,8 @@ const Notice = function () {
             axios.get(SERVER_RECOMMEND_POST)
                 .then(
                     response => {
-                        setDataResult(response.data)
+                        let copy = [...response.data];
+                        setDataResult(copy);
                     }
                 )
                 .catch(
@@ -66,8 +71,14 @@ const Notice = function () {
                                 )
                             } else {
                                 return (
-                                    <li className="mb-3">
-                                        <Link to="#" className="flex items-center gap-4">
+                                    <li className="mb-3" key={i}>
+                                        <Link
+                                            to={`/post/${element.uuid}`}
+                                            className="flex items-center gap-4"
+                                            onClick={(e) => {
+                                                dispatch(setDetailPath(`${element.username}/${element.id}`))
+                                            }}
+                                        >
                                             <span className="text-5xl text-gray-500">{i + 1}</span>
                                             <article className="text-sm">
                                                 <p>

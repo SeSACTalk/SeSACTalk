@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 import { getCookie } from "../../../modules/handle_cookie";
-import { setDetailPath } from "../../../store/postSlice";
 import { changeOptionModal, changeReportModal, changePostEditModal } from "../../../store/modalSlice";
 import axios from "axios";
 
@@ -46,7 +45,6 @@ const PostOption = function ({ isPostMine, postInfo }) {
                         <li className="border-b border-black h-1/4">
                             <Link to={`post/${postInfo.uuid}`} className="flex justify-center items-center w-full h-full" onClick={() => {
                                 dispatch(changeOptionModal(optionModal))
-                                // dispatch(setDetailPath())
                             }}>상세보기</Link>
                         </li>
                         <li className="border-b border-black h-1/4">

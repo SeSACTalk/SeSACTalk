@@ -26,7 +26,6 @@ const Posts = function () {
   const [postInfo, setPostInfo] = useState({});
   const [isPostMine, setIsPostMine] = useState(false);
 
-  let detailPath = useSelector((state) => state.detailPath);
   let optionModal = useSelector((state) => state.optionModal);
   let reportModal = useSelector((state) => state.reportModal);
   let postEditModal = useSelector((state) => state.postEditModal);
@@ -62,7 +61,6 @@ const Posts = function () {
     }
   }, [post.data])
 
-  // TODO : post에 get요청하면 댓글갯수랑 좋아요 갯수도 같이 보내주면 좋을듯?
   return (
     <div className='main_content_container w-4/5 px-10'>
       <StaffProfile />
@@ -92,12 +90,12 @@ const Posts = function () {
                   <div className="post_footer flex justify-between items-center">
                     <h3 className="hidden">해시태그</h3>
                     {
-                      element.hash_tag_name.length != 0 ?
-                        (element.hash_tag_name.map((a, i) => {
+                      element.hash_tag_name.length !== 0 ?
+                        (element.hash_tag_name.map((element, i) => {
                           return (
                             <ul className="flex gap-3" key={i}>
                               <li className="px-2 py-1 rounded-xl bg-sesac-green text-white">
-                                #{a}
+                                #{element}
                               </li>
                             </ul>
                           )
