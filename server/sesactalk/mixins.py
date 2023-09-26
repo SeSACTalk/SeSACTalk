@@ -1,4 +1,5 @@
 from django.contrib.sessions.models import Session
+from rest_framework import exceptions
 
 from accounts.models import User
 
@@ -10,6 +11,9 @@ class SessionDecoderMixin:
         return int(user_id)
 
     def get_user_by_pk(self, frontend_session_key: str)-> User:
-        user = User.objects.get(id = self.extract_user_id_from_session(frontend_session_key))
+        try:
+            user = User.objects.get(id = self.extract_user_id_from_session(frontend_session_key))
 
-        return user
+            return user
+        except:
+            raise exceptions.AuthenticationFailed

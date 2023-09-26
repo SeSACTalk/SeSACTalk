@@ -1,4 +1,4 @@
-const setCookie = async function (name, value, exp) { // Cookie 설정
+const setCookie = function (name, value, exp) { // Cookie 설정
     let date = new Date();
     date.setTime(date.getTime() + exp * 24 * 60 * 60 * 1000);
     document.cookie = `${name}=${value}; path=/; expires=${date.toUTCString()};` // TODO : SSL 추가해야함

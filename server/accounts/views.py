@@ -35,9 +35,11 @@ class UserInfoView(APIView, SessionDecoderMixin):
 
     def get(self, request: HttpRequest) -> Response:
         user = self.get_user_by_pk(request.META.get('HTTP_AUTHORIZATION'))
+        
         if user.is_staff:
-            return Response({'role' : True}, status = status.HTTP_200_OK)
-        return Response({'role' : False}, status = status.HTTP_200_OK)
+            return Response({'role' : 'STAFF'}, status = status.HTTP_200_OK)
+        
+        return Response({'role' : 'USER'}, status = status.HTTP_200_OK)
 
 class LoginView(APIView):
     def post(self, request: HttpRequest) -> Response:
@@ -54,8 +56,8 @@ class LoginView(APIView):
             return Response({'error': ResponseMessages.INVALID_CREDENTIALS}, status = status.HTTP_400_BAD_REQUEST)
 
 class LogoutView(APIView, SessionDecoderMixin):
-    def post(self, request: HttpRequest) -> Response:
-        frontend_session_key = request.data['session_key']
+    def delete(self, request: HttpRequest) -> Response:
+        frontend_session_key = request.META.get('HTTP_AUTHORIZATION')
         
         if frontend_session_key:
             user = self.get_user_by_pk(frontend_session_key)

@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import CryptoJS from 'crypto-js'
-import { useDispatch } from 'react-redux';
 
-import { changeUser } from '../../store/userSlice';
+
 import { setCookie } from '../../modules/handle_cookie';
 
 const Login = function () {
-    let dispatch = useDispatch();
-
+    // states
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
@@ -19,17 +17,14 @@ const Login = function () {
         try {
             const response = await axios.post('/accounts/login/', { username, hashedPw })
             // cookie 저장
-            await setCookie('session_key', response.data.session_key, 60)
-            await setCookie('username', response.data.username, 60)
+            setCookie('session_key', response.data.session_key, 60);
+            setCookie('username', response.data.username, 60);
 
-            // 사용자명 저장
-            dispatch(changeUser(response.data.username))
-            window.location.href = '/'
+            window.location.href = '/';
         } catch (error) {
             console.error('Login failed', error.response)
         }
     }
-
     return (
         <form className='container mx-auto' onSubmit={handleLogin}>
             <div className='grid gap-6 mb-6 md:grid-cols-2'>
