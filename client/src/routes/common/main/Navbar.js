@@ -41,7 +41,7 @@ const Navbar = function () {
             <ul className="nav mt-8 px-8 flex flex-col gap-7 text-2xl">
                 <li>
                     <Link to='/' className="block w-full h-full">
-                        <i className="fa fa-home mr-3" aria-hidden="true"></i>
+                        <i className="fa fa-home inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>홈</span>
                     </Link>
                 </li>
@@ -52,7 +52,7 @@ const Navbar = function () {
                             dispatch(showMinNav(minNav));
                             dispatch(showExploreNav(exploreNav));
                         }}>
-                        <i className="fa fa-search mr-3" aria-hidden="true"></i>
+                        <i className="fa fa-search inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>검색</span>
                     </Link>
                 </li>
@@ -61,7 +61,7 @@ const Navbar = function () {
                         onClick={(e) => {
                             dispatch(showMinNav(minNav))
                         }}>
-                        <i className="fa fa-comments-o mr-3" aria-hidden="true"></i>
+                        <i className="fa fa-comments-o inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>메시지</span>
                     </Link>
                 </li>
@@ -72,7 +72,7 @@ const Navbar = function () {
                             dispatch(showMinNav(minNav));
                             dispatch(showNoticeNav(noticeNav));
                         }}>
-                        <i className="fa fa-bell-o mr-3" aria-hidden="true"></i>
+                        <i className="fa fa-bell-o inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>알림</span>
                     </Link>
                 </li>
@@ -82,13 +82,13 @@ const Navbar = function () {
                             e.preventDefault();
                             dispatch(changeWirteModal(writeModal))
                         }}>
-                        <i className="fa fa-pencil-square-o mr-3" aria-hidden="true"></i>
+                        <i className="fa fa-pencil-square-o inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>글쓰기</span>
                     </Link>
                 </li>
                 <li>
                     <Link to='#' className="block w-full h-full">
-                        <i className="fa fa-file-text-o mr-3" aria-hidden="true"></i>
+                        <i className="fa fa-file-text-o inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>채용공고</span>
                     </Link>
                 </li>

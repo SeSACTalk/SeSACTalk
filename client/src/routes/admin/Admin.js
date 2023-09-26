@@ -1,10 +1,15 @@
-/* eslint-disable */
 import React, { useEffect } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { useDispatch } from "react-redux";
 import axios from 'axios';
+
+import { setRole } from '../../store/userSlice';
+// components
+import AdminNavbar from './AdminNavbar';
 
 function Admin() {
     let navigate = useNavigate();
+    let dispatch = useDispatch();
 
     useEffect(() => {
         axios.get('/accounts/user/info/')
@@ -27,11 +32,9 @@ function Admin() {
     }, []);
 
     return (
-        <div className="Common">
-            <Link to={`/admin/user`}>사용자 조회</Link>&nbsp;|&nbsp;
-            <Link to={`/admin/auth/user`}>사용자 권한</Link>&nbsp;|&nbsp;
-            <Link to={`/admin/notify/report`}>신고 내역</Link>{/* &nbsp;|&nbsp; */}
-            <Outlet></Outlet>
+        <div className="admin_container flex relative">
+            <AdminNavbar />
+            <Outlet />
         </div>
     );
 }

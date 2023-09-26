@@ -14,7 +14,6 @@ const Main = function () {
     let dispatch = useDispatch();;
 
     // States
-    let role = useSelector((state) => state.role);
     let writeModal = useSelector((state) => state.writeModal);
     let minNav = useSelector((state) => state.minNav);
 
