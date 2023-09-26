@@ -1,10 +1,9 @@
 /* eslint-disable */
 import React, { useEffect } from 'react';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import axios from 'axios';
 
 function Accounts() {
-    const navigate = useNavigate();
 
     const handleLogout = async (e) => {
         e.preventDefault();
@@ -13,7 +12,7 @@ function Accounts() {
             console.log(response.status)
             deleteCookie('session_key')
             deleteCookie('username')
-            navigate('/')
+            window.location.href = '/'
         } catch (error) {
             console.error(error)
         }
@@ -24,7 +23,11 @@ function Accounts() {
             .then(
                 response => {
                     if (response.status === 200) {
-                        window.location.href = '/'
+                        if (response.data.role === 'USER') {
+                            window.location.href = '/'
+                        } else {
+                            window.location.href = '/admin'
+                        }
                     }
                 }
             )

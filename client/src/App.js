@@ -34,9 +34,9 @@ function App() {
           <Route path='chat' element={<Chat />}>
             <Route path=':chatRoom' element={<ChatDetail />} />
           </Route>
-          <Route path='/admin' element={<Admin />}></Route>
         </Route>
         {/* 관리자 */}
+        <Route path='/admin' element={<Admin />}></Route>
         <Route path='*' element={<div>없는 페이지에요</div>}></Route>
       </Routes>
     </div >

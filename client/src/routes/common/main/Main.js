@@ -13,11 +13,22 @@ const Main = function () {
     let navigate = useNavigate();
     let dispatch = useDispatch();;
 
+    // States
+    let role = useSelector((state) => state.role);
+    let writeModal = useSelector((state) => state.writeModal);
+    let minNav = useSelector((state) => state.minNav);
+
+
     useEffect(() => {
         axios.get('/accounts/user/info/')
             .then(
                 response => {
                     dispatch(setRole(response.data.role));
+                    if (response.data.role === 'USER') {
+                        return
+                    } else {
+                        navigate('/admin')
+                    }
                 }
             )
             .catch(
@@ -28,29 +39,14 @@ const Main = function () {
             )
     }, []);
 
-    // States
-    let role = useSelector((state) => state.role);
-    let writeModal = useSelector((state) => state.writeModal);
-    let minNav = useSelector((state) => state.minNav);
-    if (role === 'USER') {
-        return (
-            <div className='main_container flex relative'>
-                {minNav ? <MinNavbar /> : <Navbar />}
-                <Outlet />
-                {/* Modals */}
-                {writeModal && <WritePost />}
-            </div >
-        );
-    } else {
-        return (
-            <div className='main_container flex relative'>
-                <MinNavbar />
-                <Outlet />
-                {/* Modals */}
-                {writeModal && <WritePost />}
-            </div >
-        )
-    }
+    return (
+        <div className='main_container flex relative'>
+            {minNav ? <MinNavbar /> : <Navbar />}
+            <Outlet />
+            {/* Modals */}
+            {writeModal && <WritePost />}
+        </div >
+    );
 };
 
 export default Main;
