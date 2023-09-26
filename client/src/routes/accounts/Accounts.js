@@ -31,7 +31,6 @@ function Accounts() {
             .catch(
                 error => {
                     console.clear()
-                    console.warn(error)
                 }
             )
     }, []);
