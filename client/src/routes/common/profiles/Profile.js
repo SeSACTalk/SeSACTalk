@@ -100,16 +100,13 @@ function Profile() {
 
         return (
             <>
-                <button className="inline-block">
-                    <i className="fa fa-pencil-square-o text-2xl" aria-hidden="true" onClick={() => {
-                        dispatch(changeVerifyPasswordModal(verifyPasswordModal))
-                    }}></i>
+                <button class="inline-block px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm" onClick={() => {
+                    dispatch(changeVerifyPasswordModal(verifyPasswordModal))
+                }}>프로필 수정
                 </button>
-                <button className="inline-block">
-                    <i className="fa fa-thin fa-gear text-2xl" onClick={() => {
-                        dispatch(changeProfileSettingModal(profileSettingModal))
-                    }}></i>
-                </button>
+                <button class="inline-block px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm" onClick={() => {
+                    dispatch(changeProfileSettingModal(profileSettingModal))
+                }}>설정</button>
             </>
         )
     }
@@ -117,10 +114,7 @@ function Profile() {
         return (
             <>
                 <button class="inline-block px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm">팔로잉</button>
-                <button className="inline-block">
-                    <i className="fa fa-envelope-o text-2xl" aria-hidden="true"></i>
-                    {/* 팔로우 취소 일 때 -> <i class="fa fa-user-times" aria-hidden="true"></i> */}
-                </button>
+                <button class="inline-block px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm">메시지</button>
             </>
         )
     }
@@ -130,9 +124,9 @@ function Profile() {
         <>
             {profileData ? (
                 <>
-                    <header className="profile_header flex mb-8 min-h-full">
+                    <header className="profile_header flex justify-center items-center gap-4 mt-3 mb-5 min-h-full">
                         {/* 프로필 사진 */}
-                        <div className="profile_img_container flex justify-center w-2/6 h-36 ">
+                        <div className="profile_img_container  w-1/6 h-44 ">
                             <div className="profile_img_div w-36 TOP self-center rounded-full overflow-hidden border-4 border-solid border-sesac-green p-2">
                                 <img className="block p-2" src={`${SERVER + profileData.img_path}`} alt='프로필 이미지' />
                             </div>
@@ -144,7 +138,7 @@ function Profile() {
                     한줄소개
                     링크
                 */}
-                        <section className="profile_userinfo_container flex flex-col gap-4 w-6/12 h-44 px-1 ">
+                        <section className="profile_userinfo_container flex flex-col gap-5 w-6/12 h-44 px-1 ">
                             <div className="flex flex-col gap-1">
                                 <div className="profile_userinfo flex">
                                     <div>
@@ -174,20 +168,20 @@ function Profile() {
                                     </li>
                                 </ul>
                             </div>
-                            <div className="flex flex-col gap-2">
+                            <div className="flex flex-col gap-3">
                                 {
                                     profileData.content ?
-                                        <div className="flex flex-col gap-1 text-sm">
-                                            <div className="text-sesac-green">한줄소개</div>
-                                            <div className="font-semibold">{profileData.content}</div>
+                                        <div className="flex gap-5 text-sm">
+                                            <span className="text-sesac-green font-semibold">한줄소개</span>
+                                            <span className="text-slate-500">{profileData.content}</span>
                                         </div>
                                         : null
                                 }
                                 {
                                     profileData.link ?
-                                        <div className="text-sm">
-                                            <div className="text-sesac-green">링크</div>
-                                            <div className="font-semibold">{profileData.link}</div>
+                                        <div className="flex gap-5 text-sm">
+                                            <span className="text-sesac-green font-semibold">링크</span>
+                                            <span className="text-slate-500">{profileData.link}</span>
                                         </div>
                                         : null
                                 }
@@ -321,7 +315,7 @@ function ProfileSettingModal({ user_pk }) {
                     <li className="h-1/2">
                         <button className="block w-full h-full text-red-500" type="button" onClick={(e) => {
                             dispatch(changeProfileSettingModal(profileSettingModal));
-
+                            dispatch(changeVerifyPasswordModal(verifyPasswordModal));
                         }}>회원탈퇴</button>
                     </li>
                 </ul>

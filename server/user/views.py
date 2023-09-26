@@ -41,10 +41,16 @@ class Follow(APIView, SessionDecoderMixin):
     def delete(self, request:HttpRequest, profile_user_pk):
         pass
 
+
 class Follower(APIView, SessionDecoderMixin):
-    def get(self, request:HttpRequest, profile_user_pk):
-        follower_id_list = UserRelationship.objects.filter(user_follow = profile_user_pk).values_list('user_follower')
+    def get(self, request: HttpRequest, profile_user_pk):
+        follower_id_list = UserRelationship.objects.filter(user_follow=profile_user_pk).values_list('user_follower')
         profile = Profile.objects.filter(Q(user__in=follower_id_list)).select_related('user').order_by('-date')
         follower_serializer = FollowerSerializer(profile, many=True)
-        
-        return Response(follower_serializer.data, status = status.HTTP_200_OK)
+
+        return Response(follower_serializer.data, status=status.HTTP_200_OK)
+
+
+class UserWithdraw(APIView, SessionDecoderMixin):
+    def delete(self, request: HttpRequest, profile_user_pk):
+        pass

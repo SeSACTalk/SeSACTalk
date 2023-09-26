@@ -68,14 +68,14 @@ const VerifyPassword = function ({ url }) {
         <div className="modal verify_password_modal flex justify-center items-center absolute left-0 w-full h-screen" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>
             <div className={`detail_container flex gap-5 justify-center rounded-lg w-3/12 h-2/6 p-5 bg-zinc-50 ${isPasswordMatch ? '' : 'animate-spin-shake'}`}>
                 <div className="w-5/6">
-                    <div className="flex flex-col gap-12 justify-center items-center text-sm">
+                    <div className="flex flex-col gap-5 h-[88%] justify-between items-center text-sm">
                         <span className="text-gray-500 text-base font-semibold">비밀번호 확인</span>
-                        <form className="flex flex-col gap-8">
+                        <form className="flex flex-col justify-between h-28">
                             <div>
-                                <input
-                                    className="bg-transparent outline-sesac-green text-center placeholder:italic placeholder:text-slate-400"
-                                    type="password"
-                                    name="password"
+                                <input 
+                                    type="password" 
+                                    name="password" 
+                                    className="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sesac-sub focus:ring-sesac-sub block w-full rounded-md sm:text-sm focus:ring-1"
                                     placeholder="비밀번호를 입력해주세요"
                                     onChange={(e) => setPassword(e.target.value)}
                                     onKeyDown={(e) => {
@@ -84,7 +84,11 @@ const VerifyPassword = function ({ url }) {
                                         }
                                     }
                                     }
-                                />
+                                ></input>
+
+                                {/* 비밀번호를 잘못 입력했을 때
+                                  <input type="text" id="error" class="bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 dark:bg-gray-700 focus:border-red-500 block w-full p-2.5 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" placeholder="Error input">
+  <p class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oh, snapp!</span> Some error message.</p> */}
                             </div>
                             <button className="px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm" type="button" onClick={
                                 (e) => {

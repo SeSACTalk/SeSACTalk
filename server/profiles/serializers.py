@@ -15,7 +15,8 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ['img_path', 'content', 'link', 'date', 'course_status',
-                  'user_name', 'user_campusname','user_id', 'post_count', 'follower_count', 'follow_count']
+                  'user_name', 'user_campusname','user_id',
+                  'post_count', 'follower_count', 'follow_count']
 
     def get_img_path(self, profile):
         if profile.img_path:

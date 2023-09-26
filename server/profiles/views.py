@@ -92,39 +92,40 @@ class EditProfileView(APIView, SessionDecoderMixin):
             return Response({'error': 'EditProfile not found'}, status=status.HTTP_404_NOT_FOUND)
         
     def put(self, request:HttpRequest, username: str) -> Response:
-        # session_key로 user_id get
-        profile_user_id = user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
-
-        userObj = User.objects.get(id=user_id)
-        profileObj = Profile.objects.get(user=user_id)
-
-        # 역직렬화
-        editProfileUserData=request.data
-        userObj.birthdate=editProfileUserData['birthdate']
-        userObj.phone_number = editProfileUserData['phone_number']
-        userObj.email = editProfileUserData['email']
-        if editProfileUserData['password'] != '*****':
-            userObj.password = editProfileUserData['password']
-
-        profileObj.img_path  = editProfileUserData['profile_img_path']
-        profileObj.content  = editProfileUserData['profile_content']
-        profileObj.link  = editProfileUserData['profile_link']
-        profileObj.course_status  = editProfileUserData['profile_course_status']
-        if profileObj.course_status.lower() == 'true':
-            profileObj.course_status = True
-        else:
-            profileObj.course_status = False
-
-        second_course = editProfileUserData['second_course__name']
-        if second_course:
-            second_course_id = int(second_course)
-            userObj.second_course = Course.objects.get(id = second_course_id)
-
-        userObj.save()
-        profileObj.save()
-
-        print(userObj.birthdate, userObj.phone_number, userObj.email, userObj.password, second_course)
-        print(profileObj.img_path, profileObj.content, profileObj.link, profileObj.course_status)
+        # # session_key로 user_id get
+        # profile_user_id = user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
+        #
+        # userObj = User.objects.get(id=user_id)
+        # profileObj = Profile.objects.get(user=user_id)
+        #
+        # # 역직렬화
+        # editProfileUserData=request.data
+        # userObj.birthdate=editProfileUserData['birthdate']
+        # userObj.phone_number = editProfileUserData['phone_number']
+        # userObj.email = editProfileUserData['email']
+        # if editProfileUserData['password'] != '*****':
+        #     userObj.password = editProfileUserData['password']
+        #
+        # profileObj.img_path  = editProfileUserData['profile_img_path']
+        # profileObj.content  = editProfileUserData['profile_content']
+        # profileObj.link  = editProfileUserData['profile_link']
+        # profileObj.course_status  = editProfileUserData['profile_course_status']
+        # if profileObj.course_status.lower() == 'true':
+        #     profileObj.course_status = True
+        # else:
+        #     profileObj.course_status = False
+        #
+        # second_course = editProfileUserData['second_course__name']
+        # if second_course:
+        #     second_course_id = int(second_course)
+        #     userObj.second_course = Course.objects.get(id = second_course_id)
+        #
+        # userObj.save()
+        # profileObj.save()
+        #
+        # print(userObj.birthdate, userObj.phone_number, userObj.email, userObj.password, second_course)
+        # print(profileObj.img_path, profileObj.content, profileObj.link, profileObj.course_status)
+        print(request.data)
 
         return Response({'message': 'Data updated successfully'}, status=status.HTTP_200_OK)
 
