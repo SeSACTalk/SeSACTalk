@@ -72,7 +72,7 @@ const Login = function () {
                 <div className='grid grid-cols-2 justify-items-center'>
                     <div>계정이 없으신가요?</div>
                     <div>
-                        <a className='text-sesac-green' onClick={handleSignup}>가입하기</a>
+                        <a className='text-sesac-green cursor-pointer' onClick={handleSignup}>가입하기</a>
                     </div>
                 </div>
             </div>
