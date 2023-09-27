@@ -72,17 +72,21 @@ class EditProfileSerializer(serializers.ModelSerializer):
         return profile_img_path
 
     def get_second_course__name(self, profile):
+        second_course_name = ""
         try:
-            second_course_name = profile.user.second_course.name
+            if profile.course_status:
+                second_course_name = profile.user.second_course.name
         except:
-            return ""
+            pass
         return second_course_name
 
     def get_second_course__campus__name(self, profile):
+        second_course_campus_name = ""
         try:
-            second_course_campus_name = profile.user.second_course.campus.name
+            if profile.course_status:
+                second_course_campus_name = profile.user.second_course.campus.name
         except:
-            return ""
+            pass
         return second_course_campus_name
 
     class Meta:

@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from django.db.models import Count, Subquery, OuterRef, F
 from django.http import HttpRequest
 from rest_framework.response import Response
@@ -82,52 +83,72 @@ class EditProfileView(APIView, SessionDecoderMixin):
                     courseSerializer = CourseSerializer(courses_on_campus, many = True)
                     response_data['course'] = courseSerializer.data
 
+                print(response_data)
+
 
             except Exception:
                 print(Exception)
                 return Response({'error': 'EditProfile not found'}, status=status.HTTP_404_NOT_FOUND)
-        
+
             return Response(data = response_data, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'EditProfile not found'}, status=status.HTTP_404_NOT_FOUND)
-        
-    def put(self, request:HttpRequest, username: str) -> Response:
-        # # session_key로 user_id get
-        # profile_user_id = user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
-        #
-        # userObj = User.objects.get(id=user_id)
-        # profileObj = Profile.objects.get(user=user_id)
-        #
-        # # 역직렬화
-        # editProfileUserData=request.data
-        # userObj.birthdate=editProfileUserData['birthdate']
-        # userObj.phone_number = editProfileUserData['phone_number']
-        # userObj.email = editProfileUserData['email']
-        # if editProfileUserData['password'] != '*****':
-        #     userObj.password = editProfileUserData['password']
-        #
-        # profileObj.img_path  = editProfileUserData['profile_img_path']
-        # profileObj.content  = editProfileUserData['profile_content']
-        # profileObj.link  = editProfileUserData['profile_link']
-        # profileObj.course_status  = editProfileUserData['profile_course_status']
-        # if profileObj.course_status.lower() == 'true':
-        #     profileObj.course_status = True
-        # else:
-        #     profileObj.course_status = False
-        #
-        # second_course = editProfileUserData['second_course__name']
-        # if second_course:
-        #     second_course_id = int(second_course)
-        #     userObj.second_course = Course.objects.get(id = second_course_id)
-        #
-        # userObj.save()
-        # profileObj.save()
-        #
-        # print(userObj.birthdate, userObj.phone_number, userObj.email, userObj.password, second_course)
-        # print(profileObj.img_path, profileObj.content, profileObj.link, profileObj.course_status)
-        print(request.data)
 
-        return Response({'message': 'Data updated successfully'}, status=status.HTTP_200_OK)
+    def copyDict(self, key_list:list, dict_to_copy:dict):
+        result = {}
+        for key, value in dict_to_copy.items():
+            if key in key_list:
+                result[key] = value
+
+        return result
+    def put(self, request:HttpRequest, username: str) -> Response:
+        # session_key로 user_id get
+        user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
+
+        # 데이터 분류
+        user_keys = ['birthdate','phone_number','password','second_course']
+        profile_keys = ['img_path','content','link', 'course_status']
+        keys = user_keys + ['img_path','content','link']
+        dict = {}
+
+        for key in keys :
+            value = request.data[key]
+            if value and value not in ['null', '/media/profile/default_profile.png']:
+                if key in ['second_course', 'password']:
+                    if key == 'second_course' :
+                        if value :
+                            dict['course_status'] = False
+                            try:
+                                # request.data['second_course']가 int값일 때만 update값으로 사용
+                                dict[key] = int(value)
+                            except:
+                                pass
+                    if key == 'password':
+                        dict[key] = make_password(value)
+                else :
+                    dict[key] = value
+
+        user_dict = self.copyDict(user_keys, dict)
+        profile_dict = self.copyDict(profile_keys, dict)
+
+        print(profile_dict)
+
+        # update
+        userSerializer = UserSerializer(User.objects.get(pk=user_id), data = user_dict, partial=True)
+        profileSerializer = ProfileSerializer(Profile.objects.get(user_id=user_id),data = profile_dict, partial=True)
+
+        if userSerializer.is_valid() and profileSerializer.is_valid():
+            userSerializer.save()
+            profileSerializer.save()
+
+            return Response({'message': 'Data updated successfully'}, status=status.HTTP_200_OK)
+        else:
+            errors = {
+                'user' : userSerializer.errors,
+                'profile' : profileSerializer.errors
+            }
+            return Response({'errors': errors}, status.HTTP_400_BAD_REQUEST)
+
 
 class ProfilePost(APIView, SessionDecoderMixin):
     def get(self, request:HttpRequest, user_pk: int) -> Response:

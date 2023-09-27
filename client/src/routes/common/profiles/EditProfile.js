@@ -18,6 +18,7 @@ const EditProfile = function () {
 
     const [contentLength, setContentLength] = useState(0);
     const [editProfileImg, setEditProfileImg] = useState(null); // 프로필 미리보기 이미지
+    const [isSecondCourseEmpty, setIsSecondCourseEmpty] = useState(true);
     const [isPasswordEmpty, setIsPasswordEmpty] = useState(true);
     const [matchPasswordStatus, setMatchPasswordStatus] = useState(true) // 비밀번호 일치 상황
 
@@ -70,6 +71,14 @@ const EditProfile = function () {
         setMatchPasswordStatus(password === confirmPassword);
     }, [password + confirmPassword])
 
+    useEffect(() => {
+        setSecondCourseName('');
+    }, [secondCampusName])
+
+    useEffect(() => {
+        setIsSecondCourseEmpty(((secondCampusName != null)&&(secondCourseName == '')) && (profileCourseStatus));
+    }, [secondCourseName])
+
 
     useEffect(() => {
         async function fetchData() {
@@ -91,7 +100,7 @@ const EditProfile = function () {
                     setEditProfileImg(SERVER + data.profile.profile_img_path)
                     setProfileContent(data.profile.profile_content)
                     setProfileLink(data.profile.profile_link)
-                    setProfileCourseStatus(JSON.parse(data.profile.profile_course_status))
+                    setProfileCourseStatus(data.profile.profile_course_status)
 
                     setFirstCourseName(data.profile.first_course__name)
                     setFirstCampusName(data.profile.first_course__campus__name)
@@ -174,15 +183,10 @@ const EditProfile = function () {
         }
     };
 
-    const checkValidPassword = (password) => {
-            const pattern = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
-            return pattern.test(password);
-    }
-
     const edit = async (event) => { /* 수정 요청 */
         event.preventDefault();
             
-        if(!matchPasswordStatus) {
+        if((!matchPasswordStatus) | isSecondCourseEmpty) {
             return
         } else {
             let hashedPw = ''
@@ -192,19 +196,12 @@ const EditProfile = function () {
             formData.append("birthdate", birthdate);
             formData.append("phone_number", phoneNumber);
             formData.append("password", hashedPw);
+            formData.append("second_course", secondCourseName);
 
-            formData.append("profile_img_path", profileImgpath);
-            formData.append("profile_content", profileContent);
-            formData.append("profile_link", profileLink);
+            formData.append("img_path", profileImgpath);
+            formData.append("content", profileContent);
+            formData.append("link", profileLink);
 
-            formData.append("second_course_campus_name", secondCampusName)
-            formData.append("second_course_name", secondCourseName)
-            formData.append("profile_course_status", profileCourseStatus);
-
-            console.log("Submit :");
-            for (let pair of formData.entries()) {
-                console.log(pair[0] + ': ' + pair[1]);
-            }
 
             const _ = await axios({
                 method: "put",
@@ -321,7 +318,7 @@ const EditProfile = function () {
                             </div>
                             <input
                                 type="password"
-                                name="password"
+                                name="confirm_password"
                                 className={
                                     `${isPasswordEmpty ? (inputReadOnlyStyle) :
                                         matchPasswordStatus ? (`w-full ${inputStyle}`) : (`w-full ${inputNotMatchStyle}`)}`
@@ -332,8 +329,9 @@ const EditProfile = function () {
                                         setConfirmPassword((e.target.value).trim());
                                     }
                                 }
-                                {...`${isPasswordEmpty ? 'disabled readonly' : ''}`}
                                 value={confirmPassword}
+                                disabled = {`${isPasswordEmpty ? 'true' : 'false'}`}
+                                readOnly =  {`${isPasswordEmpty ? 'true' : 'false'}`}
                             />
                         </div>
                         {/* 한줄소개 */}
@@ -379,7 +377,7 @@ const EditProfile = function () {
                             <div className="font-bold text-sesac-green">전화번호</div>
                             <input
                                 type="tel"
-                                pattern="[0-9]{3}-[0-9]{3}-[0-9]{3}"
+                                pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}"
                                 name="phone_number"
                                 className={`w-full ${inputStyle}`}
                                 placeholder={`${phoneNumber}`}
@@ -392,19 +390,18 @@ const EditProfile = function () {
                             <input
                                 type="text"
                                 name="first_course_name"
-                                className={`w-full ${inputStyle}`}
+                                className={`w-full ${inputReadOnlyStyle}`}
                                 placeholder={`${firstCampusName} 캠퍼스, ${firstCourseName}`}
                                 disabled readonly
                             />
                         </div>
                         <div className="text-sm">
                             <div className="font-bold text-sesac-green">캠퍼스 2</div>
-                            {
-                                secondCampusName == undefined ? (
+                            {   profileCourseStatus ? (secondCampusName == undefined ? (
                                     <input
                                         type="text"
                                         name="second_course_name"
-                                        class={`w-full ${inputStyle}`}
+                                        class={`w-full ${inputReadOnlyStyle}`}
                                         placeholder={`${secondCampusName} 캠퍼스, ${secondCourseName}`}
                                     />
                                 ) : (
@@ -421,7 +418,15 @@ const EditProfile = function () {
                                             <CourseOptions courseList={courseList.second} />
                                         </select>
                                     </div>
-                                )
+                                )) : (
+                                    <input
+                                        type="text"
+                                        name="course_status"
+                                        className={`w-full ${inputReadOnlyStyle}`}
+                                        placeholder={`과정 승인을 기다리는 중입니다.`}
+                                        disabled readonly
+                                    />
+                                )    
 
                             }
                         </div>
@@ -435,7 +440,7 @@ const EditProfile = function () {
                         }>취소하기</button>
                         <input
                             type="submit"
-                            className={`${!matchPasswordStatus ? 
+                            className={`${!matchPasswordStatus| isSecondCourseEmpty ? 
                                 'cursor-not-allowed px-6 py-2 font-semibold text-sm bg-gray-400 text-white rounded-full shadow-sm' : 
                                 "cursor-pointer px-6 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm"}`}
                             value="수정하기"
@@ -445,7 +450,7 @@ const EditProfile = function () {
                                 }
                             }
                             }
-                            {...`${!matchPasswordStatus ? 'disabled' : ''}`}
+                            disabled = {`${(!matchPasswordStatus) | isSecondCourseEmpty ? 'true' : 'false'}`}
                         />
                     </div>
                 </form>

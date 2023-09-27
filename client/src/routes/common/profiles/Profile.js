@@ -139,7 +139,7 @@ function Profile() {
                     링크
                 */}
                         <section className="profile_userinfo_container flex flex-col gap-5 w-6/12 h-44 px-1 ">
-                            <div className="flex flex-col gap-1">
+                            <div className="flex flex-col gap-3">
                                 <div className="profile_userinfo flex">
                                     <div>
                                         <h2 className="inline-block font-bold text-2xl mr-3">{profileData.user_name}</h2>
@@ -181,7 +181,7 @@ function Profile() {
                                     profileData.link ?
                                         <div className="flex gap-5 text-sm">
                                             <span className="text-sesac-green font-semibold">링크</span>
-                                            <span className="text-slate-500">{profileData.link}</span>
+                                            <a className="text-slate-500" href={profileData.link}>{profileData.link}</a>
                                         </div>
                                         : null
                                 }
