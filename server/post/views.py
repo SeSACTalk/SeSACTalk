@@ -18,10 +18,11 @@ from post.constants import ResponseMessages
 from profiles.models import Profile
 from accounts.models import Campus, Course, User
 from profiles.serializers import EditProfileSerializer
-from accounts.serializers import UserSerializer, CampusSerializer, CourseSerializer
+from accounts.serializers import UserInfoSerializer
 from sesactalk.mixins import SessionDecoderMixin
 
-class Main(APIView):
+class Main(APIView, SessionDecoderMixin):
+    # TODO : pk, img_path, username, name, campus_name / 사용자명이 필요한곳이 프로필, 게시글(쿠키를 설정안하는 것을 고려)
     def get(self, request: HttpRequest) -> Response:
         # 캠퍼스 매니저의 pk를 가져오기
         manager_users = User.objects.filter(
@@ -34,7 +35,20 @@ class Main(APIView):
 
         # pk리스트
         managerProfileSerializer = ManagerProfileSerializer(manager_users, many = True)
-        return Response(managerProfileSerializer.data, status = status.HTTP_200_OK)
+
+        # 사용자 정보 가져오기
+        user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION'))        
+
+        user = User.objects.filter(id = user_id).get()
+
+        userSerializer = UserInfoSerializer(user)
+        
+        response_data = {
+            'manager': managerProfileSerializer.data,
+            'info': userSerializer.data
+        }
+        
+        return Response(response_data, status = status.HTTP_200_OK)
 
 
 class Post(APIView, OwnerPermissionMixin):

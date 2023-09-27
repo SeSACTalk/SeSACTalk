@@ -13,7 +13,7 @@ const StaffProfile = function () {
         axios.get('/')
             .then(
                 response => {
-                    let copy = [...response.data]
+                    let copy = [...response.data.manager]
                     setManagerProfileList(copy)
                 }
             )

@@ -64,3 +64,25 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
+
+class UserInfoSerializer(serializers.ModelSerializer):
+    profile_set = serializers.SerializerMethodField()
+    campus_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ('id', 'name', 'username', 'campus_name', 'profile_set')
+
+    def get_campus_name(self, user):
+        if user.second_course:
+            return user.second_course.campus.name
+        return user.first_course.campus.name
+
+    def get_profile_set(self, user):
+        profile_img = user.profile_set.first().img_path
+        if profile_img:
+            profile_img_path = profile_img
+        else:
+            profile_img_path = '/media/profile/default_profile.png'
+            
+        return profile_img_path

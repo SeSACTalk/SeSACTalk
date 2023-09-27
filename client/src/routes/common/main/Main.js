@@ -22,7 +22,7 @@ const Main = function () {
         axios.get('/accounts/user/info/')
             .then(
                 response => {
-                    dispatch(setRole(response.data.role));
+                    // dispatch(setRole(response.data.role));
                     if (response.data.role === 'USER') {
                         return
                     } else {
