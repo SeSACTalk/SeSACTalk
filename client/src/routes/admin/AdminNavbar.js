@@ -1,13 +1,23 @@
-import React from "react";
-import { Link, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Link } from 'react-router-dom';
 
 const AdminNavbar = function () {
-    const location = useLocation();
+    // states
+    let [info, setInfo] = useState({});
 
-
-    let dispatch = useDispatch();
-
+    useEffect(() => {
+        axios.get('/')
+            .then(
+                response => {
+                    let copy = { ...response.data.info }
+                    setInfo(copy)
+                }
+            )
+            .catch(
+                error => console.error(error)
+            )
+    }, []);
     return (
         <nav className="w-1/5 p-3 h-screen sticky top-0 border-solid border-x border-gray-300}">
             <div className="nav_profile flex justify-center">
@@ -17,7 +27,7 @@ const AdminNavbar = function () {
                             <img src={`${process.env.PUBLIC_URL}/img/logo.png`} alt='청년취업사관학교' />
                         </Link>
                     </div>
-                    <p className="mt-3 text-3xl text-sesac-green font-medium">서대문 캠퍼스</p>
+                    <p className="mt-3 text-3xl text-sesac-green font-medium">{info['campus_name']}</p>
                 </div>
             </div>
             <h2 className="hidden">메인메뉴</h2>

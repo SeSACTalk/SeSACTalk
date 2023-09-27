@@ -1,24 +1,37 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 
 import { changeWirteModal } from "../../../store/modalSlice";
-import { getCookie } from "../../../modules/handle_cookie";
 import { showMinNav, showExploreNav, showNoticeNav } from "../../../store/navSlice";
 
-const username = getCookie('username')
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
 
 const Navbar = function () {
     const location = useLocation();
 
     // states
+    let [info, setInfo] = useState({});
     let writeModal = useSelector((state) => state.wirteModal);
     let minNav = useSelector((state) => state.minNav);
     let exploreNav = useSelector((state) => state.exploreNav);
     let noticeNav = useSelector((state) => state.noticeNav);
 
     let dispatch = useDispatch();
+
+    useEffect(() => {
+        axios.get('/')
+            .then(
+                response => {
+                    let copy = {...response.data.info}
+                    setInfo(copy)
+                }
+            )
+            .catch(
+                error => console.error(error)
+            )
+    }, []);
 
     return (
         <nav className={`w-1/5 p-3 h-screen sticky top-0 border-solid border-x border-gray-300 ${location.pathname === '/' ? '' : minNav ? 'animate-hide pointer-events-none' : 'animate-intro'}`
@@ -31,8 +44,8 @@ const Navbar = function () {
                         </Link>
                     </div>
                     <div className='logo_wrap w-32 rounded-full overflow-hidden border border-solid border-gray-200'>
-                        <Link className="block w-full h-full p-2" to={`/profile/${username}`}>
-                            <img src={`${SERVER}/media/profile/default_profile.png`} alt={username} />
+                        <Link className="block w-full h-full p-2" to={`/profile/${info['username']}`}>
+                            <img src={SERVER + info['profile_set']} alt={info['username']} />
                         </Link>
                     </div>
                 </div>

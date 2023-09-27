@@ -22,7 +22,6 @@ from accounts.serializers import UserInfoSerializer
 from sesactalk.mixins import SessionDecoderMixin
 
 class Main(APIView, SessionDecoderMixin):
-    # TODO : pk, img_path, username, name, campus_name / 사용자명이 필요한곳이 프로필, 게시글(쿠키를 설정안하는 것을 고려)
     def get(self, request: HttpRequest) -> Response:
         # 캠퍼스 매니저의 pk를 가져오기
         manager_users = User.objects.filter(
