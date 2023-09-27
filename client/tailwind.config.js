@@ -6,7 +6,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'sesac-green': 'rgba(24,123,70,0.7)'
+        'sesac-green': 'rgba(24,123,70,0.7)',
+        'sesac-dark-green': '#10502D',
+        "sesac-sub": "#B3E56A"
       },
     },
   },

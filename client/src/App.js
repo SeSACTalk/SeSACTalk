@@ -11,6 +11,8 @@ import { checkAuthMiddleware, checkInfoMiddleware } from './middleware/middlewar
 import Main from './routes/common/main/Main'
 import Login from './routes/accounts/Login';
 import Admin from './routes/admin/Admin';
+import Recruit from './routes/general/Recruit';
+import Signup from './routes/accounts/Signup';
 
 function App() {
   let navigate = useNavigate()
@@ -36,10 +38,14 @@ function App() {
       <Routes>
         {/* 계정관련 */}
         <Route path='/accounts/login' element={<Login />}></Route>
+        <Route path='/accounts/signup' element={<Signup />}></Route>
         {/* 일반 사용자 */}
         <Route path='/' element={<Main />}></Route>
         {/* 관리자 */}
         <Route path='/admin' element={<Admin />}></Route>
+
+        {/* 채용공고 */}
+        <Route path='/recruit' element={<Recruit />}></Route>
       </Routes>
 
 
