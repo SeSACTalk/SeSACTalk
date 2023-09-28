@@ -1,36 +1,18 @@
 import React, { useEffect, useState } from "react"
 import axios from "axios"
 
-const AdminUserInfo = function () {
+const UserInfo = function () {
     const [users, setUsers] = useState([])
     const [campuses, setCampuses] = useState([])
     const [auth, setAuth] = useState(0)
     const [auth_status, setStatus] = useState(['가입', '승인', '보류', '거절'])
-    const [filter_data, setFilterData] = useState({
-        'username': '',
-        'campus': 0,
-        'signupdate': '',
-        'is_auth': 0,
-    })
-
-    const SERVER = process.env.REACT_APP_BACK_BASE_URL
-    const SERVER_AUTH_REQUEST = `${SERVER}/admin/auth/user/?username=${filter_data['username']}&campus=${filter_data['campus']}&date=${filter_data['signupdate']}&auth=${filter_data['is_auth']}`
 
     useEffect(() => {
-        axios.get(SERVER_AUTH_REQUEST)
+        axios.get(`/admin/auth/user/?username=&campus=&date=&auth=`)
             .then(
                 response => {
                     // 사용자 리스트 복사
                     let list_copy = [...response.data.list]
-                    list_copy.forEach((a, i) => {
-                        if (a.is_auth == 0) {
-                            a.is_auth = auth_status[0]
-                        } else if (a.is_auth == 20) {
-                            a.is_auth = auth_status[2]
-                        } else if (a.is_auth == 30) {
-                            a.is_auth = auth_status[3]
-                        }
-                    })
                     setUsers(list_copy)
 
                     // 캠퍼스 리스트 복사
@@ -41,73 +23,10 @@ const AdminUserInfo = function () {
                 error => {
                     console.error(error)
                 })
-    }, [filter_data])
-
-    const handleUserAuth = async (e) => {
-        e.preventDefault()
-        let user_id = e.target.dataset.id
-        try {
-            const response = await axios.put(SERVER_AUTH_REQUEST, {
-                id: user_id,
-                is_auth: auth
-            })
-        }
-        catch (error) {
-            console.error('Please Try Again', error.response.data)
-        }
-    }
+    }, [])
 
     return (
-        <div className="relative overflow-x-auto m-auto">
-            <div>
-                <h4>날짜순 정렬</h4>
-                <ul>
-                    <li>
-                        <label htmlFor='latest'>최신순</label>
-                        <input type="checkbox" name="latest" value='latest' onChange={e => {
-                            let copy = {...filter_data}
-                            copy['signupdate'] = e.target.value
-                            setFilterData(copy)
-                        }}></input>
-                        <label htmlFor='oldest' onChange={e => {
-                            let copy = {...filter_data}
-                            copy['signupdate'] = e.target.value
-                            setFilterData(copy)
-                        }}>과거순</label>
-                        <input type="checkbox" name="oldest" value='oldest'></input>
-                    </li>
-                </ul>
-                <h4>권한순 정렬</h4>
-                <ul>
-                    <li>
-                        {
-                            auth_status.map((a, i) => {
-                                return (
-                                    <>
-                                        <label htmlFor={`status${i}`} key={i}>{a}</label>
-                                        <input type="checkbox" name={`status${i}`} value={a}></input>
-                                    </>
-                                )
-                            })
-                        }
-                    </li>
-                </ul>
-                <h4>캠퍼스 정렬</h4>
-                <ul>
-                    <li>
-                        {
-                            campuses.map((a, i) => {
-                                return (
-                                    <>
-                                        <label htmlFor={a.id} key={i}>{a.name}</label>
-                                        <input type="checkbox" name={a.id} value={a.name}></input>
-                                    </>
-                                )
-                            })
-                        }
-                    </li>
-                </ul>
-            </div>
+        <div className="user_container w-4/5 p-10">
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead>
                     <tr>
@@ -138,9 +57,7 @@ const AdminUserInfo = function () {
                                         }
                                     </select>
                                 </td>
-                                <td><button data-id={a.id} onClick={
-                                    handleUserAuth
-                                }>전송</button></td>
+                                <td><button data-id={a.id}>전송</button></td>
                             </tr>
                         )
                     })}
@@ -149,4 +66,4 @@ const AdminUserInfo = function () {
         </div >
     )
 }
-export default AdminUserInfo
+export default UserInfo

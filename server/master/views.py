@@ -14,7 +14,7 @@ class UserListView(APIView):
     def get(self, request: HttpRequest) -> Response:
        # 필터들
         username_value = request.query_params.get('username')
-        campus_value = int(request.query_params.get('campus'))
+        campus_value = request.query_params.get('campus')
         approval_date_value = request.query_params.get('approvaldate')
 
         date_filter = None
@@ -24,19 +24,12 @@ class UserListView(APIView):
         else:
             date_filter = 'auth_approval_date'
 
-        users = None
         # default 유저 쿼리
-        # 각 필터들은 하나만 선택가능
-        if campus_value == 0: 
-            users = User.objects.filter(
-                Q(is_auth = 10) &
-                Q(username__contains = username_value) 
-                ).order_by(date_filter).all()
-        else:
-            users = User.objects.filter(
+        # 각 필터들은 하나만 선택가능, 두번째 과정을 수강중이면 조건을 다르게 타야할듯?
+        users = User.objects.filter(
                 Q(is_auth = 10) &
                 Q(username__contains = username_value) & 
-                Q(first_course__campus = campus_value) 
+                Q(first_course__campus__name = campus_value) 
                 ).order_by(date_filter).all()
             
         # 캠퍼스 쿼리
@@ -73,9 +66,9 @@ class UserAuthRequestView(APIView):
     def get(self, request: HttpRequest) -> Response:
         # 필터들
         username_value = request.query_params.get('username')
-        campus_value = int(request.query_params.get('campus'))
+        campus_value = request.query_params.get('campus')
         signupdate_date_value = request.query_params.get('signupdate')
-        auth_value = int(request.query_params.get('auth'))
+        auth_value = request.query_params.get('auth')
 
         date_filter = None
         # 날짜별 정렬

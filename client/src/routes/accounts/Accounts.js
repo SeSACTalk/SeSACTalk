@@ -1,7 +1,8 @@
-/* eslint-disable */
 import React, { useEffect } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import axios from 'axios';
+
+import { deleteCookie } from '../../modules/handle_cookie';
 
 function Accounts() {
 
