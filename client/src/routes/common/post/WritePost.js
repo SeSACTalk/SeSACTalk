@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { changeWirteModal } from "../../../store/modalSlice";
+import { changeWriteModal } from "../../../store/modalSlice";
 import { getCookie } from "../../../modules/handle_cookie";
 
 const WritePost = function () {
@@ -68,7 +68,7 @@ const WritePost = function () {
   // 검은배경 클릭시 모달창 닫기
   const closeModal = (e) => {
     if (modalPopup.current === e.target) {
-      dispatch(changeWirteModal(writeModal))
+      dispatch(changeWriteModal(writeModal))
     }
   }
 

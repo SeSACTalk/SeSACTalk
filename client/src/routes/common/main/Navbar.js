@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 
-import { changeWirteModal } from "../../../store/modalSlice";
+import { changeWriteModal } from "../../../store/modalSlice";
 import { showMinNav, showExploreNav, showNoticeNav } from "../../../store/navSlice";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
@@ -93,7 +93,7 @@ const Navbar = function () {
                     <Link to='#' className="block w-full h-full"
                         onClick={(e) => {
                             e.preventDefault();
-                            dispatch(changeWirteModal(writeModal))
+                            dispatch(changeWriteModal(writeModal))
                         }}>
                         <i className="fa fa-pencil-square-o inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>글쓰기</span>

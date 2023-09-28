@@ -1,10 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 let writeModal = createSlice({
-    name: 'wirteModal',
+    name: 'writeModal',
     initialState: false,
     reducers: {
-        changeWirteModal(state, action) {
+        changeWriteModal(state, action) {
             return !state
         }
     }
@@ -42,7 +42,7 @@ let postEditModal = createSlice({
 
 export { writeModal, optionModal, reportModal, postEditModal };
 
-export let { changeWirteModal } = writeModal.actions;
+export let { changeWriteModal } = writeModal.actions;
 export let { changeOptionModal } = optionModal.actions;
 export let { changeReportModal } = reportModal.actions;
 export let { changePostEditModal } = postEditModal.actions;
