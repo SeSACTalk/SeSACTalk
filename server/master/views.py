@@ -15,23 +15,18 @@ class UserListView(APIView):
        # 필터들
         username_value = request.query_params.get('username')
         campus_value = request.query_params.get('campus')
-        approval_date_value = request.query_params.get('approvaldate')
+        approval_date_value = request.query_params.get('date')
 
-        date_filter = None
-        # 날짜별 정렬
-        if approval_date_value == 'oldest':
-            date_filter = '-auth_approval_date'
-        else:
-            date_filter = 'auth_approval_date'
-
-        # default 유저 쿼리
-        # 각 필터들은 하나만 선택가능, 두번째 과정을 수강중이면 조건을 다르게 타야할듯?
+        print(approval_date_value)
+        # 정렬을 일주일내, 한달내로 하는것도 괜찮을거같은데..
         users = User.objects.filter(
-                Q(is_auth = 10) &
-                Q(username__contains = username_value) & 
-                Q(first_course__campus__name = campus_value) 
-                ).order_by(date_filter).all()
-            
+                (Q(is_auth = 10)| Q(is_auth = 11) | Q(is_auth = 21)) &
+                Q(username__contains = username_value) &
+                Q(auth_approval_date__contains = approval_date_value) &
+                (Q(first_course__campus__name__contains = campus_value) | 
+                 Q(second_course__campus__name__contains = campus_value))
+                ).all()
+        
         # 캠퍼스 쿼리
         campuses = Campus.objects.all()
 

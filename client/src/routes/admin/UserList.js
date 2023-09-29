@@ -3,11 +3,16 @@ import axios from "axios";
 import { Outlet, Link } from 'react-router-dom';
 
 const UserList = function () {
-    const [users, setUsers] = useState([]) // 사용자
-    const [campuses, setCampuses] = useState([]) // 캠퍼스별
+    // 상태들
+    const [users, setUsers] = useState([]); // 사용자 리스트
+    const [campuses, setCampuses] = useState([]); // 캠퍼스필터
+    const [username, setUsername] = useState(''); // 사용자명
+    const [campusName, setCampusName] = useState('');
+    const [date, setDate] = useState('');
 
     useEffect(() => {
-        axios.get(`/admin/user/?username=&campus=&date=`)
+        console.log(date)
+        axios.get(`/admin/user/?username=${username}&campus=${campusName}&date=${date}`)
             .then(
                 response => {
                     // 사용자 리스트 복사
@@ -24,36 +29,30 @@ const UserList = function () {
                     console.error(error)
                 }
             )
-    }, [])
+    }, [username + campusName + date])
 
     return (
         <div className="user_container w-4/5 p-10">
-            <div>
-                <h4>날짜순 정렬</h4>
-                <ul>
-                    <li>
-                        <label htmlFor='latest'>최신순</label>
-                        <input type="checkbox" name="latest" value='latest' ></input>
-                        <label htmlFor='oldest' >과거순</label>
-                        <input type="checkbox" name="oldest" value='oldest'></input>
-                    </li>
-                </ul>
-                <h4>캠퍼스 정렬</h4>
-                <ul>
+            <div className="flex gap-5">
+                <select
+                    className="border border-black h-6"
+                    defaultValue=''
+                    onChange={(e) => { setCampusName(e.target.value) }}>
+                    <option value=''>캠퍼스 카테고리</option>
                     {
-                        campuses.map((a, i) => {
+                        campuses.map((element, i) => {
                             return (
-                                <li key={i}>
-                                    <label htmlFor={a.id} key={i}>{a.name}</label>
-                                    <input type="checkbox" name={a.id} value={a.name}></input>
-                                </li>
+                                <option key={i} value={element.name}>{element.name}</option>
                             )
                         })
                     }
-                </ul>
+                </select>
+                <label className="hidden" htmlFor="latest">날짜선택</label>
+                <input id="date"
+                    className="border border-black h-6"
+                    type="date" onChange={(e) => setDate(e.target.value)} />
             </div>
-            <h4>사용자 리스트임</h4>
-            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <table className="w-full text-sm text-left text-gray-500">
                 <thead>
                     <tr>
                         <th scope="col" className="px-6 py-3">이름</th>
@@ -69,7 +68,7 @@ const UserList = function () {
                     {
                         users.map((element, i) => {
                             return (
-                                <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700" key={i}>
+                                <tr className="bg-white border-b " key={i}>
                                     <td className="px-6 py-4">
                                         <Link to={`${element.id}`}>{element.name}</Link>
                                     </td>
@@ -85,7 +84,7 @@ const UserList = function () {
                     }
                 </tbody>
             </table>
-        </div>
+        </div >
     )
 }
 

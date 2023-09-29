@@ -16,6 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UserAuthSerializer(serializers.ModelSerializer):
     first_course = CourseSerializer(read_only = True)
     second_course = CourseSerializer(read_only = True)
+    signup_date = serializers.DateTimeField(format = "%Y년 %m월 %d일")
 
     def validate(self, data):
         is_auth = data.get('is_auth')
