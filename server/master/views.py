@@ -17,8 +17,7 @@ class UserListView(APIView):
         campus_value = request.query_params.get('campus')
         approval_date_value = request.query_params.get('date')
 
-        print(approval_date_value)
-        # 정렬을 일주일내, 한달내로 하는것도 괜찮을거같은데..
+        # 사용자 가져오기
         users = User.objects.filter(
                 (Q(is_auth = 10)| Q(is_auth = 11) | Q(is_auth = 21)) &
                 Q(username__contains = username_value) &

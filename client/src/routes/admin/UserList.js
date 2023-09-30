@@ -11,7 +11,6 @@ const UserList = function () {
     const [date, setDate] = useState('');
 
     useEffect(() => {
-        console.log(date)
         axios.get(`/admin/user/?username=${username}&campus=${campusName}&date=${date}`)
             .then(
                 response => {
