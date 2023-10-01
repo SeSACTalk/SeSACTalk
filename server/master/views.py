@@ -20,7 +20,7 @@ class UserListView(APIView):
         # 사용자 가져오기
         users = User.objects.filter(
                 (Q(is_auth = 10)| Q(is_auth = 11) | Q(is_auth = 21)) &
-                Q(username__contains = username_value) &
+                Q(name__contains = username_value) &
                 Q(auth_approval_date__contains = approval_date_value) &
                 (Q(first_course__campus__name__contains = campus_value) | 
                  Q(second_course__campus__name__contains = campus_value))
