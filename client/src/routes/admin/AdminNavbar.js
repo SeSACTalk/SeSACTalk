@@ -39,7 +39,7 @@ const AdminNavbar = function () {
                     </Link>
                 </li>
                 <li>
-                    <Link to='user' className="block w-full h-full">
+                    <Link to='' className="block w-full h-full">
                         <i className="fa fa-search inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>사용자 조회</span>
                     </Link>

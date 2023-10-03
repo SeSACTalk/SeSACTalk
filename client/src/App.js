@@ -16,7 +16,7 @@ import Chat from './routes/common/chat/Chat'
 import ChatDetail from './routes/common/chat/ChatDetail';
 import Admin from './routes/admin/Admin';
 import UserList from './routes/admin/UserList';
-import UserInfo from './routes/admin/UserInfo';
+import UserVerify from './routes/admin/UserVerify';
 
 function App() {
   return (
@@ -37,8 +37,8 @@ function App() {
         </Route>
         {/* 관리자 */}
         <Route path='/admin' element={<Admin />}>
-          <Route path='user' element={<UserList />} />
-          <Route path='auth/user' element={<UserInfo />} />
+          <Route index element={<UserList />} />
+          <Route path='auth/user' element={<UserVerify />} />
           <Route path='chat' element={<Chat />} >
             <Route path=':chatRoom' element={<ChatDetail />} />
           </Route>

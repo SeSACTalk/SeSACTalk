@@ -13,14 +13,14 @@ from post.models import Report
 class UserListView(APIView):
     def get(self, request: HttpRequest) -> Response:
        # 필터들
-        username_value = request.query_params.get('username')
+        name_value = request.query_params.get('name')
         campus_value = request.query_params.get('campus')
         approval_date_value = request.query_params.get('date')
 
         # 사용자 가져오기
         users = User.objects.filter(
                 (Q(is_auth = 10)| Q(is_auth = 11) | Q(is_auth = 21)) &
-                Q(name__contains = username_value) &
+                Q(name__contains = name_value) &
                 Q(auth_approval_date__contains = approval_date_value) &
                 (Q(first_course__campus__name__contains = campus_value) | 
                  Q(second_course__campus__name__contains = campus_value))
@@ -59,33 +59,20 @@ class UserDetailVeiw(APIView):
 class UserAuthRequestView(APIView):
     def get(self, request: HttpRequest) -> Response:
         # 필터들
-        username_value = request.query_params.get('username')
+        name_value = request.query_params.get('name')
         campus_value = request.query_params.get('campus')
-        signupdate_date_value = request.query_params.get('signupdate')
+        signup_date_date_value = request.query_params.get('date')
         auth_value = request.query_params.get('auth')
-
-        date_filter = None
-        # 날짜별 정렬
-        if signupdate_date_value == 'oldest':
-            date_filter = '-signup_date'
-        else:
-            date_filter = 'signup_date'
-
-        users = None
-        # default 유저 쿼리
-        # 필터는 하나만 적용 가능, is_active false 제외할것인가..
-        if campus_value == 0: 
-            users = User.objects.exclude(is_auth = 10).filter(
-                Q(username__contains = username_value) & 
-                Q(is_auth = auth_value)
-                ).order_by(date_filter).all()
-        else:
-            users = User.objects.exclude(is_auth = 10).filter(
-                Q(username__contains = username_value) & 
-                Q(first_course__campus = campus_value) &
-                Q(is_auth = auth_value)
-                ).order_by(date_filter).all()
-            
+        
+        # 사용자 가져오기
+        users = User.objects.filter(
+                Q(is_auth__contains = auth_value) &
+                Q(name__contains = name_value) &
+                Q(signup_date__contains = signup_date_date_value) &
+                (Q(first_course__campus__name__contains = campus_value) | 
+                 Q(second_course__campus__name__contains = campus_value))
+                ).all()
+        
         # 캠퍼스 쿼리
         campuses = Campus.objects.all()
 

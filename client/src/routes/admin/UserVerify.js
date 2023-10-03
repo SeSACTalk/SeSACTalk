@@ -1,43 +1,32 @@
-import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import UserDetail from "./UserDeatil";
+import React, { useEffect, useState } from "react"
+import axios from "axios"
 
-const UserList = function () {
-    // 상태들
-    const [scroll, setScroll] = useState();
+const UserVerify = function () {
     const [users, setUsers] = useState([]); // 사용자 리스트
     const [campuses, setCampuses] = useState([]); // 캠퍼스필터
-    const [userId, setUserId] = useState();
     const [username, setUsername] = useState(''); // 사용자명
     const [campusName, setCampusName] = useState(''); // 캠퍼스명
     const [date, setDate] = useState(''); // 날짜기반
-    const [detail, setDetail] = useState(false);
+    const [auth, setAuth] = useState('');
 
     useEffect(() => {
-        axios.get(`/admin/user/?name=${username}&campus=${campusName}&date=${date}`)
+        axios.get(`/admin/auth/user/?name=${username}&campus=${campusName}&date=${date}&auth=${auth}`)
             .then(
                 response => {
                     // 사용자 리스트 복사
                     let list_copy = [...response.data.list]
                     setUsers(list_copy)
+                    console.log(list_copy)
 
                     // 캠퍼스 리스트 복사
                     let campus_copy = [...response.data.campus]
                     setCampuses(campus_copy)
-                }
-            )
+                })
             .catch(
                 error => {
                     console.error(error)
-                }
-            )
-    }, [username + campusName + date])
-
-    useEffect(() => {
-        setScroll(window.scrollY)
-        document.body.style.overflow = 'hidden';
-        return () => { document.body.style.overflow = 'unset'; }
-    }, [scroll])
+                })
+    }, [username + campusName + date + auth])
 
     return (
         <div className="user_container w-4/5 p-10">
@@ -56,7 +45,16 @@ const UserList = function () {
                             })
                         }
                     </select>
-                    <label className="hidden" htmlFor="latest">날짜선택</label>
+                    <select
+                        className="border border-black h-6"
+                        defaultValue=''
+                        onChange={(e) => { setAuth(e.target.value) }}>
+                        <option value=''>권한</option>
+                        <option value='10'>가입</option>
+                        <option value='20'>보류</option>
+                        <option value='30'>거절</option>
+                    </select>
+                    <label className="hidden" htmlFor="latest">가입신청날짜</label>
                     <input id="date"
                         className="border border-black h-6"
                         type="date" onChange={(e) => setDate(e.target.value)} />
@@ -73,45 +71,38 @@ const UserList = function () {
                 <thead>
                     <tr className="border-b">
                         <th scope="col" className="px-6 py-3">이름</th>
-                        <th scope="col" className="px-6 py-3">이메일</th>
+                        <th scope="col" className="px-6 py-3">연락처</th>
                         <th scope="col" className="px-6 py-3">캠퍼스</th>
                         <th scope="col" className="px-6 py-3">과정명</th>
                         <th scope="col" className="px-6 py-3">가입일</th>
-                        <th scope="col" className="px-6 py-3">활성화 여부</th>
-                        <th scope="col" className="px-6 py-3">관리자 여부</th>
+                        <th scope="col" className="px-6 py-3">상태</th>
                     </tr>
                 </thead>
                 <tbody>
                     {
                         users.map((element, i) => {
                             return (
-                                <tr className="border-b cursor-pointer" key={i}
-                                    onClick={() => {
-                                        setUserId(element.id)
-                                        setDetail(!detail)
-                                    }}>
+                                <tr className="border-b" key={i}>
                                     <td className="px-6 py-4">{element.name}</td>
-                                    <td className="px-6 py-4">{element.email}</td>
-                                    {
-                                        element.second_course ?
-                                            <td className="px-6 py-4">{element.second_course.campus.name}</td> :
-                                            <td className="px-6 py-4">{element.first_course.campus.name}</td>
-                                    }
-
+                                    <td className="px-6 py-4">{element.phone_number}</td>
+                                    <td className="px-6 py-4">{element.first_course.campus.name}</td>
                                     <td className="px-6 py-4">{element.first_course.name}</td>
                                     <td className="px-6 py-4">{element.signup_date}</td>
-                                    <td className="px-6 py-4">{String(element.is_active)}</td>
-                                    <td className="px-6 py-4">{String(element.is_staff)}</td>
+                                    <td className="px-6 py-4">
+                                        <select defaultValue={element.is_auth}>
+                                            <option value={element.is_auth}>가입</option>
+                                            <option value="10">승인</option>
+                                            <option value="20">보류</option>
+                                            <option value="30">거절</option>
+                                        </select>
+                                    </td>
                                 </tr>
                             )
                         })
                     }
                 </tbody>
             </table>
-            {/* modal */}
-            {detail && <UserDetail userId={userId} detail={detail} setDetail={setDetail} scroll={scroll} />}
         </div>
     )
 }
-
-export default UserList;
+export default UserVerify;

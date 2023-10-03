@@ -49,7 +49,7 @@ const UserDetail = memo(function ({ userId, detail, scroll, setDetail }) {
                                         <th scope="col" className="px-6 py-3">캠퍼스</th>
                                 }
                                 <th scope="col" className="px-6 py-3">가입승인일</th>
-                                <th scope="col" className="px-6 py-3">마지막 접속일</th>
+                                <th scope="col" className="px-6 py-3">활성화상태</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -65,7 +65,7 @@ const UserDetail = memo(function ({ userId, detail, scroll, setDetail }) {
                                     <td className="px-6 py-4">{user.first_course.name}</td>
                             }
                             <td className="px-6 py-4">{user.auth_approval_date}</td>
-                            <td className="px-6 py-4">{user.last_login}</td>
+                            <td className="px-6 py-4">{user.is_active}</td>
                         </tbody>
                     </table>
                 </div>
