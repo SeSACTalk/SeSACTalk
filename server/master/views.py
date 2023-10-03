@@ -46,15 +46,6 @@ class UserDetailVeiw(APIView):
         serializer = UserSerializer(user)
 
         return Response(serializer.data, status = status.HTTP_200_OK)
-    
-    def put(self, request: HttpRequest, **kwargs) -> Response:
-        user_id = kwargs['id']
-        user = User.objects.get(id = user_id)
-        serializer = UserSerializer(user, data = request.data, partial = True )
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'message': ResponseMessages.UPDATE_SUCCESS}, status = status.HTTP_201_CREATED)
-        return Response({'message':ResponseMessages.UPDATE_FAIL}, status = status.HTTP_400_BAD_REQUEST)
 
 class UserAuthRequestView(APIView):
     def get(self, request: HttpRequest) -> Response:
@@ -66,7 +57,7 @@ class UserAuthRequestView(APIView):
         
         # 사용자 가져오기
         users = User.objects.filter(
-                Q(is_auth__contains = auth_value) &
+                Q(is_auth = auth_value) &
                 Q(name__contains = name_value) &
                 Q(signup_date__contains = signup_date_date_value) &
                 (Q(first_course__campus__name__contains = campus_value) | 
@@ -88,11 +79,13 @@ class UserAuthRequestView(APIView):
     
     def put(self, request: HttpRequest) -> Response:
         user = User.objects.get(id = request.data['id'])
+
         serializer = UserAuthSerializer(user, data = request.data, partial = True)
         if serializer.is_valid():
             serializer.save()
-            return Response({'message': ResponseMessages.UPDATE_SUCCESS}, status = status.HTTP_201_CREATED)
-        return Response({'message':ResponseMessages.UPDATE_FAIL}, status = status.HTTP_400_BAD_REQUEST)
+            return Response({'message': ResponseMessages.UPDATE_SUCCESS}, status = status.HTTP_202_ACCEPTED)
+        
+        return Response({'message':ResponseMessages.UPDATE_FAIL}, status = status.HTTP_304_NOT_MODIFIED)
 
 class NotifycationReport(APIView):
     def get(self, request: HttpRequest) -> Response:

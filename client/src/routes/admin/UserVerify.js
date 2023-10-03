@@ -7,7 +7,7 @@ const UserVerify = function () {
     const [username, setUsername] = useState(''); // 사용자명
     const [campusName, setCampusName] = useState(''); // 캠퍼스명
     const [date, setDate] = useState(''); // 날짜기반
-    const [auth, setAuth] = useState('');
+    const [auth, setAuth] = useState(0);
 
     useEffect(() => {
         axios.get(`/admin/auth/user/?name=${username}&campus=${campusName}&date=${date}&auth=${auth}`)
@@ -16,7 +16,6 @@ const UserVerify = function () {
                     // 사용자 리스트 복사
                     let list_copy = [...response.data.list]
                     setUsers(list_copy)
-                    console.log(list_copy)
 
                     // 캠퍼스 리스트 복사
                     let campus_copy = [...response.data.campus]
@@ -49,8 +48,7 @@ const UserVerify = function () {
                         className="border border-black h-6"
                         defaultValue=''
                         onChange={(e) => { setAuth(e.target.value) }}>
-                        <option value=''>권한</option>
-                        <option value='10'>가입</option>
+                        <option value='0'>신규</option>
                         <option value='20'>보류</option>
                         <option value='30'>거절</option>
                     </select>
@@ -89,8 +87,22 @@ const UserVerify = function () {
                                     <td className="px-6 py-4">{element.first_course.name}</td>
                                     <td className="px-6 py-4">{element.signup_date}</td>
                                     <td className="px-6 py-4">
-                                        <select defaultValue={element.is_auth}>
-                                            <option value={element.is_auth}>가입</option>
+                                        <select defaultValue={element.is_auth}
+                                            onChange={(e) => {
+                                                axios.put('/admin/auth/user/', {
+                                                    id: element.id,
+                                                    is_auth: e.target.value
+                                                }).then(
+                                                    response => console.log(response.data.message)
+                                                ).catch(
+                                                    error => console.error(error)
+                                                )
+                                            }}>
+                                            <option value={element.is_auth}>{
+                                                element.is_auth == 0 ?
+                                                    "신규" : element.is_auth == 20 ?
+                                                        '보류' : '거절'}
+                                            </option>
                                             <option value="10">승인</option>
                                             <option value="20">보류</option>
                                             <option value="30">거절</option>
