@@ -1,24 +1,37 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 
-import { changeWirteModal } from "../../../store/modalSlice";
-import { getCookie } from "../../../modules/handle_cookie";
+import { changeWriteModal } from "../../../store/modalSlice";
 import { showMinNav, showExploreNav, showNoticeNav } from "../../../store/navSlice";
 
-const username = getCookie('username')
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
 
 const Navbar = function () {
     const location = useLocation();
 
     // states
+    let [info, setInfo] = useState({});
     let writeModal = useSelector((state) => state.wirteModal);
     let minNav = useSelector((state) => state.minNav);
     let exploreNav = useSelector((state) => state.exploreNav);
     let noticeNav = useSelector((state) => state.noticeNav);
 
     let dispatch = useDispatch();
+
+    useEffect(() => {
+        axios.get('/')
+            .then(
+                response => {
+                    let copy = {...response.data.info}
+                    setInfo(copy)
+                }
+            )
+            .catch(
+                error => console.error(error)
+            )
+    }, []);
 
     return (
         <nav className={`w-1/5 p-3 h-screen sticky top-0 border-solid border-x border-gray-300 ${location.pathname === '/' ? '' : minNav ? 'animate-hide pointer-events-none' : 'animate-intro'}`
@@ -31,8 +44,8 @@ const Navbar = function () {
                         </Link>
                     </div>
                     <div className='logo_wrap w-32 rounded-full overflow-hidden border border-solid border-gray-200'>
-                        <Link className="block w-full h-full p-2" to={`/profile/${username}`}>
-                            <img src={`${SERVER}/media/profile/default_profile.png`} alt={username} />
+                        <Link className="block w-full h-full p-2" to={`/profile/${info['username']}`}>
+                            <img src={SERVER + info['profile_set']} alt={info['username']} />
                         </Link>
                     </div>
                 </div>
@@ -41,7 +54,7 @@ const Navbar = function () {
             <ul className="nav mt-8 px-8 flex flex-col gap-7 text-2xl">
                 <li>
                     <Link to='/' className="block w-full h-full">
-                        <i className="fa fa-home mr-3" aria-hidden="true"></i>
+                        <i className="fa fa-home inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>홈</span>
                     </Link>
                 </li>
@@ -52,7 +65,7 @@ const Navbar = function () {
                             dispatch(showMinNav(minNav));
                             dispatch(showExploreNav(exploreNav));
                         }}>
-                        <i className="fa fa-search mr-3" aria-hidden="true"></i>
+                        <i className="fa fa-search inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>검색</span>
                     </Link>
                 </li>
@@ -61,7 +74,7 @@ const Navbar = function () {
                         onClick={(e) => {
                             dispatch(showMinNav(minNav))
                         }}>
-                        <i className="fa fa-comments-o mr-3" aria-hidden="true"></i>
+                        <i className="fa fa-comments-o inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>메시지</span>
                     </Link>
                 </li>
@@ -72,7 +85,7 @@ const Navbar = function () {
                             dispatch(showMinNav(minNav));
                             dispatch(showNoticeNav(noticeNav));
                         }}>
-                        <i className="fa fa-bell-o mr-3" aria-hidden="true"></i>
+                        <i className="fa fa-bell-o inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>알림</span>
                     </Link>
                 </li>
@@ -80,15 +93,15 @@ const Navbar = function () {
                     <Link to='#' className="block w-full h-full"
                         onClick={(e) => {
                             e.preventDefault();
-                            dispatch(changeWirteModal(writeModal))
+                            dispatch(changeWriteModal(writeModal))
                         }}>
-                        <i className="fa fa-pencil-square-o mr-3" aria-hidden="true"></i>
+                        <i className="fa fa-pencil-square-o inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>글쓰기</span>
                     </Link>
                 </li>
                 <li>
                     <Link to='#' className="block w-full h-full">
-                        <i className="fa fa-file-text-o mr-3" aria-hidden="true"></i>
+                        <i className="fa fa-file-text-o inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>채용공고</span>
                     </Link>
                 </li>

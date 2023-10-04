@@ -1,14 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { getCookie } from "../../../modules/handle_cookie";
 import { changeReportModal } from "../../../store/modalSlice"
 import axios from "axios";
 
-const SERVER = process.env.REACT_APP_BACK_BASE_URL
-let session_key = getCookie('session_key')
-
-const ReportPost = function ({ postId }) {
+const ReportPost = function ({ postInfo }) {
     /* DOM */
     const modalPopup = useRef();
 
@@ -16,9 +12,6 @@ const ReportPost = function ({ postId }) {
     const [scroll, setScroll] = useState()
     let reportModal = useSelector((state) => state.reportModal)
     let dispatch = useDispatch();
-
-    /* SERVER */
-    const SERVER_REPORT_POST = `${SERVER}/post/${postId}/report/`
 
     useEffect(() => {
         setScroll(window.scrollY)
@@ -30,14 +23,12 @@ const ReportPost = function ({ postId }) {
     const reportPost = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(SERVER_REPORT_POST, {
-                'content_type': 'post',
-                'category': e.target.value
-            }, {
-                headers: {
-                    'Authorization': session_key
-                }
-            });
+            const response = await axios.post(`/post/${postInfo.Id}/report/`
+                , {
+                    'content_type': 'post',
+                    'category': e.target.value
+                });
+            console.log(response.status)
         } catch (error) {
             console.error(error)
         } finally {

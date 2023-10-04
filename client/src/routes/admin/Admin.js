@@ -1,38 +1,46 @@
-/* eslint-disable */
 import React, { useEffect } from 'react';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
+import axios from 'axios';
 
-import { getCookie } from '../../modules/handle_cookie'
-import { checkAuthMiddleware, checkInfoMiddleware } from '../../middleware/middleware';
-
+import { setRole } from '../../store/userSlice';
+// components
+import AdminNavbar from './AdminNavbar';
+import WritePost from '../common/post/WritePost';
 
 function Admin() {
     let navigate = useNavigate();
+    let dispatch = useDispatch();
+
+    // States
+    let writeModal = useSelector((state) => state.writeModal);
+
     useEffect(() => {
-        checkAuthMiddleware()
-            .then(() => {
-                checkInfoMiddleware()
-                    .then(() => {
-                        navigate('/admin')
-                    })
-                    .catch(() => {
-                        console.log('어드민 페이지이므로 접근이 불가합니다.\n/general로 이동')
-                        navigate('/general')
-                    })
-            })
-            .catch(() => {
-                navigate('/accounts/login');
-            });
+        axios.get('/accounts/user/info/')
+            .then(
+                response => {
+                    // dispatch(setRole(response.data.role));
+                    if (response.data.role === 'USER') {
+                        navigate('/')
+                    } else {
+                        return
+                    }
+                }
+            )
+            .catch(
+                error => {
+                    console.error(error.message)
+                    navigate('/accounts/login');
+                }
+            )
     }, []);
 
-    let username = getCookie('username')
     return (
-        <div className="Common">
-            <Link to={`/post/${username}`}>Post</Link>&nbsp;|&nbsp;
-            <Link to={`/admin/user`}>사용자 조회</Link>&nbsp;|&nbsp;
-            <Link to={`/admin/auth/user`}>사용자 권한</Link>&nbsp;|&nbsp;
-            <Link to={`/admin/notify/report`}>신고 내역</Link>{/* &nbsp;|&nbsp; */}
-            <Outlet></Outlet>
+        <div className="admin_container flex relative">
+            <AdminNavbar />
+            <Outlet />
+            {/* Modals */}
+            {writeModal && <WritePost />}
         </div>
     );
 }

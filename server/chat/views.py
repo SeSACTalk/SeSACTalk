@@ -26,7 +26,6 @@ class ChatListView(APIView, SessionDecoderMixin):
 
         return Response(serializer.data, status = status.HTTP_200_OK)
 
-    # TODO 채팅방 생성하는 view도 만들어야함
     def post(self, request: HttpRequest) -> Response:
         my_user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
         target_id = request.data['user']
@@ -55,7 +54,7 @@ class ChatListView(APIView, SessionDecoderMixin):
             if serializer.is_valid():
                 serializer.save()
         
-        return Response(serializer.data,status = status.HTTP_200_OK)
+        return Response(serializer.data, status = status.HTTP_200_OK)
 
         # post요청을 먼저 해서 채팅방을 생성한 후 get요청을 통해 이동이 되게하는게 맞을듯..
 class ChatDetailView(APIView, SessionDecoderMixin):

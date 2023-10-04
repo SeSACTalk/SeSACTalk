@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 
-import { changeWirteModal } from "../../../store/modalSlice";
+import { changeWriteModal } from "../../../store/modalSlice";
 import { showMinNav, showExploreNav, showNoticeNav } from "../../../store/navSlice";
 /* Components */
 import Explore from "../../general/Explore";
@@ -87,7 +87,7 @@ const MinNavbar = function () {
                     <li>
                         <Link to='#' onClick={(e) => {
                             e.preventDefault();
-                            dispatch(changeWirteModal(writeModal))
+                            dispatch(changeWriteModal(writeModal))
                         }}>
                             <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
                             <span className="hidden">글쓰기</span>

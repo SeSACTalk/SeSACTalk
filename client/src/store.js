@@ -1,8 +1,9 @@
-import { configureStore, createSlice } from '@reduxjs/toolkit'
+import { configureStore, createSlice } from '@reduxjs/toolkit';
 
-import user from './store/userSlice'
-import { writeModal, optionModal, reportModal, detailModal, postEditModal } from './store/modalSlice'
-import { minNav, exploreNav, noticeNav } from './store/navSlice'
+import role from './store/userSlice';
+import detailPath from './store/postSlice';
+import { writeModal, optionModal, reportModal, postEditModal } from './store/modalSlice';
+import { minNav, exploreNav, noticeNav } from './store/navSlice';
 
 let chatStatus = createSlice({
     name: 'chatStatus',
@@ -18,17 +19,20 @@ export let { changeStatus } = chatStatus.actions;
 
 export default configureStore({
     reducer: {
-        user: user.reducer,
+        // user
+        role: role.reducer,
         chatStatus: chatStatus.reducer,
+        // post
+        detailPath: detailPath.reducer,
         // modal
         writeModal: writeModal.reducer,
         optionModal: optionModal.reducer,
         reportModal: reportModal.reducer,
-        detailModal: detailModal.reducer,
         postEditModal: postEditModal.reducer,
         // nav
         minNav: minNav.reducer,
         exploreNav: exploreNav.reducer,
         noticeNav: noticeNav.reducer
-    }
+    },
+    // devTools: false
 }) 

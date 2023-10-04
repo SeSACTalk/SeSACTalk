@@ -1,14 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-let user = createSlice({
-    name: 'user',
+let role = createSlice({
+    name: 'role',
     initialState: '',
     reducers: {
-        changeUser(state, action) {
+        setRole(state, action) {
             return action.payload
         }
     }
-})
+});
 
-export default user;
-export let { changeUser } = user.actions;
+export default role;
+export let { setRole } = role.actions;

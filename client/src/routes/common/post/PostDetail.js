@@ -1,26 +1,21 @@
 import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-
-import { changeDetailModal } from "../../../store/modalSlice";
-import { getCookie } from "../../../modules/handle_cookie";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
-let session_key = getCookie('session_key')
 
-const PostDetail = function ({ detailPath, isPostMine }) {
+const PostDetail = function () {
     // DOM
-    const modalPopup = useRef()
+    const modalPopup = useRef();
 
     // State
-    const [scroll, setScroll] = useState()
-    const [post, setPost] = useState([])
-    let detailModal = useSelector((state) => state.detailModal)
-    let dispatch = useDispatch()
+    const [scroll, setScroll] = useState();
+    const [post, setPost] = useState([]);
+    const [isPostMine, setIsPostMine] = useState(true);
+    let detailPath = useSelector((state) => state.detailPath);
 
-    // SERVER
-    const SERVER_DETAIL_POST = `${SERVER}/post/${detailPath}?request_post`
+    let navigate = useNavigate();
 
     // 스크롤 위치 추적
     useEffect(() => {
@@ -31,13 +26,10 @@ const PostDetail = function ({ detailPath, isPostMine }) {
 
     // 게시글 불러오기
     useEffect(() => {
-        axios.get(SERVER_DETAIL_POST, {
-            headers: {
-                'Authorization': session_key
-            }
-        }).then((response) => {
+        axios.get(`/post/${detailPath}?request_post`).then((response) => {
             let copy = [{ ...response.data.post }]
             setPost(copy)
+            setIsPostMine(response.data.isPostMine)
         }).catch((error) => {
             console.error(error)
         })
@@ -46,29 +38,35 @@ const PostDetail = function ({ detailPath, isPostMine }) {
     // 검은배경 클릭시 모달창 닫기
     const closeModal = (e) => {
         if (modalPopup.current === e.target) {
-            dispatch(changeDetailModal(detailModal))
+            navigate(-1)
         }
     }
 
     return (
-        <div className="modal detail_modal flex justify-center items-center absolute left-0 w-full h-screen" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>
+        <div className="modal detail_modal flex justify-center items-center absolute left-0 z-30 w-full h-screen" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>
             <div className="detail_container flex gap-5 rounded-lg w-4/5 h-4/5 p-5 bg-zinc-50">
                 {/* 게시글 내용 */}
                 <div className="content_container flex flex-col justify-between gap-2 w-1/2">
                     {
                         post.map((element, i) => {
                             return (
-                                <>
+                                <div className="flex flex-col gap-2 h-full" key={i}>
                                     {
-                                        element.img_path != null &&
-                                        <div className="img_wrap flex justify-center h-full rounded-xl bg-gray-100 overflow-hidden">
-                                            <img className="w-auto" src={SERVER + element.img_path} alt="첨부 이미지" />
-                                        </div>
+                                        element.img_path != null ?
+                                            <>
+                                                <div className="img_wrap flex justify-center h-1/2 rounded-xl bg-gray-100 overflow-hidden">
+                                                    <img className="w-auto" src={SERVER + element.img_path} alt="첨부 이미지" />
+                                                </div>
+                                                <div className="text_container h-1/2 rounded-xl bg-gray-100 p-5 text-gray-600">
+                                                    <p className="text">{element.content}</p>
+                                                </div>
+                                            </>
+                                            :
+                                            <div className="text_container h-full rounded-xl bg-gray-100 p-5 text-gray-600">
+                                                <p className="text">{element.content}</p>
+                                            </div>
                                     }
-                                    <div className="text_container h-full rounded-xl bg-gray-100 p-5 text-gray-600" key={i}>
-                                        <p className="text">{element.content}</p>
-                                    </div>
-                                </>
+                                </div>
                             )
                         })
                     }

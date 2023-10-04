@@ -5,12 +5,13 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { getCookie } from "../../../modules/handle_cookie";
+import { setDetailPath } from "../../../store/postSlice";
 import { changeOptionModal } from "../../../store/modalSlice";
+
 /* components */
 import StaffProfile from "../../general/StaffProfile";
 import PostOption from "../post/PostOption";
 import ReportPost from "../post/ReportPost";
-import PostDetail from "../post/PostDetail";
 import PostEdit from "../post/PostEdit";
 
 // cookie
@@ -22,24 +23,18 @@ const SERVER = process.env.REACT_APP_BACK_BASE_URL
 const Posts = function () {
   // states
   const [postList, setPostList] = useState([]);
-  const [detailPath, setDetailPath] = useState('');
-  const [postId, setPostId] = useState('');
+  const [postInfo, setPostInfo] = useState({});
   const [isPostMine, setIsPostMine] = useState(false);
+
   let optionModal = useSelector((state) => state.optionModal);
   let reportModal = useSelector((state) => state.reportModal);
-  let detailModal = useSelector((state) => state.detailModal);
   let postEditModal = useSelector((state) => state.postEditModal);
-  let dispatch = useDispatch();
 
-  const SERVER_POST_POSTS = `${SERVER}/post/${username}/`;
+  let dispatch = useDispatch();
 
   // post 실시간으로 받아오기
   let post = useQuery(['post'], () => {
-    return axios.get(SERVER_POST_POSTS, {
-      headers: {
-        'Authorization': session_key
-      }
-    })
+    return axios.get(`/post/${username}`)
       .then(
         response => {
           return response.data
@@ -60,7 +55,6 @@ const Posts = function () {
     }
   }, [post.data])
 
-  // TODO : post에 get요청하면 댓글갯수랑 좋아요 갯수도 같이 보내주면 좋을듯?
   return (
     <div className='main_content_container w-4/5 px-10'>
       <StaffProfile />
@@ -90,12 +84,12 @@ const Posts = function () {
                   <div className="post_footer flex justify-between items-center">
                     <h3 className="hidden">해시태그</h3>
                     {
-                      element.hash_tag_name.length != 0 ?
-                        (element.hash_tag_name.map((a, i) => {
+                      element.hash_tag_name.length !== 0 ?
+                        (element.hash_tag_name.map((element, i) => {
                           return (
                             <ul className="flex gap-3" key={i}>
                               <li className="px-2 py-1 rounded-xl bg-sesac-green text-white">
-                                #{a}
+                                #{element}
                               </li>
                             </ul>
                           )
@@ -131,8 +125,12 @@ const Posts = function () {
                       } catch (error) {
                         console.error(error)
                       }
-                      setDetailPath(`${element.username}/${element.id}`)
-                      setPostId(element.id)
+                      // 상세경로 저장
+                      dispatch(setDetailPath(`${element.username}/${element.id}`)) 
+                      // 게시글 세부정보 저장
+                      let copy = {...element};
+                      setPostInfo(copy)
+                      // 옵션 모달 띄우기
                       dispatch(changeOptionModal(optionModal))
                     }}>
                     <span className='hidden'>게시글 세부설정</span>
@@ -143,10 +141,9 @@ const Posts = function () {
             })
         }
         {/* Modals */}
-        {optionModal && <PostOption detailPath={detailPath} isPostMine={isPostMine} />}
-        {reportModal && <ReportPost postId={postId} isPostMine={isPostMine} />}
-        {detailModal && <PostDetail detailPath={detailPath} />}
-        {postEditModal && <PostEdit detailPath={detailPath} />}
+        {optionModal && <PostOption isPostMine={isPostMine} postInfo={postInfo} />}
+        {reportModal && <ReportPost isPostMine={isPostMine} postInfo={postInfo} />}
+        {postEditModal && <PostEdit />}
       </section>
     </div >
   )

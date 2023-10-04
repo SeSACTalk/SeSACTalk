@@ -7,8 +7,6 @@ import { getCookie } from "../../../modules/handle_cookie";
 import ChatExplore from "./ChatExplore";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
-const SERVER_CHAT_LIST = `${SERVER}/chat/`
-const session_key = getCookie('session_key')
 const username = getCookie('username')
 
 const ChatList = function () {
@@ -17,13 +15,8 @@ const ChatList = function () {
     const [chatExploreModal, setChatExplore] = useState(false);
     let chatStatus = useSelector((state) => state.chatStatus);
 
-    // TODO: 특정 조건을 걸어서 채팅내용이 업데이트 되면 여기도 같이 업데이트 되어야 함
     useEffect(() => {
-        axios.get(SERVER_CHAT_LIST, {
-            headers: {
-                'Authorization': session_key
-            }
-        })
+        axios.get('/chat')
             .then(
                 response => {
                     let copy = [...response.data]
@@ -38,7 +31,7 @@ const ChatList = function () {
     }, [chatStatus])
 
     return (
-        <div className="main_content_container w-1/4 h-screen border-r border-gray-300">
+        <div className="main_content_container w-1/4 border-r border-gray-300">
             <div className="user_info_wrap relative px-5 mt-14">
                 <h4 className="text-2xl font-medium">메시지</h4>
                 <div className="img_wrap w-1/4 h-1/4">
@@ -57,7 +50,7 @@ const ChatList = function () {
                     ) : (
                         <ul className="chat_list flex flex-col gap-2 mt-3">
                             {target.map((element, i) => (
-                                <li className="box-border p-3" key={i}>
+                                <li className="box-border p-2" key={i}>
                                     <Link className="flex items-center gap-3" to={`${element.id}`}>
                                         <div className="img_wrap w-1/5 h-1/5 rounded-full border border-gray-200 overflow-hidden p-1.5">
                                             <img src={SERVER + element.profile_img_path} alt={element.target_name} />

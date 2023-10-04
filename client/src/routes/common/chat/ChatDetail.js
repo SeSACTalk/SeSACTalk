@@ -3,8 +3,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 
-
-import { getCookie } from "../../../modules/handle_cookie";
 import { changeStatus } from "../../../store";
 
 const ChatDetail = function () {
@@ -16,14 +14,10 @@ const ChatDetail = function () {
     // 서버 주소
     const SERVER = process.env.REACT_APP_BACK_BASE_URL
     const { chatRoom } = useParams();
-    const SERVER_CHAT_DETAIL = `${SERVER}/chat/${chatRoom}`
 
     // 웹 소켓 주소
     const SERVER_WEB_SOCKET = process.env.REACT_APP_BACK_SOCKET_URL
     const SERVER_CHAT = `${SERVER_WEB_SOCKET}/ws/chat/${chatRoom}`
-
-    // 세션키
-    const session_key = getCookie('session_key');
 
     let ws = useRef(null);
 
@@ -40,11 +34,7 @@ const ChatDetail = function () {
 
     // 이전 대화내용 DB로부터 가져오기
     useEffect(() => {
-        axios.get(SERVER_CHAT_DETAIL, {
-            headers: {
-                'Authorization': session_key
-            }
-        })
+        axios.get(`/chat/${chatRoom}`)
             .then(
                 response => {
                     let copy = { ...response.data };
@@ -77,9 +67,9 @@ const ChatDetail = function () {
         }
 
         return () => {
-            // if (ws.current) {
-            setSocketConnected(false)
-            // }
+            if (ws.current) {
+                setSocketConnected(false)
+            }
         }
     }, [chatRoom])
 
@@ -115,7 +105,7 @@ const ChatDetail = function () {
     }, [chatDetail]);
 
     return (
-        <div className="w-[calc(75%-6rem)] h-screen">
+        <div className="w-3/4 h-screen">
             <h4 className="hidden">상세채팅</h4>
             {
                 profile && <div className="chat_user_info flex items-center h-20 p-1 gap-5 border-b border-gray-200">

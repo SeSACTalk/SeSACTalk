@@ -10,10 +10,10 @@ const StaffProfile = function () {
 
     // 관리자 프로필 받아오기
     useEffect(() => {
-        axios.get(SERVER)
+        axios.get('/')
             .then(
                 response => {
-                    let copy = [...response.data]
+                    let copy = [...response.data.manager]
                     setManagerProfileList(copy)
                 }
             )

@@ -207,7 +207,7 @@ class RecommendPostSerilaier(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = (
-           'id', 'content', 'date', 'user', 'campus_name','username', 'name', 'like'
+           'id', 'uuid', 'content', 'date', 'user', 'campus_name','username', 'name', 'like'
         )
 
     def get_campus_name(self, post):

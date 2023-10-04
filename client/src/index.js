@@ -9,10 +9,17 @@ import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import store from './store'
+import axios from 'axios';
+import { getCookie } from './modules/handle_cookie';
 
 const queryClient = new QueryClient();
 
+const session_key = getCookie('session_key');
+axios.defaults.baseURL = process.env.REACT_APP_BACK_BASE_URL;
+axios.defaults.headers.common['Authorization'] = session_key;
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>

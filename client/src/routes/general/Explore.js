@@ -21,9 +21,8 @@ const Explore = function () {
 
     // 태그 검색
     const exploreByTag = async (content) => {
-        const SERVER_TAG_EXPLORE = `${SERVER}/explore/tag?name=${content}`
         try {
-            const response = await axios.get(SERVER_TAG_EXPLORE)
+            const response = await axios.get(`/explore/tag?name=${content}`)
             let copy = [...response.data]
             setExploreResult(copy)
         }
@@ -34,9 +33,8 @@ const Explore = function () {
 
     // 사용자 검색
     const exploreByUser = async (content) => {
-        const SERVER_USER_EXPLORE = `${SERVER}/explore/user?name=${content}`
         try {
-            const response = await axios.get(SERVER_USER_EXPLORE)
+            const response = await axios.get(`/explore/user?name=${content}`)
             let copy = [...response.data]
             setExploreResult(copy)
         } catch (error) {

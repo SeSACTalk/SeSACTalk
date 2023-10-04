@@ -5,8 +5,6 @@ import { Routes, Route } from 'react-router-dom';
 import './style.css'
 import './firebase-messaging-sw'
 
-// import { checkAuthMiddleware } from './middleware/middleware';
-
 /* Components */
 import Accounts from './routes/accounts/Accounts';
 import Login from './routes/accounts/Login';
@@ -16,7 +14,6 @@ import PostDetail from './routes/common/post/PostDetail';
 import ExploreResult from './routes/general/ExploreResult';
 import Chat from './routes/common/chat/Chat'
 import ChatDetail from './routes/common/chat/ChatDetail';
-import Admin from './routes/admin/Admin';
 
 function App() {
   return (
@@ -36,7 +33,13 @@ function App() {
           </Route>
         </Route>
         {/* 관리자 */}
-        <Route path='/admin' element={<Admin />}></Route>
+        <Route path='/admin' element={<Admin />}>
+          <Route index element={<UserList />} />
+          <Route path='auth/user' element={<UserVerify />} />
+          <Route path='chat' element={<Chat />} >
+            <Route path=':chatRoom' element={<ChatDetail />} />
+          </Route>
+        </Route>
         <Route path='*' element={<div>없는 페이지에요</div>}></Route>
       </Routes>
     </div >

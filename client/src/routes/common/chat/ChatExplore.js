@@ -1,10 +1,11 @@
 import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
-import { getCookie } from "../../../modules/handle_cookie";
+
+import { useNavigate } from "react-router-dom";
 
 const ChatExplore = function (props) {
     const SERVER = process.env.REACT_APP_BACK_BASE_URL;
-    const session_key = getCookie('session_key')
+    let navigate = useNavigate();
 
     /* DOM */
     const modalPopup = useRef()
@@ -33,9 +34,8 @@ const ChatExplore = function (props) {
      * @param {string} data - 인풋에 입력된 데이터
      */
     const getExploreResult = async (data) => {
-        const SERVER_USERS_EXPLORE = `${SERVER}/explore/user?name=${data}`
         try {
-            const response = await axios.get(SERVER_USERS_EXPLORE);
+            const response = await axios.get(`/explore/user?name=${data}`);
             let copy = [...response.data]
             setExploreResult(copy)
         } catch (error) {
@@ -59,16 +59,12 @@ const ChatExplore = function (props) {
      * @param {number} target_id 
      */
     const createChat = async (target_id) => {
-        const SERVER_CHAT = `${SERVER}/chat/`
         try {
-            const response = await axios.post(SERVER_CHAT, {
+            const response = await axios.post(`/chat/`, {
                 'user': target_id
-            }, {
-                headers: {
-                    'Authorization': session_key
-                }
             })
             props.setChatExplore(!props.chatExploreModal)
+            navigate(`/chat/${response.data.id}`)
         }
         catch (error) {
             console.error(error)
@@ -87,11 +83,11 @@ const ChatExplore = function (props) {
                 </div>
                 <div className="post_option flex-row gap-2 w-5/6 h-4/5 px-2 py-3 overflow-auto">
                     <ul>
-                        {/* 클릭시 채팅방이 생긴 후 이동이 되어야함 */}
                         {exploreResult.map((element, i) => {
                             return (
                                 <li className="cursor-pointer mb-3"
-                                    onClick={(e) => { createChat(element.id) }}>
+                                    onClick={(e) => { createChat(element.id) }}
+                                    key={i}>
                                     <div className="result_info flex items-center h-20 p-1 gap-5">
                                         <div className="img_wrap w-16 h-16 rounded-full overflow-hidden border border-solid border-gray-200 p-1">
                                             <img src={SERVER + element.profile_img_path} alt={element.name} />

@@ -1,30 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-
-import { changeDetailModal } from "../../store/modalSlice";
-import { getCookie } from "../../modules/handle_cookie";
-/* component */
-import PostDetail from "../common/post/PostDetail";
 
 const ExploreResult = function () {
-  const SERVER = process.env.REACT_APP_BACK_BASE_URL;
-  let session_key = getCookie('session_key')
   let { tagName } = useParams();
 
   // 상태
   const [result, setResult] = useState([]);
-  const [isPostMine, setIsPostMine] = useState(false);
-  const [detailPath, setDetailPath] = useState('');
-  let detailModal = useSelector((state) => state.detailModal);
-
-  let dispatch = useDispatch();
 
   // 검색결과 데이터 바인딩
   useEffect(() => {
-    const SERVER_EXPLORE_TAG_RESULT = `${SERVER}/explore/tag/${tagName}/`;
-    axios.get(SERVER_EXPLORE_TAG_RESULT)
+    axios.get(`/explore/tag/${tagName}/`)
       .then(
         response => {
           let copy = [...response.data]
@@ -37,16 +23,6 @@ const ExploreResult = function () {
         }
       )
   }, [])
-
-  // 조건들 다 변하고 모달창뜨게
-  useEffect(() => {
-    if (detailPath.length !== 0) {
-      dispatch(changeDetailModal(detailModal))
-    }
-    return () => {
-      setDetailPath('');
-    }
-  }, [detailPath + isPostMine])
 
   /**
    * 랜덤 이미지 주소 출력 함수
@@ -85,22 +61,8 @@ const ExploreResult = function () {
                 return (
                   <li className="relative border border-black h-80 bg-no-repeat bg-right-bottom bg-green-50 before:block before:w-full before:h-full before:bg-white before:opacity-30" style={{ backgroundImage: `url(${rand(1, 7)})` }} key={i}>
                     <Link
-                      className="absolute top-0 left-0 flex flex-col justify-center items-center w-full h-full"
-                      to="#"
-                      onClick={async (e) => {
-                        e.preventDefault();
-                        try {
-                          const response = await axios.get(`${SERVER}/post/${element.username}/${element.id}`, {
-                            headers: {
-                              'Authorization': session_key
-                            }
-                          })
-                          setIsPostMine(response.data.isPostMine)
-                          setDetailPath(`${element.username}/${element.id}`)
-                        } catch (error) {
-                          console.error(error)
-                        }
-                      }}>
+                      to={`/post/${element.uuid}`}
+                      className="absolute top-0 left-0 flex flex-col justify-center items-center w-full h-full">
                       <span className="font-semibold text-xl">{element.content}</span>
                       <span className="font-semibold text-sesac-green">By. {element.username}</span>
                     </Link>
@@ -111,7 +73,6 @@ const ExploreResult = function () {
           </ul>
         </article>
       </main>
-      {detailModal && <PostDetail isPostMine={isPostMine} detailPath={detailPath} />}
     </div>
   );
 };

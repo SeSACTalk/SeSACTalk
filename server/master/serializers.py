@@ -8,14 +8,29 @@ from post.models import Report, Post, Reply
 class UserSerializer(serializers.ModelSerializer):
     first_course = CourseSerializer(read_only = True)
     second_course = CourseSerializer(read_only = True)
+    auth_approval_date = serializers.DateTimeField(format = "%Y년 %m월 %d일 %H시%M분")
+    last_login = serializers.DateTimeField(format = "%Y년 %m월 %d일 %H시%M분")
+    withdraw_date = serializers.DateTimeField(format = "%Y년 %m월 %d일 %H시%M분")
+
+    is_auth = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        exclude = ('password',)
+        exclude = ('password', 'user_permissions', 'groups', 'signup_date')
+    
+    def get_is_auth(self, user):
+        if user.is_auth == 10:
+            return '승인'
+        elif user.is_auth == 11:
+            return '임시비밀번호 발급'
+        elif user.is_auth == 20:
+            return '비밀번호 변경 대기'
 
 
 class UserAuthSerializer(serializers.ModelSerializer):
     first_course = CourseSerializer(read_only = True)
     second_course = CourseSerializer(read_only = True)
+    signup_date = serializers.DateTimeField(format = "%Y년 %m월 %d일")
 
     def validate(self, data):
         is_auth = data.get('is_auth')
@@ -25,10 +40,8 @@ class UserAuthSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = (
-        'id', 'username', 'name', 'birthdate', 'gender', 'phone_number', 'email', 'signup_date', 'withdraw_date',
-        'first_course', 'second_course', 'is_auth', 'is_active', 'is_staff', 'is_superuser')
-
+        exclude = ('password', 'user_permissions', 'groups', 'withdraw_date', 'last_login', 'auth_approval_date', 'is_superuser')
+    
 
 class ReportDetailSerializer(serializers.ModelSerializer):
     reported_name = serializers.CharField(source='reported.name', read_only=True)

@@ -3,30 +3,33 @@ import axios from "axios";
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 
-const SERVER = process.env.REACT_APP_BACK_BASE_URL
+import { setDetailPath } from "../../store/postSlice";
 
 const Notice = function () {
     // 상태
-    let noticeNav = useSelector((state) => state.noticeNav);
     const [dataResult, setDataResult] = useState([]);
     const [isNotice, setIsNotice] = useState(true);
+    let noticeNav = useSelector((state) => state.noticeNav);
+
+    let dispatch = useDispatch();
 
     useEffect(() => {
-        const SERVER_NOTICE_LIST = ""; // 나중에 추가해주세요
-        const SERVER_RECOMMEND_POST = `${SERVER}/post/recommend/`
-
         if (isNotice) { // notice경로로 요청
             return
         } else { // 추천게시물 경로로 요청
-            axios.get(SERVER_RECOMMEND_POST)
+            axios.get(`/post/recommend/`)
                 .then(
                     response => {
-                        setDataResult(response.data)
+                        let copy = [...response.data];
+                        setDataResult(copy);
                     }
                 )
                 .catch(
                     error => console.error(error)
                 )
+        }
+        return () => {
+            setDataResult([]);
         }
     }, [isNotice])
 
@@ -66,9 +69,15 @@ const Notice = function () {
                                 )
                             } else {
                                 return (
-                                    <li className="mb-3">
-                                        <Link to="#" className="flex items-center gap-4">
-                                            <span className="text-5xl text-gray-500">{i + 1}</span>
+                                    <li className="mb-3" key={i}>
+                                        <Link
+                                            to={`/post/${element.uuid}`}
+                                            className="flex items-center gap-4"
+                                            onClick={(e) => {
+                                                dispatch(setDetailPath(`${element.username}/${element.id}`))
+                                            }}
+                                        >
+                                            <span className="flex justify-center w-1/6 text-5xl text-gray-500">{i + 1}</span>
                                             <article className="text-sm">
                                                 <p>
                                                     <span className="text-lg mr-1">{element.name}</span>
