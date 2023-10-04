@@ -13,8 +13,6 @@ const Chat = function () {
         <div className="chat flex w-full">
             <ChatList />
             <Outlet></Outlet>
-            {/* Modals */}
-            {writeModal && <WritePost />}
         </div>
     )
 

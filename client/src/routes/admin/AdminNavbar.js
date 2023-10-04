@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
+
+import { changeWriteModal } from "../../store/modalSlice";
 
 const AdminNavbar = function () {
     // states
     let [info, setInfo] = useState({});
+    let writeModal = useSelector((state) => state.wirteModal);
+
+    let dispatch = useDispatch();
 
     useEffect(() => {
         axios.get('/')
@@ -63,7 +69,11 @@ const AdminNavbar = function () {
                     </Link>
                 </li>
                 <li>
-                    <Link to='#' className="block w-full h-full">
+                    <Link to='#' className="block w-full h-full"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            dispatch(changeWriteModal(writeModal))
+                        }}>
                         <i className="fa fa-pencil-square-o inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>글쓰기</span>
                     </Link>
