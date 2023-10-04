@@ -53,19 +53,21 @@ const UserDetail = memo(function ({ userId, detail, scroll, setDetail }) {
                             </tr>
                         </thead>
                         <tbody>
-                            <td className="px-6 py-4">{user.name}</td>
-                            <td className="px-6 py-4">{user.gender}</td>
-                            <td className="px-6 py-4">{user.phone_number}</td>
-                            {
-                              user.second_course ?
-                                    <>
+                            <tr>
+                                <td className="px-6 py-4">{user.name}</td>
+                                <td className="px-6 py-4">{user.gender}</td>
+                                <td className="px-6 py-4">{user.phone_number}</td>
+                                {
+                                    user.second_course ?
+                                        <>
+                                            <td className="px-6 py-4">{user.first_course.name}</td>
+                                            <td className="px-6 py-4">{user.second_course.name}</td>
+                                        </> :
                                         <td className="px-6 py-4">{user.first_course.name}</td>
-                                        <td className="px-6 py-4">{user.second_course.name}</td>
-                                    </> :
-                                    <td className="px-6 py-4">{user.first_course.name}</td>
-                            }
-                            <td className="px-6 py-4">{user.auth_approval_date}</td>
-                            <td className="px-6 py-4">{user.is_active}</td>
+                                }
+                                <td className="px-6 py-4">{user.auth_approval_date}</td>
+                                <td className="px-6 py-4">{user.is_auth}</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

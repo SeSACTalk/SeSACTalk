@@ -40,7 +40,7 @@ class UserAuthSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        exclude = ('password', 'user_permissions', 'groups', 'withdraw_date', 'last_login', 'auth_approval_date', 'is_active', 'is_staff', 'is_superuser')
+        exclude = ('password', 'user_permissions', 'groups', 'withdraw_date', 'last_login', 'auth_approval_date', 'is_superuser')
     
 
 class ReportDetailSerializer(serializers.ModelSerializer):

@@ -9,14 +9,19 @@ from accounts.serializers import CampusSerializer
 from master.serializers import UserSerializer, UserAuthSerializer, ReportDetailSerializer
 from master.constants import ResponseMessages
 from post.models import Report
+from sesactalk.mixins import SessionDecoderMixin
 
-class UserListView(APIView):
+class UserListView(APIView, SessionDecoderMixin):
     def get(self, request: HttpRequest) -> Response:
+        is_staff = self.check_admin_by_pk(request.META.get('HTTP_AUTHORIZATION', ''))
+        if not is_staff:
+            return Response({'message':ResponseMessages.NOT_STAFF}, status = status.HTTP_401_UNAUTHORIZED)
+       
        # 필터들
         name_value = request.query_params.get('name')
         campus_value = request.query_params.get('campus')
         approval_date_value = request.query_params.get('date')
-
+        
         # 사용자 가져오기
         users = User.objects.filter(
                 (Q(is_auth = 10)| Q(is_auth = 11) | Q(is_auth = 21)) &
@@ -39,23 +44,31 @@ class UserListView(APIView):
         }
         return Response(data, status = status.HTTP_200_OK)
 
-class UserDetailVeiw(APIView):
+class UserDetailVeiw(APIView, SessionDecoderMixin):
     def get(self, request: HttpRequest, **kwargs) -> Response:
+        is_staff = self.check_admin_by_pk(request.META.get('HTTP_AUTHORIZATION', ''))
+        if not is_staff:
+            return Response({'message':ResponseMessages.NOT_STAFF}, status = status.HTTP_401_UNAUTHORIZED)
+        
         user_id = kwargs['id']
         user = User.objects.get(id = user_id)
         serializer = UserSerializer(user)
 
         return Response(serializer.data, status = status.HTTP_200_OK)
 
-class UserAuthRequestView(APIView):
+class UserAuthRequestView(APIView, SessionDecoderMixin):
     def get(self, request: HttpRequest) -> Response:
+        is_staff = self.check_admin_by_pk(request.META.get('HTTP_AUTHORIZATION', ''))
+        if not is_staff:
+            return Response({'message':ResponseMessages.NOT_STAFF}, status = status.HTTP_401_UNAUTHORIZED)
+        
         # 필터들
         name_value = request.query_params.get('name')
         campus_value = request.query_params.get('campus')
         signup_date_date_value = request.query_params.get('date')
         auth_value = request.query_params.get('auth')
-        
-        # 사용자 가져오기
+
+        # 사용자 쿼리
         users = User.objects.filter(
                 Q(is_auth = auth_value) &
                 Q(name__contains = name_value) &
@@ -78,6 +91,10 @@ class UserAuthRequestView(APIView):
         return Response(data, status = status.HTTP_200_OK)
     
     def put(self, request: HttpRequest) -> Response:
+        is_staff = self.check_admin_by_pk(request.META.get('HTTP_AUTHORIZATION', ''))
+        if not is_staff:
+            return Response({'message':ResponseMessages.NOT_STAFF}, status = status.HTTP_401_UNAUTHORIZED)
+        
         user = User.objects.get(id = request.data['id'])
 
         serializer = UserAuthSerializer(user, data = request.data, partial = True)
@@ -87,8 +104,12 @@ class UserAuthRequestView(APIView):
         
         return Response({'message':ResponseMessages.UPDATE_FAIL}, status = status.HTTP_304_NOT_MODIFIED)
 
-class NotifycationReport(APIView):
+class NotifycationReport(APIView, SessionDecoderMixin):
     def get(self, request: HttpRequest) -> Response:
+        is_staff = self.check_admin_by_pk(request.META.get('HTTP_AUTHORIZATION', ''))
+        if not is_staff:
+            return Response({'message':ResponseMessages.NOT_STAFF}, status = status.HTTP_401_UNAUTHORIZED)
+        
         # 신고 처리 또는 거절된 것을 제외한 신고 내역만 가져옴
         reports = Report.objects.exclude(
             Q(report_status = 10) | Q(report_status = 30)
@@ -100,8 +121,12 @@ class NotifycationReport(APIView):
         serializer = ReportDetailSerializer(reports, many = True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class HandleReport(APIView):
+class HandleReport(APIView, SessionDecoderMixin):
     def post(self, request: HttpRequest, **kwargs) -> Response:
+        is_staff = self.check_admin_by_pk(request.META.get('HTTP_AUTHORIZATION', ''))
+        if not is_staff:
+            return Response({'message':ResponseMessages.NOT_STAFF}, status = status.HTTP_401_UNAUTHORIZED)
+        
         report = Report.objects.get(id = request.data['id'])
         report.report_status = request.data['report_status']
         report.save()
