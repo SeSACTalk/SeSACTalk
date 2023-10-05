@@ -166,5 +166,6 @@ class UserWithdraw(APIView, SessionDecoderMixin):
 
     def delete(self, request: HttpRequest, username):
         user = self.get_user_by_pk(request.META.get('HTTP_AUTHORIZATION', ''))
-        print(user.username)
+        user.is_auth = 0
+        user.save()
         return Response({'message' : 'accounts successfully delete!'}, status=status.HTTP_204_NO_CONTENT)

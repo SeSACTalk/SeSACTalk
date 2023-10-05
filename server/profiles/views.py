@@ -49,7 +49,7 @@ class ProfileView(APIView, SessionDecoderMixin):
 
         # 해당 프로필 유저를 팔로우하는 지 여부
         follow_status = UserRelationship.objects.filter(user_follow = profile_user_id, user_follower = user_id).exists()
-
+        print(follow_status)
         profileSerializer = ProfileSetSerializer(profile)
         data = profileSerializer.data
         data['isProfileMine'] = isProfileMine

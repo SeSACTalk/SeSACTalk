@@ -47,6 +47,7 @@ function Profile() {
     const { username } = useParams()
     const SERVER_USER_PROFILE = `${SERVER}/profile/${username}`
 
+    let navigate = useNavigate();
     let dispatch = useDispatch();
     let verifyPasswordForEditProfileModal = useSelector((state) => state.verifyPasswordForEditProfileModal)
     let followModal = useSelector((state) => state.followModal)
@@ -61,6 +62,7 @@ function Profile() {
     const navStyle = "border-t-2 border-gray-600 relative -top-0.5"
 
     const [profileData, setProfileData] = useState(null);
+    const [followStatus, setFollowStatus] = useState(null);
 
     useEffect(() => {
         fetchData();
@@ -78,10 +80,9 @@ function Profile() {
 
     useEffect(() => {
         fetchData();
-    }, [profileData.followStatus]);
+    }, [followStatus]);
 
     // 프로필 데이터 가져오기
-
     const fetchData = async () => {
         await axios.get(SERVER_USER_PROFILE, {
             headers: {
@@ -92,6 +93,7 @@ function Profile() {
                 response => {
                     const data = response.data;
                     setProfileData(data); // profileData 설정
+                    setFollowStatus(data.followStatus); // 팔로우 상태 설정
                     console.log(data);
                 }
             )
@@ -104,7 +106,7 @@ function Profile() {
     }
 
     // 팔로우하기
-    const follow = async (e, target_id) => { // 회원 탈퇴
+    const follow = async (e, target_id) => {
         e.preventDefault();
         await axios.post(`${SERVER}/user/${target_id}/follow/`, null, {
             headers: {
@@ -117,6 +119,7 @@ function Profile() {
                     let copy = { ...profileData };
                     copy.followStatus = true;
                     setProfileData(copy);
+                    setFollowStatus(true);
                 }
             )
             .catch(
@@ -127,7 +130,7 @@ function Profile() {
             )
     }
     // 언팔로우하기
-    const unfollow = async (e, target_id) => { // 회원 탈퇴
+    const unfollow = async (e, target_id) => {
         e.preventDefault();
         await axios.delete(`${SERVER}/user/${target_id}/follow/`, {
             headers: {
@@ -140,6 +143,7 @@ function Profile() {
                     let copy = { ...profileData };
                     copy.followStatus = false;
                     setProfileData(copy);
+                    setFollowStatus(false);
                 }
             )
             .catch(
@@ -148,6 +152,23 @@ function Profile() {
                 }
             );
     }
+
+    // 채팅하기
+    const createChat = async (e, target_id) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post(`${SERVER}/chat/`, {
+                'user': target_id
+            }, {
+                'Authorization': session_key
+            })
+            navigate(`/chat/${response.data.id}`)
+        }
+        catch (error) {
+            console.error(error)
+        }
+    }
+    
     function MyProfileBtn() {
         let dispatch = useDispatch();
 
@@ -164,9 +185,6 @@ function Profile() {
         )
     }
     function OtherProfileBtn({ target_id, followStatus }) {
-        useEffect(() => {
-
-        }, [followStatus]);
         return (
             <>
                 {
@@ -184,7 +202,12 @@ function Profile() {
                                 }}>팔로잉</button>
                         )
                 }
-                <button class="inline-block px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm">메시지</button>
+                <button
+                    class="inline-block px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm"
+                    onClick={(e) => {
+                        createChat(e, target_id)
+                    }
+                    }>메시지</button>
             </>
         )
     }
