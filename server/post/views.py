@@ -1,6 +1,8 @@
 from django.db.models import Q, Count
 from django.http import HttpRequest
 from datetime import date
+from environ import Env
+import requests
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -49,6 +51,22 @@ class Main(APIView, SessionDecoderMixin):
         
         return Response(response_data, status = status.HTTP_200_OK)
 
+class RecruitView(APIView):
+    def get(self, request: HttpRequest) -> Response:
+        env = Env()
+        access_key = env('SARAMIN_ACCESS_KEY')
+        headers = {'Accept': 'application/json'}
+
+        dev_data = requests.get(f'https://oapi.saramin.co.kr/job-search?access-key={access_key}&job_type=&loc_cd=101000&job_mid_cd=2', headers=headers)
+
+        plan_data = requests.get(f'https://oapi.saramin.co.kr/job-search?access-key={access_key}&bbs_gb=0&job_type=&loc_cd=101000&job_mid_cd=2', headers=headers)
+
+        response_data = {
+            'dev_data' : dev_data.json(),
+            'plan_data': plan_data.json()
+        }
+
+        return Response(data = response_data, status = status.HTTP_200_OK)
 
 class Post(APIView, OwnerPermissionMixin):
     def get(self, request: HttpRequest, username) -> Response:
