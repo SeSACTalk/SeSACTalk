@@ -99,7 +99,7 @@ const UserList = function () {
                                     }
 
                                     <td className="px-6 py-4">{element.first_course.name}</td>
-                                    <td className="px-6 py-4">{element.signup_date}</td>
+                                    <td className="px-6 py-4">{element.auth_approval_date}</td>
                                     <td className="px-6 py-4">{String(element.is_active)}</td>
                                     <td className="px-6 py-4">{String(element.is_staff)}</td>
                                 </tr>
