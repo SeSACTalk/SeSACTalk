@@ -9,9 +9,9 @@ from accounts.serializers import CampusSerializer
 from master.serializers import UserSerializer, UserAuthSerializer, ReportDetailSerializer
 from master.constants import ResponseMessages
 from post.models import Report
-from sesactalk.mixins import SessionDecoderMixin
+from master.mixins import AccessRestrictionMixin
 
-class UserListView(APIView, SessionDecoderMixin):
+class UserListView(APIView, AccessRestrictionMixin):
     def get(self, request: HttpRequest) -> Response:
         is_staff = self.check_admin_by_pk(request.META.get('HTTP_AUTHORIZATION', ''))
         if not is_staff:
@@ -44,7 +44,7 @@ class UserListView(APIView, SessionDecoderMixin):
         }
         return Response(data, status = status.HTTP_200_OK)
 
-class UserDetailVeiw(APIView, SessionDecoderMixin):
+class UserDetailVeiw(APIView, AccessRestrictionMixin):
     def get(self, request: HttpRequest, **kwargs) -> Response:
         is_staff = self.check_admin_by_pk(request.META.get('HTTP_AUTHORIZATION', ''))
         if not is_staff:
@@ -56,7 +56,7 @@ class UserDetailVeiw(APIView, SessionDecoderMixin):
 
         return Response(serializer.data, status = status.HTTP_200_OK)
 
-class UserAuthRequestView(APIView, SessionDecoderMixin):
+class UserAuthRequestView(APIView, AccessRestrictionMixin):
     def get(self, request: HttpRequest) -> Response:
         is_staff = self.check_admin_by_pk(request.META.get('HTTP_AUTHORIZATION', ''))
         if not is_staff:
@@ -104,7 +104,7 @@ class UserAuthRequestView(APIView, SessionDecoderMixin):
         
         return Response({'message':ResponseMessages.UPDATE_FAIL}, status = status.HTTP_304_NOT_MODIFIED)
 
-class NotifycationReport(APIView, SessionDecoderMixin):
+class NotifycationReport(APIView, AccessRestrictionMixin):
     def get(self, request: HttpRequest) -> Response:
         is_staff = self.check_admin_by_pk(request.META.get('HTTP_AUTHORIZATION', ''))
         if not is_staff:
@@ -121,7 +121,7 @@ class NotifycationReport(APIView, SessionDecoderMixin):
         serializer = ReportDetailSerializer(reports, many = True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class HandleReport(APIView, SessionDecoderMixin):
+class HandleReport(APIView, AccessRestrictionMixin):
     def post(self, request: HttpRequest, **kwargs) -> Response:
         is_staff = self.check_admin_by_pk(request.META.get('HTTP_AUTHORIZATION', ''))
         if not is_staff:

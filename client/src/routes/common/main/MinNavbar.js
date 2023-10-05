@@ -12,7 +12,7 @@ const MinNavbar = function () {
     const location = useLocation();
 
     // states
-    let writeModal = useSelector((state) => state.wirteModal);
+    let writeModal = useSelector((state) => state.writeModal);
     let minNav = useSelector((state) => state.minNav);
     let exploreNav = useSelector((state) => state.exploreNav);
     let noticeNav = useSelector((state) => state.noticeNav);

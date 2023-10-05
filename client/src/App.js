@@ -14,6 +14,9 @@ import PostDetail from './routes/common/post/PostDetail';
 import ExploreResult from './routes/general/ExploreResult';
 import Chat from './routes/common/chat/Chat'
 import ChatDetail from './routes/common/chat/ChatDetail';
+import Admin from './routes/admin/Admin';
+import UserList from './routes/admin/UserList';
+import UserVerify from './routes/admin/UserVerify';
 
 function App() {
   return (

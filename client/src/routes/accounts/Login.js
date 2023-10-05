@@ -6,7 +6,6 @@ import CryptoJS from 'crypto-js'
 import { setCookie } from '../../modules/handle_cookie';
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
-const SERVER_ACCOUNTS_LOGIN = `${SERVER}/accounts/login/`
 
 const Login = function () {
     // states
@@ -30,7 +29,6 @@ const Login = function () {
     }
     const handleSignup = async (e) => {
         e.preventDefault()
-        navigate('/accounts/signup')
     }
 
     return (
