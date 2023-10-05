@@ -4,6 +4,11 @@ from profiles.models import Profile
 from accounts.models import User, Course, Campus
 
 class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = '__all__'
+
+class ProfileSetSerializer(serializers.ModelSerializer):
     img_path = serializers.SerializerMethodField()
     user_id = serializers.IntegerField(source='user.id')
     user_name = serializers.CharField(source='user.name')

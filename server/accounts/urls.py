@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from accounts.views import LoginView, LogoutView, SignUpView, IdCheckView, FindIdView, VerifyUserView, FindPasswordView,\
-                           UserInfoView, VerifyPassword
+                           UserInfoView, VerifyPassword, UserWithdraw
 
 urlpatterns = [
     path('verify/session/', VerifyUserView.as_view(), name = 'VerifyUser'),
@@ -14,6 +14,7 @@ urlpatterns = [
     path('find/user/id/', FindIdView.as_view(), name = 'findId' ),
     path('find/user/password/', FindPasswordView.as_view(), name = 'findPassword'),
     path('verify/password/', VerifyPassword.as_view(), name = 'VerifyPassword'),
+    path('<str:username>/withdraw/', UserWithdraw.as_view(), name = 'UserWithdraw'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

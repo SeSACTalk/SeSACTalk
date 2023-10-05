@@ -1,6 +1,6 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit'
 import user from './store/userSlice'
-import { writeModal, optionModal, reportModal, detailModal, verifyPasswordModal, followModal, followerModal, profileSettingModal } from './store/modalSlice'
+import { writeModal, optionModal, reportModal, detailModal, verifyPasswordForEditProfileModal, verifyPasswordForWithdrawModal, followModal, followerModal, profileSettingModal, withdrawModal } from './store/modalSlice'
 
 let server = createSlice({
     name: 'server',
@@ -18,7 +18,8 @@ export default configureStore({
         optionModal: optionModal.reducer,
         reportModal: reportModal.reducer,
         detailModal: detailModal.reducer,
-        verifyPasswordModal : verifyPasswordModal.reducer,
+        verifyPasswordForEditProfileModal : verifyPasswordForEditProfileModal.reducer,
+        verifyPasswordForWithdrawModal : verifyPasswordForWithdrawModal.reducer,
         followModal : followModal.reducer,
         followerModal : followerModal.reducer,
         profileSettingModal : profileSettingModal.reducer,

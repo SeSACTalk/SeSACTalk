@@ -7,7 +7,8 @@ module.exports = {
     extend: {
       colors: {
         'sesac-green': 'rgba(24,123,70,0.7)',
-        "sesac-sub": "#B3E56A"
+        "sesac-sub": "#B3E56A",
+        "sesac-sub-transparency" : "rgba(179, 229, 106, 0.1)"
       },
       keyframes: {
         shake: {

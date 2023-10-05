@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from accounts.serializers import UserSerializer
 from profiles.models import Profile
 from user.models import FCMToken, User, UserRelationship
 from sesactalk.mixins import SessionDecoderMixin
@@ -37,9 +38,18 @@ class Follow(APIView, SessionDecoderMixin):
 
         return Response(follow_serializer.data, status = status.HTTP_200_OK)
     def post(self, request:HttpRequest, profile_user_pk):
-        pass
+        user = self.get_user_by_pk(request.META.get('HTTP_AUTHORIZATION', ''))
+        target_user = User.objects.get(pk = profile_user_pk)
+        # 팔로우
+        follow_relationship = UserRelationship.objects.create(user_follow = target_user, user_follower = user)
+
+        return Response({'message' : 'follow ok'}, status = status.HTTP_200_OK)
     def delete(self, request:HttpRequest, profile_user_pk):
-        pass
+        user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
+        # 팔로우
+        unfollower = UserRelationship.objects.filter(user_follow = profile_user_pk, user_follower = user_id).delete()
+        print(unfollower)
+        return Response({'message' : 'follow delete ok'}, status = status.HTTP_200_OK)
 
 
 class Follower(APIView, SessionDecoderMixin):
@@ -49,8 +59,3 @@ class Follower(APIView, SessionDecoderMixin):
         follower_serializer = FollowerSerializer(profile, many=True)
 
         return Response(follower_serializer.data, status=status.HTTP_200_OK)
-
-
-class UserWithdraw(APIView, SessionDecoderMixin):
-    def delete(self, request: HttpRequest, profile_user_pk):
-        pass

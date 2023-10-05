@@ -64,3 +64,18 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
+class UserWithdrawInfoSerializer(serializers.ModelSerializer):
+    profile_img_path = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = ['username', 'profile_img_path']
+
+    def get_profile_img_path(self, user):
+        profile_obj = user.profile_set.first()
+        if profile_obj.img_path:
+            profile_img_path = profile_obj.img_path
+        else:
+            profile_img_path = '/media/profile/default_profile.png'
+
+        return profile_img_path

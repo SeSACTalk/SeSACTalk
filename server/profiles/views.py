@@ -11,7 +11,7 @@ from post.serializers import PostSetSerializer, ReplysSetSerializer, LikesSetSer
 from profiles.models import Profile
 # from user.models import User
 from accounts.models import Campus, Course, User
-from profiles.serializers import ProfileSerializer, EditProfileSerializer
+from profiles.serializers import ProfileSerializer, ProfileSetSerializer, EditProfileSerializer
 from accounts.serializers import UserSerializer, CampusSerializer, CourseSerializer
 from sesactalk.mixins import SessionDecoderMixin
 from user.models import UserRelationship
@@ -47,9 +47,13 @@ class ProfileView(APIView, SessionDecoderMixin):
             )
         ).first()
 
-        profileSerializer = ProfileSerializer(profile)
+        # 해당 프로필 유저를 팔로우하는 지 여부
+        follow_status = UserRelationship.objects.filter(user_follow = profile_user_id, user_follower = user_id).exists()
+
+        profileSerializer = ProfileSetSerializer(profile)
         data = profileSerializer.data
         data['isProfileMine'] = isProfileMine
+        data['followStatus'] = follow_status
 
         return Response(data = data, status=status.HTTP_200_OK)
 
@@ -114,7 +118,7 @@ class EditProfileView(APIView, SessionDecoderMixin):
         for key in keys :
             value = request.data[key]
             if value and value not in ['null', '/media/profile/default_profile.png']:
-                if key in ['second_course', 'password']:
+                if key in ['second_course', 'password', 'img_path']:
                     if key == 'second_course' :
                         if value :
                             dict['course_status'] = False
@@ -125,6 +129,9 @@ class EditProfileView(APIView, SessionDecoderMixin):
                                 pass
                     if key == 'password':
                         dict[key] = make_password(value)
+                    if key == 'img_path':
+                        dict[key] = request.FILES.get(key, None)
+                        print(f"confirm : {request.FILES.get(key, None)}")
                 else :
                     dict[key] = value
 

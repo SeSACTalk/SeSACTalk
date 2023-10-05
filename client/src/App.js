@@ -10,9 +10,11 @@ import { checkAuthMiddleware, checkInfoMiddleware } from './middleware/middlewar
 /* Components */
 import Main from './routes/common/main/Main'
 import Login from './routes/accounts/Login';
+import Signup from './routes/accounts/Signup';
 import Admin from './routes/admin/Admin';
 import { ProfileLayout, Profile } from './routes/common/profiles/Profile';
 import EditProfile from './routes/common/profiles/EditProfile';
+import WithdrawModal from './routes/common/profiles/WithdrawModal';
 
 function App() {
   let navigate = useNavigate()
@@ -38,13 +40,17 @@ function App() {
       <Routes>
         {/* 계정관련 */}
         <Route path='/accounts/login' element={<Login />}></Route>
+        {/* 임시 - 회원가입 */}
+        <Route path='/accounts/signup' element={<Signup />}></Route>
         {/* 일반 사용자 */}
         <Route path='/' element={<Main />}></Route>
         {/* 관리자 */}
         <Route path='/admin' element={<Admin />}></Route>
         {/* 프로필 */}
         <Route path="/profile/:username" element={<ProfileLayout />} >
-          <Route path="" element={<Profile/>} />
+          <Route path="" element={<Profile/>}>
+            <Route path="withdraw" element={<WithdrawModal/>} />
+          </Route>
           <Route path="edit" element={<EditProfile/>} />
         </Route>
       </Routes>

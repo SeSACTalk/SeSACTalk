@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom"
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from 'axios';
 
 import { checkAuthMiddleware } from "../../../middleware/middleware"
@@ -15,6 +15,10 @@ const session_key = getCookie('session_key')
 const EditProfile = function () {
     const navigate = useNavigate();
     const { username } = useParams();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+  
+    const verify = JSON.parse(queryParams.get('verify'));
 
     const [contentLength, setContentLength] = useState(0);
     const [editProfileImg, setEditProfileImg] = useState(null); // 프로필 미리보기 이미지
@@ -60,6 +64,9 @@ const EditProfile = function () {
             .catch(() => {
                 redirectToLogin();
             });
+        if (!verify) { //비밀번호 입력이 안되어 있을 경우
+            navigate(`/profile/${username}`)
+        }
     }, []);
 
     useEffect(() => {
@@ -76,7 +83,7 @@ const EditProfile = function () {
     }, [secondCampusName])
 
     useEffect(() => {
-        setIsSecondCourseEmpty(((secondCampusName != null)&&(secondCourseName == '')) && (profileCourseStatus));
+        setIsSecondCourseEmpty(((secondCampusName != null) && (secondCourseName == '')) && (profileCourseStatus));
     }, [secondCourseName])
 
 
@@ -168,25 +175,26 @@ const EditProfile = function () {
         );
     };
 
-    const handleFileChange = (e) => { /* 업로드 한 이미지 미리보기 처리 */
-        const file = e.target.files[0]; // 선택된 파일 가져오기
+    const onFileChange = (event) => setProfileImgpath(event.target.files[0]);
+    const changeImagePreview = (e) => { /* 업로드 한 이미지 미리보기 처리 */
+        const file = e.target.files[0]; 
 
         if (file) {
             const reader = new FileReader();
 
             reader.onload = (e) => {
-                const imageUrl = e.target.result; // 이미지 URL을 얻습니다.
-                setEditProfileImg(imageUrl); // 이미지 URL을 상태 변수에 설정합니다.
+                const imageUrl = e.target.result; 
+                setEditProfileImg(imageUrl); 
             };
 
-            reader.readAsDataURL(file); // 파일을 읽습니다.
+            reader.readAsDataURL(file); 
         }
     };
 
     const edit = async (event) => { /* 수정 요청 */
         event.preventDefault();
-            
-        if((!matchPasswordStatus) | isSecondCourseEmpty) {
+
+        if ((!matchPasswordStatus) | isSecondCourseEmpty) {
             return
         } else {
             let hashedPw = ''
@@ -214,12 +222,12 @@ const EditProfile = function () {
             })
                 .then(response => {
                     console.log(response.data);
-                    // navigate(`/profile/${username}`);
+                    navigate(`/profile/${username}`);
                 })
                 .catch(error => {
                     console.log(error.response.data);
                 });
-            }
+        }
     };
 
 
@@ -258,9 +266,9 @@ const EditProfile = function () {
                                             file:bg-sesac-sub file:text-sesac-green
                                             hover:file:bg-green-200"
                                         onChange={
-                                            (e) =>{ 
-                                                setProfileImgpath(e.target.files[0]);
-                                                handleFileChange(e);
+                                            (e) => {
+                                                onFileChange(e);
+                                                changeImagePreview(e);
                                             }
                                         }
                                     />
@@ -297,7 +305,7 @@ const EditProfile = function () {
                             <input
                                 type="password"
                                 name="password"
-                                pattern="^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$" 
+                                pattern="^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$"
                                 title="영문, 숫자, 특수문자를 포함한 8~20자의 비밀번호를 입력해주세요."
                                 className={`w-full ${inputStyle}`}
                                 placeholder="변경할 비밀번호를 입력해주세요!"
@@ -330,8 +338,6 @@ const EditProfile = function () {
                                     }
                                 }
                                 value={confirmPassword}
-                                disabled = {`${isPasswordEmpty ? 'true' : 'false'}`}
-                                readOnly =  {`${isPasswordEmpty ? 'true' : 'false'}`}
                             />
                         </div>
                         {/* 한줄소개 */}
@@ -397,36 +403,36 @@ const EditProfile = function () {
                         </div>
                         <div className="text-sm">
                             <div className="font-bold text-sesac-green">캠퍼스 2</div>
-                            {   profileCourseStatus ? (secondCampusName == undefined ? (
-                                    <input
-                                        type="text"
-                                        name="second_course_name"
-                                        class={`w-full ${inputReadOnlyStyle}`}
-                                        placeholder={`${secondCampusName} 캠퍼스, ${secondCourseName}`}
-                                    />
-                                ) : (
-                                    <div className="flex gap-3">
-                                        {generateCampusSelectAndOptionsElements('second')}
-                                        <select
-                                            className={`w-[80%] ${inputStyle}`}
-                                            name="second_course__name"
-                                            // value={secondCampusName}
-                                            onChange={(e) => {
-                                                setSecondCourseName(e.target.value);
-                                            }}
-                                        >
-                                            <CourseOptions courseList={courseList.second} />
-                                        </select>
-                                    </div>
-                                )) : (
-                                    <input
-                                        type="text"
-                                        name="course_status"
-                                        className={`w-full ${inputReadOnlyStyle}`}
-                                        placeholder={`과정 승인을 기다리는 중입니다.`}
-                                        disabled readonly
-                                    />
-                                )    
+                            {profileCourseStatus ? (secondCampusName == undefined ? (
+                                <input
+                                    type="text"
+                                    name="second_course_name"
+                                    class={`w-full ${inputReadOnlyStyle}`}
+                                    placeholder={`${secondCampusName} 캠퍼스, ${secondCourseName}`}
+                                />
+                            ) : (
+                                <div className="flex gap-3">
+                                    {generateCampusSelectAndOptionsElements('second')}
+                                    <select
+                                        className={`w-[80%] ${inputStyle}`}
+                                        name="second_course__name"
+                                        // value={secondCampusName}
+                                        onChange={(e) => {
+                                            setSecondCourseName(e.target.value);
+                                        }}
+                                    >
+                                        <CourseOptions courseList={courseList.second} />
+                                    </select>
+                                </div>
+                            )) : (
+                                <input
+                                    type="text"
+                                    name="course_status"
+                                    className={`w-full ${inputReadOnlyStyle}`}
+                                    placeholder={`과정 승인을 기다리는 중입니다.`}
+                                    disabled readonly
+                                />
+                            )
 
                             }
                         </div>
@@ -440,8 +446,8 @@ const EditProfile = function () {
                         }>취소하기</button>
                         <input
                             type="submit"
-                            className={`${!matchPasswordStatus| isSecondCourseEmpty ? 
-                                'cursor-not-allowed px-6 py-2 font-semibold text-sm bg-gray-400 text-white rounded-full shadow-sm' : 
+                            className={`${!matchPasswordStatus | isSecondCourseEmpty ?
+                                'cursor-not-allowed px-6 py-2 font-semibold text-sm bg-gray-400 text-white rounded-full shadow-sm' :
                                 "cursor-pointer px-6 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm"}`}
                             value="수정하기"
                             onKeyDown={(e) => {
@@ -450,7 +456,6 @@ const EditProfile = function () {
                                 }
                             }
                             }
-                            disabled = {`${(!matchPasswordStatus) | isSecondCourseEmpty ? 'true' : 'false'}`}
                         />
                     </div>
                 </form>

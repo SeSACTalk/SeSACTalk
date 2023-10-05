@@ -40,11 +40,21 @@ let detailModal = createSlice({
     }
 })
 
-let verifyPasswordModal = createSlice({
-    name: 'verifyPasswordModal',
+let verifyPasswordForEditProfileModal = createSlice({
+    name: 'verifyPasswordForEditProfileModal',
     initialState: false,
     reducers: {
-        changeVerifyPasswordModal(state, action) {
+        changeVerifyPasswordForEditProfileModal(state, action) {
+            return !state
+        }
+    }
+})
+
+let verifyPasswordForWithdrawModal = createSlice({
+    name: 'verifyPasswordForWithdrawModal',
+    initialState: false,
+    reducers: {
+        changeVerifyPasswordForWithdrawModal(state, action) {
             return !state
         }
     }
@@ -80,13 +90,14 @@ let profileSettingModal = createSlice({
     }
 })
 
-export { writeModal, optionModal, reportModal, detailModal, verifyPasswordModal, followModal, followerModal, profileSettingModal };
+export { writeModal, optionModal, reportModal, detailModal, verifyPasswordForEditProfileModal, verifyPasswordForWithdrawModal, followModal, followerModal, profileSettingModal };
 
 export let { changeWirteModal } = writeModal.actions;
 export let { changeOptionModal } = optionModal.actions;
 export let { changeReportModal } = reportModal.actions;
 export let { changeDetailModal } = detailModal.actions;
-export let { changeVerifyPasswordModal } = verifyPasswordModal.actions;
+export let { changeVerifyPasswordForEditProfileModal } = verifyPasswordForEditProfileModal.actions;
+export let { changeVerifyPasswordForWithdrawModal } = verifyPasswordForWithdrawModal.actions;
 export let { changeFollowModal } = followModal.actions;
 export let { changeFollowerModal } = followerModal.actions;
 export let { changeProfileSettingModal } = profileSettingModal.actions;

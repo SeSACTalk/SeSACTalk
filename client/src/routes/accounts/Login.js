@@ -6,6 +6,8 @@ import { changeUser } from '../../store/userSlice';
 
 import { useNavigate } from 'react-router-dom'
 import { setCookie } from '../../modules/handle_cookie';
+// 임시
+import { Link } from 'react-router-dom'
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
 const SERVER_ACCOUNTS_LOGIN = `${SERVER}/accounts/login/`
@@ -39,6 +41,7 @@ const Login = function () {
 
     return (
         <form className='container mx-auto' onSubmit={handleLogin}>
+            <Link to='/accounts/signup'>회원가입</Link>
             <div className='grid gap-6 mb-6 md:grid-cols-2'>
                 <div>
                     <label htmlFor='username' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>아이디</label>
