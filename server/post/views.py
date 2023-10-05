@@ -8,23 +8,20 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from post.models import Post as PostModel, Like, View, Reply, HashTag, Report
+from post.models import Post as PostModel
 from accounts.models import User
 from user.models import UserRelationship
 
-from post.serializers import PostSerializer, LikeSerializer, ViewSerializer, ReplySerializer, HashTagSerializer, \
-    ReportSerializer, ManagerProfileSerializer, RecommendPostSerilaier
+from post.serializers import PostSerializer, ReportSerializer, ManagerProfileSerializer, RecommendPostSerilaier
 from post.mixins import OwnerPermissionMixin
 from post.constants import ResponseMessages
 
-from profiles.models import Profile
-from accounts.models import Campus, Course, User
-from profiles.serializers import EditProfileSerializer
+from accounts.models import User
 from accounts.serializers import UserInfoSerializer
 from sesactalk.mixins import SessionDecoderMixin
 
 class Main(APIView, SessionDecoderMixin):
-    def get(self, request: HttpRequest) -> Response:
+    def get(self, request: HttpRequest) -> Response:       
         # 캠퍼스 매니저의 pk를 가져오기
         manager_users = User.objects.filter(
             Q(is_staff = True) & Q(is_superuser = False)
@@ -51,22 +48,14 @@ class Main(APIView, SessionDecoderMixin):
         
         return Response(response_data, status = status.HTTP_200_OK)
 
-class RecruitView(APIView):
+class RecruitView(APIView, SessionDecoderMixin):
     def get(self, request: HttpRequest) -> Response:
-        env = Env()
-        access_key = env('SARAMIN_ACCESS_KEY')
-        headers = {'Accept': 'application/json'}
-
-        dev_data = requests.get(f'https://oapi.saramin.co.kr/job-search?access-key={access_key}&job_type=&loc_cd=101000&job_mid_cd=2', headers=headers)
-
-        plan_data = requests.get(f'https://oapi.saramin.co.kr/job-search?access-key={access_key}&bbs_gb=0&job_type=&loc_cd=101000&job_mid_cd=2', headers=headers)
-
-        response_data = {
-            'dev_data' : dev_data.json(),
-            'plan_data': plan_data.json()
-        }
-
-        return Response(data = response_data, status = status.HTTP_200_OK)
+        user_exist = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION'))
+        
+        if not user_exist:
+            return Response(status = status.HTTP_401_UNAUTHORIZED)
+    
+        return Response(status = status.HTTP_200_OK)
 
 class Post(APIView, OwnerPermissionMixin):
     def get(self, request: HttpRequest, username) -> Response:
@@ -155,7 +144,7 @@ class PostDetail(APIView, OwnerPermissionMixin):
         post.delete()
         return Response({'message' : ResponseMessages.POST_DELETE_SUCCESS}, status.HTTP_204_NO_CONTENT)
 
-class ReportPost(OwnerPermissionMixin, APIView):
+class ReportPost(APIView, OwnerPermissionMixin):
     def post(self, request, pk:int) -> Response:
         reportSerializer = ReportSerializer(data = request.data)
         reportSerializer.content_id = pk
@@ -163,7 +152,6 @@ class ReportPost(OwnerPermissionMixin, APIView):
         reportSerializer.reporter = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION'))
 
         if not reportSerializer.is_valid():
-            print(f'<<CHECK INVALID DATA>>\n{reportSerializer.errors}')
             return Response({'error': ResponseMessages.INVALID_DATA}, status=status.HTTP_400_BAD_REQUEST)            
 
         reportSerializer.save()
@@ -171,81 +159,10 @@ class ReportPost(OwnerPermissionMixin, APIView):
         # 한 사람이 같은 게시물을 연속적으로 신고 가능?
         return Response({'message': ResponseMessages.REPORT_CREATE_SUCCESS}, status=status.HTTP_201_CREATED)
     
-class Replys(APIView, SessionDecoderMixin):
-    def get(self, request: HttpRequest, p_sq: int)-> Response:
-        user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
-
-        response_data=[]
-        reply_querysets = Reply.objects.filter(post = p_sq)
-        for reply in reply_querysets:
-            data={}
-            replySerializer = ReplySerializer(reply)
-            # print(reply.user.id, reply.user.name)
-            data['reply']=replySerializer.data
-            profile_queryset = Profile.objects.select_related('user').filter(user__id = reply.user.id).first()
-            if profile_queryset:
-                profileSerializer = EditProfileSerializer(profile_queryset)
-                data['profile']=profileSerializer.data
-
-            # user_id와 reply_userid 값 비교(True == 내 댓글)
-            data['isReplyMine'] = user_id == reply.user.id
-
-            response_data.append(data)
-
-        return Response(data=response_data, status=status.HTTP_200_OK)
-    def post(self, request: HttpRequest, p_sq: int)-> Response:
-        # 클라이언트에서 전송된 데이터 가져오기
-        reply_text = request.data.get('replyText')
-
-        user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
-
-        # Reply 모델에 데이터 삽입
-        try:
-            data={'content':reply_text, 'user':user_id, 'post':p_sq}
-            replySerializer = ReplySerializer(data=data)
-            
-            if replySerializer.is_valid():
-                replySerializer.save()
-            else:
-                print(f"댓글 유효성 검사 실패")
-                print(f'<<CHECK INVALID DATA>>\n{replySerializer.errors}')
-
-            print("댓글이 성공적으로 삽입되었습니다.")
-            return Response(status=status.HTTP_200_OK)
-        
-        except Exception as e:
-            print(f"댓글 삽입 중 오류 발생: {str(e)}")
-            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-class ReplyDetail(APIView, SessionDecoderMixin):
-    def delete(self, request: HttpRequest, p_sq: int, r_sq: int)-> Response:
-        # session_key로 user_id get
-        user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
-
-        reply_queryset = Reply.objects.filter(id = r_sq).first()
-        if reply_queryset.user.id == user_id:
-            reply_queryset.delete()
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-        return Response(status=status.HTTP_200_OK)
-    
-    def put(self, request: HttpRequest, p_sq: int, r_sq: int)-> Response:
-        # session_key로 user_id get
-        user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
-
-        reply_queryset = Reply.objects.get(id = r_sq)
-        if reply_queryset.user.id == user_id:
-            reply_queryset.content=request.data
-            reply_queryset.save()
-        else:
-            return Response(status = status.HTTP_400_BAD_REQUEST)
-
-        return Response(status = status.HTTP_200_OK)
-    
-class RecommendPost(APIView):
+class RecommendPost(APIView, SessionDecoderMixin):
     def get(self, request: HttpRequest) -> Response:
+        user = self.get_user_by_pk(request.META.get('HTTP_AUTHORIZATION', ''))
+
         posts = PostModel.objects.filter(date__startswith = date.today()).prefetch_related('like_set').select_related('user').annotate(like_count = Count('like')).order_by('like_count').all()[:10]
         
         serializer = RecommendPostSerilaier(posts, many = True)

@@ -7,7 +7,7 @@ const UserVerify = function () {
     const [username, setUsername] = useState(''); // 사용자명
     const [campusName, setCampusName] = useState(''); // 캠퍼스명
     const [date, setDate] = useState(''); // 날짜기반
-    const [auth, setAuth] = useState(10);
+    const [auth, setAuth] = useState(0);
 
     useEffect(() => {
         axios.get(`/admin/auth/user/?name=${username}&campus=${campusName}&date=${date}&auth=${auth}`)

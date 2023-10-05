@@ -142,11 +142,6 @@ class ViewSerializer(serializers.ModelSerializer):
         model = View
         fields = '__all__'
 
-class ReplySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Reply
-        fields = '__all__'
-
 class HashTagSerializer(serializers.ModelSerializer):
     class Meta:
         model = HashTag

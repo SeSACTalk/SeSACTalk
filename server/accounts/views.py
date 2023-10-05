@@ -59,15 +59,13 @@ class LogoutView(APIView, SessionDecoderMixin):
     def delete(self, request: HttpRequest) -> Response:
         frontend_session_key = request.META.get('HTTP_AUTHORIZATION')
         
-        if frontend_session_key:
-            user = self.get_user_by_pk(frontend_session_key)
+        user = self.get_user_by_pk(frontend_session_key)
             # 임시비밀번호 사용 중인 사용자의 is_auth를 보류로 변경
-            if user.is_auth == 11:
-                user.is_auth = 21
-                user.save()
-            Session.objects.filter(session_key=frontend_session_key).delete()
-            return Response(status = status.HTTP_200_OK)
-        return Response(status = status.HTTP_400_BAD_REQUEST)
+        if user.is_auth == 11:
+            user.is_auth = 21
+            user.save()
+        Session.objects.filter(session_key=frontend_session_key).delete()
+        return Response(status = status.HTTP_200_OK)
 
 class SignUpView(APIView):
     def get(self, request: HttpRequest) -> Response:
