@@ -7,7 +7,7 @@ const UserVerify = function () {
     const [username, setUsername] = useState(''); // 사용자명
     const [campusName, setCampusName] = useState(''); // 캠퍼스명
     const [date, setDate] = useState(''); // 날짜기반
-    const [auth, setAuth] = useState(0);
+    const [auth, setAuth] = useState(10);
 
     useEffect(() => {
         axios.get(`/admin/auth/user/?name=${username}&campus=${campusName}&date=${date}&auth=${auth}`)
@@ -91,9 +91,12 @@ const UserVerify = function () {
                                             onChange={(e) => {
                                                 axios.put('/admin/auth/user/', {
                                                     id: element.id,
-                                                    is_auth: e.target.value
+                                                    is_auth: Number(e.target.value)
                                                 }).then(
-                                                    response => console.log(response.data.message)
+                                                    response => {
+                                                        console.log(response.data.message)
+                                                        window.location.href = '/'
+                                                    }
                                                 ).catch(
                                                     error => console.error(error)
                                                 )

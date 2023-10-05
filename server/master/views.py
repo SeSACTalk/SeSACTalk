@@ -3,6 +3,7 @@ from django.http import HttpRequest
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from datetime import datetime
 
 from accounts.models import User, Campus
 from accounts.serializers import CampusSerializer
@@ -96,6 +97,9 @@ class UserAuthRequestView(APIView, AccessRestrictionMixin):
             return Response({'message':ResponseMessages.NOT_STAFF}, status = status.HTTP_401_UNAUTHORIZED)
         
         user = User.objects.get(id = request.data['id'])
+
+        if request.data['is_auth'] == 10:
+            request.data['auth_approval_date'] = datetime.now()
 
         serializer = UserAuthSerializer(user, data = request.data, partial = True)
         if serializer.is_valid():
