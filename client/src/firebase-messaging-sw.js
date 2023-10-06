@@ -37,7 +37,7 @@ async function requestPermission() {
   if (username) {
     if (token) {
       try {
-        const response = await axios.post(`${SERVER}/user/${username}/notify`, { token: token })
+        const response = await axios.post(`${SERVER}/user/${username}/notify/`, { token: token })
       }
       catch (error) {
         console.error('Fail', error.response.data)
