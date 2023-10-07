@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from "react"
-import axios from "axios"
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
 
-const UserVerify = function () {
+const CourseApproval = function () {
     const [users, setUsers] = useState([]); // 사용자 리스트
     const [campuses, setCampuses] = useState([]); // 캠퍼스필터
     const [username, setUsername] = useState(''); // 사용자명
     const [campusName, setCampusName] = useState(''); // 캠퍼스명
-    const [date, setDate] = useState(''); // 날짜기반
-    const [auth, setAuth] = useState(0);
 
     useEffect(() => {
-        axios.get(`/admin/auth/user/?name=${username}&campus=${campusName}&date=${date}&auth=${auth}`)
+        axios.get(`/admin/user/course?name=${username}&campus=${campusName}`)
             .then(
                 response => {
                     // 사용자 리스트 복사
@@ -20,22 +18,31 @@ const UserVerify = function () {
                     // 캠퍼스 리스트 복사
                     let campus_copy = [...response.data.campus]
                     setCampuses(campus_copy)
-                })
+                }
+            )
             .catch(
                 error => {
                     console.error(error)
-                })
-    }, [username + campusName + date + auth])
+                }
+            )
+    }, [username, campusName])
 
-    // 사용자 승인 함수
-    const verifyUser = async (e) => {
+    // 과정 추가 승인 함수
+    const approvalCoruse = async (e) => {
         e.preventDefault();
+        e.target.value = Number(e.target.value)
+        let status;
+        if (Number(e.target.value)) {
+            status = true;
+        } else {
+            status = false;
+        }
         try {
-            const response = await axios.put('/admin/auth/user/', {
+            const response = await axios.put('/admin/user/course/', {
                 id: e.target.dataset.id,
-                is_auth: Number(e.target.value)
+                course_status: true,
+                status: status
             });
-            console.log(response.status)
             window.location.href = ''
         }
         catch (error) {
@@ -60,18 +67,6 @@ const UserVerify = function () {
                             })
                         }
                     </select>
-                    <select
-                        className="border border-black h-6"
-                        defaultValue=''
-                        onChange={(e) => { setAuth(e.target.value) }}>
-                        <option value='0'>신규</option>
-                        <option value='20'>보류</option>
-                        <option value='30'>거절</option>
-                    </select>
-                    <label className="hidden" htmlFor="latest">가입신청날짜</label>
-                    <input id="date"
-                        className="border border-black h-6"
-                        type="date" onChange={(e) => setDate(e.target.value)} />
                 </div>
                 <div>
                     <input className="border border-black px-2" type="text"
@@ -85,10 +80,9 @@ const UserVerify = function () {
                 <thead>
                     <tr className="border-b">
                         <th scope="col" className="px-6 py-3">이름</th>
-                        <th scope="col" className="px-6 py-3">연락처</th>
+                        <th scope="col" className="px-6 py-3">아이디</th>
                         <th scope="col" className="px-6 py-3">캠퍼스</th>
                         <th scope="col" className="px-6 py-3">과정명</th>
-                        <th scope="col" className="px-6 py-3">가입일</th>
                         <th scope="col" className="px-6 py-3">상태</th>
                     </tr>
                 </thead>
@@ -98,21 +92,16 @@ const UserVerify = function () {
                             return (
                                 <tr className="border-b" key={i}>
                                     <td className="px-6 py-4">{element.name}</td>
-                                    <td className="px-6 py-4">{element.phone_number}</td>
-                                    <td className="px-6 py-4">{element.first_course.campus.name}</td>
-                                    <td className="px-6 py-4">{element.first_course.name}</td>
-                                    <td className="px-6 py-4">{element.signup_date}</td>
+                                    <td className="px-6 py-4">{element.username}</td>
+                                    <td className="px-6 py-4">{element.campus_name}</td>
+                                    <td className="px-6 py-4">{element.course_name}</td>
                                     <td className="px-6 py-4">
-                                        <select data-id={element.id} defaultValue={element.is_auth}
-                                            onChange={verifyUser}>
-                                            <option value={element.is_auth}>{
-                                                element.is_auth == 0 ?
-                                                    "신규" : element.is_auth == 20 ?
-                                                        '보류' : '거절'}
-                                            </option>
-                                            <option value="10">승인</option>
-                                            <option value="20">보류</option>
-                                            <option value="30">거절</option>
+                                        <select defaultValue=""
+                                            data-id={element.id}
+                                            onChange={approvalCoruse}>
+                                            <option value="">선택</option>
+                                            <option value="1">승인</option>
+                                            <option value="0">거절</option>
                                         </select>
                                     </td>
                                 </tr>
@@ -124,4 +113,5 @@ const UserVerify = function () {
         </div>
     )
 }
-export default UserVerify;
+
+export default CourseApproval;

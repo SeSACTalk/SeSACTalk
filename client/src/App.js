@@ -17,6 +17,7 @@ import ChatDetail from './routes/common/chat/ChatDetail';
 import Admin from './routes/admin/Admin';
 import UserList from './routes/admin/UserList';
 import UserVerify from './routes/admin/UserVerify';
+import CourseApproval from './routes/admin/CourseApproval';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
         {/* 관리자 */}
         <Route path='/admin' element={<Admin />}>
           <Route index element={<UserList />} />
+          <Route path='user/course' element={<CourseApproval />} />
           <Route path='auth/user' element={<UserVerify />} />
           <Route path='chat' element={<Chat />} >
             <Route path=':chatRoom' element={<ChatDetail />} />

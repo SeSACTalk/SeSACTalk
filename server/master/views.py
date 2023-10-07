@@ -7,9 +7,11 @@ from datetime import datetime
 
 from accounts.models import User, Campus
 from accounts.serializers import CampusSerializer
-from master.serializers import UserSerializer, UserAuthSerializer, ReportDetailSerializer
+from master.serializers import UserSerializer, UserAuthSerializer, ReportDetailSerializer, UserCourseSerializer
 from master.constants import ResponseMessages
 from post.models import Report
+from profiles.models import Profile
+from profiles.serializers import ProfileSerializer
 from master.mixins import AccessRestrictionMixin
 
 class UserListView(APIView, AccessRestrictionMixin):
@@ -107,6 +109,54 @@ class UserAuthRequestView(APIView, AccessRestrictionMixin):
             return Response({'message': ResponseMessages.UPDATE_SUCCESS}, status = status.HTTP_202_ACCEPTED)
         
         return Response({'message':ResponseMessages.UPDATE_FAIL}, status = status.HTTP_304_NOT_MODIFIED)
+
+class CourseApprovalView(APIView, AccessRestrictionMixin):
+    def get(self, request: HttpRequest) -> Response:
+        is_staff = self.check_admin_by_pk(request.META.get('HTTP_AUTHORIZATION', ''))
+        if not is_staff:
+            return Response({'message':ResponseMessages.NOT_STAFF}, status = status.HTTP_401_UNAUTHORIZED)
+        
+        name_value = request.query_params.get('name')
+        campus_value = request.query_params.get('campus')
+        
+        # course_status가 false인 애들만 가져옴
+        users = User.objects.filter(
+            Q(is_auth = 10) &
+            Q(name__contains = name_value) &
+            Q(second_course__campus__name__contains = campus_value) &
+            Q(profile__course_status = False)
+        ).prefetch_related('profile_set').all()
+
+        # 캠퍼스 쿼리
+        campuses = Campus.objects.all()
+
+        # 직렬화
+        user_serializer = UserCourseSerializer(users, many = True)
+        campus_serializer = CampusSerializer(campuses, many = True)
+
+        data ={
+            'list': user_serializer.data,
+            'campus': campus_serializer.data
+        }
+
+        return Response(data = data, status = status.HTTP_200_OK)
+    
+    def put(self, request: HttpRequest) -> Response:
+        is_staff = self.check_admin_by_pk(request.META.get('HTTP_AUTHORIZATION', ''))
+        if not is_staff:
+            return Response({'message':ResponseMessages.NOT_STAFF}, status = status.HTTP_401_UNAUTHORIZED)
+        
+        if not request.data['status']:
+            user = User.objects.get(id = request.data['id'])
+            user.second_course = None
+            user.save()
+
+        profile = Profile.objects.get(user = request.data['id'])
+        serializer = ProfileSerializer(profile, data = request.data, partial = True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status = status.HTTP_200_OK)
 
 class NotifycationReport(APIView, AccessRestrictionMixin):
     def get(self, request: HttpRequest) -> Response:

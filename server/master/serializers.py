@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from accounts.models import User
 from accounts.serializers import CourseSerializer
+from profiles.serializers import ProfileSerializer
 from post.models import Report, Post, Reply
 
 
@@ -42,7 +43,26 @@ class UserAuthSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         exclude = ('password', 'user_permissions', 'groups', 'withdraw_date', 'last_login', 'is_superuser')
+
+class UserCourseSerializer(serializers.ModelSerializer):
+    campus_name = serializers.SerializerMethodField()
+    course_name = serializers.SerializerMethodField()
+    profile_set = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ('id', 'name', 'username', 'campus_name', 'course_name', 'profile_set')
+
+    def get_campus_name(self, user):
+        return user.second_course.campus.name
+        
+    def get_course_name(self, user):
+         return user.second_course.name
     
+    def get_profile_set(self, user):
+        profile = user.profile_set.get()
+        serializer = ProfileSerializer(profile)
+        return serializer.data
 
 class ReportDetailSerializer(serializers.ModelSerializer):
     reported_name = serializers.CharField(source='reported.name', read_only=True)
@@ -55,10 +75,10 @@ class ReportDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Report
-        fields = ['id', 'date', 'content_type', 'category', 'content_id', 'report_status',
+        fields = ('id', 'date', 'content_type', 'category', 'content_id', 'report_status',
                   'reported_id', 'reported_name', 'reported_username',
                   'reporter_id', 'reporter_name', 'reporter_username',
-                  'reported_content', 'post_id']
+                  'reported_content', 'post_id')
 
     def get_reported_content(self, report):
         if report.content_type == 'post':

@@ -64,7 +64,7 @@ class LogoutView(APIView, SessionDecoderMixin):
         if user.is_auth == 11:
             user.is_auth = 21
             user.save()
-        Session.objects.filter(session_key=frontend_session_key).delete()
+        Session.objects.filter(session_key = frontend_session_key).delete()
         return Response(status = status.HTTP_200_OK)
 
 class SignUpView(APIView):
