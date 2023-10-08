@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework import serializers
 
 from profiles.models import Profile
@@ -13,7 +14,7 @@ def get_img_path(obj):
     return profile_img_path
 
 def get_user_campusname(obj):
-    user = User.objects.get(pk=obj.user.id)
+    user = User.objects.get(pk=obj.id)
     try:
         campus_name = Campus.objects.get(pk=user.second_course.campus.id).name
     except Exception as e:
@@ -28,33 +29,38 @@ class UserRelationshipSerializer(serializers.ModelSerializer):
 
 class FollowSerializer(serializers.ModelSerializer):
     follow_user_img_path = serializers.SerializerMethodField()
-    follow_user_name = serializers.CharField(source='user.name')
-    follow_user_username = serializers.CharField(source='user.username')
+    follow_user_id = serializers.IntegerField(source='id')
+    follow_user_name = serializers.CharField(source='name')
+    follow_user_username = serializers.CharField(source='username')
     follow_user_campusname = serializers.SerializerMethodField()
 
+
     class Meta:
-        model = Profile
-        fields = ['follow_user_img_path', 'follow_user_name', 'follow_user_username', 'follow_user_campusname']
+        model = User
+        fields = [
+                    'follow_user_img_path', 'follow_user_id', 'follow_user_name',
+                    'follow_user_username', 'follow_user_campusname'
+                ]
 
-    def get_follow_user_img_path(self, profile):
-        return get_img_path(profile)
+    def get_follow_user_img_path(self, user):
+        return get_img_path(user.profile_set.first())
 
-    def get_follow_user_campusname(self, profile):
-        return get_user_campusname(profile)
-
+    def get_follow_user_campusname(self, user):
+        return get_user_campusname(user)
 
 class FollowerSerializer(serializers.ModelSerializer):
     follower_user_img_path = serializers.SerializerMethodField()
-    follower_user_name = serializers.CharField(source='user.name')
-    follower_user_username = serializers.CharField(source='user.username')
+    follower_user_id = serializers.IntegerField(source='id')
+    follower_user_name = serializers.CharField(source='name')
+    follower_user_username = serializers.CharField(source='username')
     follower_user_campusname = serializers.SerializerMethodField()
 
     class Meta:
-        model = Profile
-        fields = ['follower_user_img_path', 'follower_user_name', 'follower_user_username', 'follower_user_campusname']
+        model = User
+        fields = ['follower_user_img_path', 'follower_user_id', 'follower_user_name', 'follower_user_username', 'follower_user_campusname']
 
-    def get_follower_user_img_path(self, profile):
-        return get_img_path(profile)
+    def get_follower_user_img_path(self, user):
+        return get_img_path(user.profile_set.first())
 
-    def get_follower_user_campusname(self, profile):
-        return get_user_campusname(profile)
+    def get_follower_user_campusname(self, user):
+        return get_user_campusname(user)

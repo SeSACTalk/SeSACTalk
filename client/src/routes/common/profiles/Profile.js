@@ -11,11 +11,11 @@ import { Link, Outlet } from 'react-router-dom'
 import { useDispatch, useSelector } from "react-redux";
 
 // Components
-import { changeVerifyPasswordForWithdrawModal, changeFollowModal, changeFollowerModal, changeProfileSettingModal, changeVerifyPasswordForEditProfileModal } from "../../../store/modalSlice";
+import { changeVerifyPasswordForWithdrawModal, changeOwnFollowModal, changeOwnFollowerModal, changeOtherFollowModal, changeOtherFollowerModal, changeProfileSettingModal, changeVerifyPasswordForEditProfileModal } from "../../../store/modalSlice";
 import Navbar from '../main/Navbar';
 import { ProfilePosts, ProfileLikes, ProfileReplys } from "./ProfileNav";
 import VerifyPasswordModal from "./VerifyPasswordModal";
-import { FollowModal, FollowerModal } from "./UserRelationshipModal";
+import { OwnFollowerModal, OwnFollowModal, OtherFollowModal, OtherFollowerModal } from "./UserRelationshipModal";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
 const session_key = getCookie('session_key')
@@ -50,14 +50,18 @@ function Profile() {
     let navigate = useNavigate();
     let dispatch = useDispatch();
     let verifyPasswordForEditProfileModal = useSelector((state) => state.verifyPasswordForEditProfileModal)
-    let followModal = useSelector((state) => state.followModal)
-    let followerModal = useSelector((state) => state.followerModal)
+    let ownFollowModal = useSelector((state) => state.ownFollowModal)
+    let ownFollowerModal = useSelector((state) => state.ownFollowerModal)
+    let otherFollowModal = useSelector((state) => state.otherFollowModal)
+    let otherFollowerModal = useSelector((state) => state.otherFollowerModal)
     let profileSettingModal = useSelector((state) => state.profileSettingModal)
 
     // state 
     const [postClickStatus, setPostClickStatus] = useState(true);
     const [likeClickStatus, setLikeClickStatus] = useState(false);
     const [replyClickStatus, setReplyClickStatus] = useState(false);
+    const [followerCount, setFollowerCount] = useState(0);
+    const [followCount, setFollowCount] = useState(0);
 
     const navStyle = "border-t-2 border-gray-600 relative -top-0.5"
 
@@ -67,11 +71,17 @@ function Profile() {
     useEffect(() => {
         fetchData();
         // 팔로우, 팔로워 창, 설정 창에서 프로필 페이지로 이동했을 때 모달창을 닫기
-        if (followModal) {
-            dispatch(changeFollowModal(followModal));
+        if (ownFollowModal) {
+            dispatch(changeOwnFollowModal(ownFollowModal));
         }
-        if (followerModal) {
-            dispatch(changeFollowerModal(followerModal));
+        if (ownFollowerModal) {
+            dispatch(changeOwnFollowerModal(ownFollowerModal));
+        }
+        if (otherFollowModal) {
+            dispatch(changeOtherFollowModal(otherFollowModal));
+        }
+        if (otherFollowerModal) {
+            dispatch(changeOtherFollowerModal(otherFollowerModal));
         }
         if (profileSettingModal) {
             dispatch(changeProfileSettingModal(profileSettingModal));
@@ -81,6 +91,10 @@ function Profile() {
     useEffect(() => {
         fetchData();
     }, [followStatus]);
+
+    useEffect(() => {
+        setFollowerCount(followerCount)
+    }, [followerCount]);
 
     // 프로필 데이터 가져오기
     const fetchData = async () => {
@@ -94,6 +108,8 @@ function Profile() {
                     const data = response.data;
                     setProfileData(data); // profileData 설정
                     setFollowStatus(data.followStatus); // 팔로우 상태 설정
+                    setFollowerCount(data.follower_count);
+                    setFollowCount(data.follow_count);
                     console.log(data);
                 }
             )
@@ -168,7 +184,7 @@ function Profile() {
             console.error(error)
         }
     }
-    
+
     function MyProfileBtn() {
         let dispatch = useDispatch();
 
@@ -190,7 +206,7 @@ function Profile() {
                 {
                     followStatus ? (
                         <button
-                            class="inline-block px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm"
+                            class="inline-block px-4 py-2 font-semibold text-sm bg-zinc-400 text-white rounded-full shadow-sm"
                             onClick={(e) => {
                                 unfollow(e, target_id);
                             }}>언팔로잉</button>) :
@@ -249,15 +265,20 @@ function Profile() {
                                         <span className="font-semibold text-black">{profileData.post_count}</span>
                                     </li>
                                     <li>
-                                        <Link className="flex gap-2" to='#' onClick={(e) => { dispatch(changeFollowerModal(followerModal)) }}>
+                                        <Link className="flex gap-2" to='#' onClick={(e) => {
+                                            profileData.isProfileMine ? dispatch(changeOwnFollowerModal(ownFollowerModal)) : dispatch(changeOtherFollowerModal(otherFollowerModal))
+                                        }
+                                        }>
                                             <span>팔로워</span>
-                                            <span className="font-semibold text-black">{profileData.follower_count == null ? 0 : profileData.follower_count}</span>
+                                            <span className="font-semibold text-black">{followerCount == null ? 0 : followerCount}</span>
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link className="flex gap-2" to='#' onClick={(e) => { dispatch(changeFollowModal(followModal)) }}>
+                                        <Link className="flex gap-2" to='#' onClick={(e) => {
+                                            profileData.isProfileMine ? dispatch(changeOwnFollowModal(ownFollowModal)) : dispatch(changeOtherFollowModal(otherFollowModal))
+                                        }}>
                                             <span>팔로우</span>
-                                            <span className="font-semibold text-black">{profileData.follow_count == null ? 0 : profileData.follow_count}</span>
+                                            <span className="font-semibold text-black">{followCount == null ? 0 : followCount}</span>
                                         </Link>
                                     </li>
                                 </ul>
@@ -317,8 +338,10 @@ function Profile() {
 
                     {/* Modals */}
                     {verifyPasswordForEditProfileModal && <VerifyPasswordModal url={`/profile/${username}/edit`} modal={verifyPasswordForEditProfileModal} changeModal={changeVerifyPasswordForEditProfileModal} />}
-                    {followModal && <FollowModal user_pk={profileData.user_id} />}
-                    {followerModal && <FollowerModal user_pk={profileData.user_id} />}
+                    {ownFollowModal && <OwnFollowModal user_pk={profileData.user_id} isProfileMine={profileData.isProfileMine} followCount={followCount} setFollowCount={setFollowCount} />}
+                    {ownFollowerModal && <OwnFollowerModal user_pk={profileData.user_id} isProfileMine={profileData.isProfileMine} followerCount={followerCount} setFollowerCount={setFollowerCount} />}
+                    {otherFollowModal && <OtherFollowModal user_pk={profileData.user_id} isProfileMine={profileData.isProfileMine} followCount={followCount} setFollowCount={setFollowCount} />}
+                    {otherFollowerModal && <OtherFollowerModal user_pk={profileData.user_id} isProfileMine={profileData.isProfileMine} followerCount={followerCount} setFollowerCount={setFollowerCount} />}
                     {profileSettingModal && <ProfileSettingModal username={username} />}
 
                     {/* withdraw */}

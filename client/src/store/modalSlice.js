@@ -60,21 +60,41 @@ let verifyPasswordForWithdrawModal = createSlice({
     }
 })
 
-let followModal = createSlice({
-    name: 'followModal',
+let ownFollowModal = createSlice({
+    name: 'ownFollowModal',
     initialState: false,
     reducers: {
-        changeFollowModal(state, action) {
+        changeOwnFollowModal(state, action) {
             return !state
         }
     }
 })
 
-let followerModal = createSlice({
-    name: 'followerModal',
+let ownFollowerModal = createSlice({
+    name: 'ownFollowerModal',
     initialState: false,
     reducers: {
-        changeFollowerModal(state, action) {
+        changeOwnFollowerModal(state, action) {
+            return !state
+        }
+    }
+})
+
+let otherFollowModal = createSlice({
+    name: 'otherFollowModal',
+    initialState: false,
+    reducers: {
+        changeOtherFollowModal(state, action) {
+            return !state
+        }
+    }
+})
+
+let otherFollowerModal = createSlice({
+    name: 'otherFollowerModal',
+    initialState: false,
+    reducers: {
+        changeOtherFollowerModal(state, action) {
             return !state
         }
     }
@@ -89,8 +109,7 @@ let profileSettingModal = createSlice({
         }
     }
 })
-
-export { writeModal, optionModal, reportModal, detailModal, verifyPasswordForEditProfileModal, verifyPasswordForWithdrawModal, followModal, followerModal, profileSettingModal };
+export { writeModal, optionModal, reportModal, detailModal, verifyPasswordForEditProfileModal, verifyPasswordForWithdrawModal, ownFollowModal, ownFollowerModal, otherFollowModal, otherFollowerModal, profileSettingModal };
 
 export let { changeWirteModal } = writeModal.actions;
 export let { changeOptionModal } = optionModal.actions;
@@ -98,6 +117,8 @@ export let { changeReportModal } = reportModal.actions;
 export let { changeDetailModal } = detailModal.actions;
 export let { changeVerifyPasswordForEditProfileModal } = verifyPasswordForEditProfileModal.actions;
 export let { changeVerifyPasswordForWithdrawModal } = verifyPasswordForWithdrawModal.actions;
-export let { changeFollowModal } = followModal.actions;
-export let { changeFollowerModal } = followerModal.actions;
+export let { changeOwnFollowModal } = ownFollowModal.actions;
+export let { changeOwnFollowerModal } = ownFollowerModal.actions;
+export let { changeOtherFollowModal } = otherFollowModal.actions;
+export let { changeOtherFollowerModal } = otherFollowerModal.actions;
 export let { changeProfileSettingModal } = profileSettingModal.actions;
