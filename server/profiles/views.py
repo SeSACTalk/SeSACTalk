@@ -1,6 +1,8 @@
+import re
+
 from django.contrib.auth.hashers import make_password
 from django.db.models import Count, Subquery, OuterRef, F
-from django.http import HttpRequest
+from django.http import HttpRequest, QueryDict
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -9,16 +11,13 @@ from post.constants import ResponseMessages
 from post.models import Post, Reply, Like
 from post.serializers import PostSetSerializer, ReplysSetSerializer, LikesSetSerializer
 from profiles.models import Profile
-# from user.models import User
 from accounts.models import Campus, Course, User
 from profiles.serializers import ProfileSerializer, ProfileSetSerializer, EditProfileSerializer
 from accounts.serializers import UserSerializer, CampusSerializer, CourseSerializer
 from sesactalk.mixins import SessionDecoderMixin
 from user.models import UserRelationship
 
-
 # Create your views here.
-
 class ProfileView(APIView, SessionDecoderMixin):
     def get(self, request:HttpRequest, username: str) -> Response:
         # session_key로 user_id get
@@ -49,7 +48,7 @@ class ProfileView(APIView, SessionDecoderMixin):
 
         # 해당 프로필 유저를 팔로우하는 지 여부
         follow_status = UserRelationship.objects.filter(user_follow = profile_user_id, user_follower = user_id).exists()
-        print(follow_status)
+
         profileSerializer = ProfileSetSerializer(profile)
         data = profileSerializer.data
         data['isProfileMine'] = isProfileMine
@@ -87,74 +86,77 @@ class EditProfileView(APIView, SessionDecoderMixin):
                     courseSerializer = CourseSerializer(courses_on_campus, many = True)
                     response_data['course'] = courseSerializer.data
 
-                print(response_data)
-
 
             except Exception:
                 print(Exception)
                 return Response({'error': 'EditProfile not found'}, status=status.HTTP_404_NOT_FOUND)
-
             return Response(data = response_data, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'EditProfile not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    def copyDict(self, key_list:list, dict_to_copy:dict):
-        result = {}
-        for key, value in dict_to_copy.items():
-            if key in key_list:
-                result[key] = value
+    def check_second_course_request(self, data):
+        second_course_id = data.get('second_course')
+        if second_course_id:
+            try:
+                int(second_course_id)
+                print(f'두 번째 과정이 신청됨 : {second_course_id}')
+                return False
+            except:
+                print('이미 신청 처리된 두 번째 과정이 있음')
+        else:
+            print('신청된 두 번째 과정 없음')
 
+        return True
+    def copy_querydict(self, data, keys, course_status, **kwargs):
+        result = QueryDict(mutable=True)
+        for key, value in data.items():
+            if key in keys:
+                if not course_status and (key == 'second_course'):
+                    result[key] = int(value)
+                elif key == 'course_status':
+                    if bool(value):
+                        result[key] = course_status
+                elif key == 'img_path':
+                    result[key] = (kwargs['request']).FILES[key]
+                else:
+                    result[key] = value
         return result
+
     def put(self, request:HttpRequest, username: str) -> Response:
         # session_key로 user_id get
         user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
-
-        # 데이터 분류
-        user_keys = ['birthdate','phone_number','password','second_course']
-        profile_keys = ['img_path','content','link', 'course_status']
-        keys = user_keys + ['img_path','content','link']
-        dict = {}
-
-        for key in keys :
-            value = request.data[key]
-            if value and value not in ['null', '/media/profile/default_profile.png']:
-                if key in ['second_course', 'password', 'img_path']:
-                    if key == 'second_course' :
-                        if value :
-                            dict['course_status'] = False
-                            try:
-                                # request.data['second_course']가 int값일 때만 update값으로 사용
-                                dict[key] = int(value)
-                            except:
-                                pass
-                    if key == 'password':
-                        dict[key] = make_password(value)
-                    if key == 'img_path':
-                        dict[key] = request.FILES.get(key, None)
-                        print(f"confirm : {request.FILES.get(key, None)}")
-                else :
-                    dict[key] = value
-
-        user_dict = self.copyDict(user_keys, dict)
-        profile_dict = self.copyDict(profile_keys, dict)
-
-        print(profile_dict)
-
-        # update
-        userSerializer = UserSerializer(User.objects.get(pk=user_id), data = user_dict, partial=True)
-        profileSerializer = ProfileSerializer(Profile.objects.get(user_id=user_id),data = profile_dict, partial=True)
-
-        if userSerializer.is_valid() and profileSerializer.is_valid():
-            userSerializer.save()
-            profileSerializer.save()
-
-            return Response({'message': 'Data updated successfully'}, status=status.HTTP_200_OK)
-        else:
-            errors = {
-                'user' : userSerializer.errors,
-                'profile' : profileSerializer.errors
-            }
-            return Response({'errors': errors}, status.HTTP_400_BAD_REQUEST)
+        profile = Profile.objects.get(user_id = user_id)
+        profile.img_path = request.FILES.get('img_path')
+        profile.save()
+        # request_data = request.data
+        #
+        # course_status = self.check_second_course_request(request_data)
+        # user_keys = ['birthdate','phone_number','password','second_course']
+        # profile_keys = ['img_path','content','link', 'course_status']
+        # user_querydict = self.copy_querydict(request_data, user_keys, course_status)
+        # profile_querydict = self.copy_querydict(request_data, profile_keys, course_status, request = request)
+        #
+        # user = User.objects.get(pk=user_id)
+        # profile = Profile.objects.get(user_id=user_id)
+        #
+        # # update
+        # userSerializer = UserSerializer(user, data = user_querydict, partial=True)
+        # profileSerializer = ProfileSerializer(profile, data = profile_querydict, partial=True)
+        #
+        # if userSerializer.is_valid():
+        #     userSerializer.save()
+        # elif profileSerializer.is_valid():
+        #     profileSerializer.save()
+        #     print(f"profile_querydict : {profile_querydict}")
+        #     print(f"profileSerializer : {profileSerializer.data}")
+        # else:
+        #     errors = {
+        #         'user_errors': userSerializer.errors,
+        #         'profile_errors': profileSerializer.errors,
+        #     }
+        #     return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+        #
+        return Response({'message': 'Data updated successfully'}, status=status.HTTP_200_OK)
 
 
 class ProfilePost(APIView, SessionDecoderMixin):
@@ -185,8 +187,6 @@ class ProfileLike(APIView, SessionDecoderMixin):
         # QuerySet이 비어있을 경우
         if not bool(likes):
             return Response({'message': ResponseMessages.NO_LIKES_TO_DISPLAY}, status=status.HTTP_200_OK)
-
-        print(likesSetSerializer.data)
 
         return Response(likesSetSerializer.data, status=status.HTTP_200_OK)
 

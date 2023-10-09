@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { changeProfileSettingModal } from "../../../store/modalSlice";
 
@@ -16,10 +16,6 @@ function WithdrawModal() {
     /* etc */
     const { username } = useParams();
     const navigate = useNavigate();
-    const location = useLocation();
-    const queryParams = new URLSearchParams(location.search);
-
-    const verify = JSON.parse(queryParams.get('verify'));
 
     /* DOM */
     const modalPopup = useRef()
@@ -52,9 +48,7 @@ function WithdrawModal() {
             .catch(() => {
                 navigate('/accounts/login');
             });
-            if (!verify) {
-                navigate(`/profile/${username}`);
-            }
+
     }, []);
 
     /* functions */
@@ -82,8 +76,8 @@ function WithdrawModal() {
                     <div className="flex flex-col gap-1 h-[88%] justify-between items-center text-sm">
                         <span className="text-gray-500 text-base font-semibold">회원 탈퇴</span>
                         {userInfoForWithdrawStatus && <UserInfoForWithdrawModal SERVER_WITHDRAW={SERVER_WITHDRAW} setUserInfoForWithdrawStatus={setUserInfoForWithdrawStatus} setWithdrawalConfirmationStatus={setWithdrawalConfirmationStatus} />}
-                        {withdrawalConfirmationStatus && <WithdrawalConfirmationModal SERVER_WITHDRAW={SERVER_WITHDRAW} setWithdrawalConfirmationStatus={setWithdrawalConfirmationStatus} setWithdrawalCompleteStatus = {setWithdrawalCompleteStatus} cancelWithdrawal={cancelWithdrawal} />}
-                        {withdrawalCompleteStatus && <WithdrawalCompleteModal setWithdrawalCompleteStatus = {setWithdrawalCompleteStatus} closeProfileSettingModal={closeProfileSettingModal} />}
+                        {withdrawalConfirmationStatus && <WithdrawalConfirmationModal SERVER_WITHDRAW={SERVER_WITHDRAW} setWithdrawalConfirmationStatus={setWithdrawalConfirmationStatus} setWithdrawalCompleteStatus={setWithdrawalCompleteStatus} cancelWithdrawal={cancelWithdrawal} />}
+                        {withdrawalCompleteStatus && <WithdrawalCompleteModal setWithdrawalCompleteStatus={setWithdrawalCompleteStatus} closeProfileSettingModal={closeProfileSettingModal} />}
                     </div>
                 </div>
             </div>
@@ -141,7 +135,7 @@ function WithdrawalConfirmationModal({ SERVER_WITHDRAW, setWithdrawalConfirmatio
     const navigate = useNavigate();
     const { username } = useParams();
 
-    {/* functions */}
+    {/* functions */ }
     const handleWithdraw = async (e) => { // 회원 탈퇴
         e.preventDefault();
         await axios.delete(SERVER_WITHDRAW, {
@@ -159,7 +153,7 @@ function WithdrawalConfirmationModal({ SERVER_WITHDRAW, setWithdrawalConfirmatio
                 console.log(error.response.data);
             });
     }
-    
+
     const handleLogout = async (e) => { // 로그아웃
         e.preventDefault();
         try {

@@ -50,7 +50,7 @@ const VerifyPassword = function ({ url, modal, changeModal }) {
         })
             .then(response => {
                 dispatch(changeModal(modal));
-                navigate(`${url}?verify=${true}`);
+                navigate(`${url}`);
             })
             .catch(error => {
                 // 잘못된 접근

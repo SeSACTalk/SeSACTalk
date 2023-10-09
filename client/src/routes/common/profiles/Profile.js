@@ -34,7 +34,7 @@ function ProfileLayout() {
     return (
         <div className='main_container flex relative'>
             <Navbar />
-            <div className="main_content_container w-full">
+            <div className="main_content_container w-4/5">
                 <div className="profile_container pt-12 px-20 text-lg">
                     <Outlet />
                 </div>
