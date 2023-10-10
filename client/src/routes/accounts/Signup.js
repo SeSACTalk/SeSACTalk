@@ -120,7 +120,7 @@ const Signup = function () {
         })
             .then(response => {
                 console.log(response.data);
-                navigate('accounts/login');
+                // navigate('accounts/login');
             })
             .catch(error => {
                 console.log(error.response.data);

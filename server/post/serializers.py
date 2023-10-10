@@ -6,9 +6,11 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from PIL import Image
 import io
 
-from accounts.models import User
+from accounts.models import User, Campus
 from post.models import Post, Like, View, Reply, HashTag, Report
 from profiles.models import Profile
+
+from datetime import datetime
 
 
 class PostContentLengthValidator:
@@ -32,10 +34,10 @@ class ImgPathContentTypeValidator:
         if not value.name.lower().endswith(tuple(self.allowed_extensions)):
             raise serializers.ValidationError('Invalid image format. Allowed formats: %s' % ', '.join(self.allowed_extensions))
 
-class PostSerializer(serializers.ModelSerializer):
-    user = None
-    hash_tag_name = serializers.SerializerMethodField(read_only = True)
 
+class PostSerializer(serializers.ModelSerializer):
+    # post field
+    user = None
     content = serializers.CharField(
         validators=[
             PostContentLengthValidator()
@@ -48,14 +50,58 @@ class PostSerializer(serializers.ModelSerializer):
         ],
         required = False,
     )
-    def __init__(self, *args, **kwargs)-> None:
-        self.user = None
-        super().__init__(*args, **kwargs)
+    hash_tag_name = serializers.SerializerMethodField(read_only = True)
+
+    # user field
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
+    username = serializers.CharField(source='user.username', read_only=True)
+    name = serializers.CharField(source='user.name', read_only=True)
+    campusname = serializers.SerializerMethodField()
+
+    # profile field
+    profile_img_path = serializers.SerializerMethodField()
+
+    # like & reply field
+    like_set = serializers.SerializerMethodField()
+    reply_set = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
         fields = '__all__'
-    
+
+    def get_campusname(self, post):
+        user = post.user
+        try:
+            campus_name = user.second_course.campus.name
+        except Exception:
+            campus_name = user.first_course.campus.name
+        return campus_name
+    def get_campus_name(self, post):
+        user = post.user
+        if user.second_course:
+            return user.second_course.campus.name
+        return user.first_course.campus.name
+
+    def get_like_set(self, obj):
+        likes = obj.like_set.all()  # Post 객체의 like_set을 가져옴
+        return LikeSerializer(likes, many=True).data
+
+    def get_reply_set(self, obj):
+        replies = obj.reply_set.all()  # Post 객체의 reply_set을 가져옴
+        return ReplySerializer(replies, many=True).data
+
+    def get_profile_img_path(self, post):
+        profile = Profile.objects.get(user = post.user.id)
+        if profile.img_path:
+            profile_img_path = profile.img_path
+        else:
+            profile_img_path = '/media/profile/default_profile.png'
+
+        return profile_img_path
+    def __init__(self, *args, **kwargs)-> None:
+        self.user = None
+        super().__init__(*args, **kwargs)
+
     def get_hash_tag_name(self, post):
         return [hashtag.name for hashtag in post.tags.all()]
 
@@ -132,6 +178,7 @@ class PostSerializer(serializers.ModelSerializer):
 
         return InMemoryUploadedFile(img_io, None, input_image.name, input_image.content_type, img_size, None)
 
+
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
@@ -140,6 +187,11 @@ class LikeSerializer(serializers.ModelSerializer):
 class ViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = View
+        fields = '__all__'
+
+class ReplySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reply
         fields = '__all__'
 
 class HashTagSerializer(serializers.ModelSerializer):
@@ -183,9 +235,9 @@ class ManagerProfileSerializer(serializers.ModelSerializer):
         fields = (
             'campus', 'manager_id', 'manager_username', 'profile_img_path'
         )
-        
+
     def get_profile_img_path(self, user):
-        profile = Profile.objects.get(user = user.id)
+        profile = Profile.objects.get(user=user.id)
         if profile.img_path:
             profile_img_path = profile.img_path
         else:
@@ -210,3 +262,54 @@ class RecommendPostSerilaier(serializers.ModelSerializer):
         if user.second_course:
             return user.second_course.campus.name
         return user.first_course.campus.name
+
+class ReplysSetSerializer(ReplySerializer):
+    format_date = serializers.SerializerMethodField()
+    post_id = serializers.IntegerField(source='post.id', read_only=True)
+    post_user_username = serializers.CharField(read_only=True)
+    post_user_name = serializers.CharField(read_only=True)
+    post_user_profile_img_path = serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model = Reply
+        fields = (
+            'id', 'content', 'date', 'format_date', 'report_status', 'post_id',
+            'post_user_username', 'post_user_name', 'post_user_profile_img_path'
+        )
+    def get_format_date(self, reply):
+        parsed_date = datetime.fromisoformat(str(reply.date))
+        return parsed_date.strftime("%Y년 %m월 %d일")
+
+    def get_post_user_profile_img_path(self, reply):
+        profile = Profile.objects.get(user = reply.post.user.id)
+        if profile.img_path:
+            profile_img_path = profile.img_path
+        else:
+            profile_img_path = '/media/profile/default_profile.png'
+
+        return profile_img_path
+
+class LikesSetSerializer(LikeSerializer):
+    format_date = serializers.SerializerMethodField()
+    post_id = serializers.IntegerField(source='post.id', read_only=True)
+    post_content = serializers.CharField(source='post.content', read_only=True)
+    post_user_username = serializers.CharField(read_only=True)
+    post_user_name = serializers.CharField(read_only=True)
+    post_user_profile_img_path = serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model = Like
+        fields = (
+            'id', 'date', 'format_date', 'post_id', 'post_content',
+            'post_user_username', 'post_user_name', 'post_user_profile_img_path',
+        )
+    def get_format_date(self, reply):
+        parsed_date = datetime.fromisoformat(str(reply.date))
+        return parsed_date.strftime("%Y년 %m월 %d일")
+
+    def get_post_user_profile_img_path(self, reply):
+        profile = Profile.objects.get(user = reply.post.user.id)
+        if profile.img_path:
+            profile_img_path = profile.img_path
+        else:
+            profile_img_path = '/media/profile/default_profile.png'
+
+        return profile_img_path

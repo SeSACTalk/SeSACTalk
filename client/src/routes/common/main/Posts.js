@@ -67,13 +67,13 @@ const Posts = function () {
               return (
                 <article className='relative post_container p-5 h-96 border-solid border-b border-gray-200' key={i}>
                   <div className='post_author'>
-                    <Link className='inline-flex gap-5' to={element.username}>
+                    <Link className='inline-flex gap-5' to={`/profile/${element.username}`}>
                       <div className='img_wrap w-24 h-24 p-2 rounded-full overflow-hidden border border-solid border-gray-200'>
                         <img src={`${SERVER}/media/profile/default_profile.png`} alt={element.username} />
                       </div>
                       <p className='flex flex-col gap-1 text_wrap justify-center'>
-                        <span className='text-base'>{element.username}</span>
-                        <span className='text-sm'>{element.campus}</span>
+                        <span className='text-base'>{element.name}</span>
+                        <span className='text-sm text-sesac-green'>{element.campusname} 캠퍼스</span>
                       </p>
                     </Link>
                   </div>
@@ -104,12 +104,12 @@ const Posts = function () {
                       <li className='flex items-center'>
                         <span className='hidden'>좋아요</span>
                         <i className="fa fa-gratipay mr-1 text-rose-500" aria-hidden="true"></i>
-                        <span className='text-sm'>1</span>
+                        <span className='text-sm'>{element.like_set.length}</span>
                       </li>
                       <li className='flex items-center'>
                         <span className='hidden'>댓글</span>
                         <i className="fa fa-comment-o mr-1" aria-hidden="true"></i>
-                        <span className='text-sm'>20</span>
+                        <span className='text-sm'>{element.reply_set.length}</span>
                       </li>
                     </ul>
                   </div>

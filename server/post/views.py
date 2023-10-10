@@ -12,7 +12,8 @@ from post.models import Post as PostModel
 from accounts.models import User
 from user.models import UserRelationship
 
-from post.serializers import PostSerializer, ReportSerializer, ManagerProfileSerializer, RecommendPostSerilaier
+from post.serializers import PostSerializer, LikeSerializer, ViewSerializer, ReplySerializer, HashTagSerializer, \
+    ReportSerializer, ManagerProfileSerializer, RecommendPostSerilaier
 from post.mixins import OwnerPermissionMixin
 from post.constants import ResponseMessages
 
@@ -76,8 +77,8 @@ class Post(APIView, OwnerPermissionMixin):
 
         # 반환할 게시물이 있는 경우
         postSerializer = PostSerializer(posts, many=True)
-        for i, post in enumerate(posts): postSerializer.data[i]['username'] = post.user.username
-        
+
+        print(postSerializer.data)
         return Response(postSerializer.data, status=status.HTTP_200_OK)
 
     def post(self, request: HttpRequest, username) -> Response:
@@ -109,7 +110,7 @@ class PostDetail(APIView, OwnerPermissionMixin):
             'post': postSerializer.data,
             'isPostMine': access_user_condition
             }
-        
+        print(response_data)
         return Response(response_data, status.HTTP_200_OK)
 
     def put(self, request, **kwargs) -> Response:

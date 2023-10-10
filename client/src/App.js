@@ -18,6 +18,9 @@ import Admin from './routes/admin/Admin';
 import UserList from './routes/admin/UserList';
 import UserVerify from './routes/admin/UserVerify';
 import CourseApproval from './routes/admin/CourseApproval';
+import { ProfileLayout, Profile } from './routes/common/profiles/Profile';
+import EditProfile from './routes/common/profiles/EditProfile';
+import WithdrawModal from './routes/common/profiles/WithdrawModal';
 
 function App() {
   return (
@@ -34,6 +37,13 @@ function App() {
           <Route path='explore/:tagName' element={<ExploreResult />} />
           <Route path='chat' element={<Chat />}>
             <Route path=':chatRoom' element={<ChatDetail />} />
+          </Route>
+          {/* 프로필 */}
+          <Route path="profile/:username" element={<ProfileLayout />} >
+            <Route path="" element={<Profile/>}>
+              <Route path="withdraw" element={<WithdrawModal/>} />
+            </Route>
+            <Route path="edit" element={<EditProfile/>} />
           </Route>
         </Route>
         {/* 관리자 */}

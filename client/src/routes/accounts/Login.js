@@ -4,6 +4,8 @@ import CryptoJS from 'crypto-js'
 
 
 import { setCookie } from '../../modules/handle_cookie';
+// 임시
+import { Link } from 'react-router-dom'
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
 

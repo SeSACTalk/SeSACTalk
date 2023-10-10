@@ -1,8 +1,8 @@
-import { configureStore, createSlice } from '@reduxjs/toolkit';
+import { configureStore, createSlice } from '@reduxjs/toolkit'
+import { writeModal, optionModal, reportModal, postEditModal, verifyPasswordForEditProfileModal, verifyPasswordForWithdrawModal, ownFollowModal, ownFollowerModal, otherFollowModal, otherFollowerModal, profileSettingModal } from './store/modalSlice'
 
 import role from './store/userSlice';
 import detailPath from './store/postSlice';
-import { writeModal, optionModal, reportModal, postEditModal } from './store/modalSlice';
 import { minNav, exploreNav, noticeNav } from './store/navSlice';
 
 let chatStatus = createSlice({
@@ -32,7 +32,14 @@ export default configureStore({
         // nav
         minNav: minNav.reducer,
         exploreNav: exploreNav.reducer,
-        noticeNav: noticeNav.reducer
-    },
-    // devTools: false
+        noticeNav: noticeNav.reducer,
+        // devTools: false
+        verifyPasswordForEditProfileModal : verifyPasswordForEditProfileModal.reducer,
+        verifyPasswordForWithdrawModal : verifyPasswordForWithdrawModal.reducer,
+        ownFollowModal : ownFollowModal.reducer,
+        ownFollowerModal : ownFollowerModal.reducer,
+        otherFollowModal : otherFollowModal.reducer,
+        otherFollowerModal : otherFollowerModal.reducer,
+        profileSettingModal : profileSettingModal.reducer,
+    }
 }) 
