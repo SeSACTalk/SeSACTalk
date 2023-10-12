@@ -46,13 +46,14 @@ const Login = function () {
      * @param {String} text 
      */
     const pwValidator = (text) => {
-        let regex = /^[a-zA-Z\d`~!@#$%^&*-_=+]{8,20}$/
-        if (regex.test(text)) {
-            return true
-        } else {
-            pwAlert.current.innerHTML = '비밀번호를 올바르게 입력해주세요.'
-            return false
-        }
+        // let regex = /^[a-zA-Z\d`~!@#$%^&*-_=+]{8,20}$/
+        // if (regex.test(text)) {
+        //     return true
+        // } else {
+        //     pwAlert.current.innerHTML = '비밀번호를 올바르게 입력해주세요.'
+        //     return false
+        // }
+        return true
     }
 
     /**
@@ -71,7 +72,7 @@ const Login = function () {
 
                 window.location.href = '/';
             } catch (error) {
-                console.error('Login failed', error.response)
+                alert(error.response.data.error)
             }
         }
     }
