@@ -84,8 +84,7 @@ function Profile() {
 
     // 프로필 데이터 가져오기
     const fetchData = async () => {
-        await axios.get(`/profile/${username}`, {
-        })
+        await axios.get(`/profile/${username}`)
             .then(
                 response => {
                     const data = response.data;
@@ -312,7 +311,7 @@ function Profile() {
                             <span>댓글</span>
                         </Link>
                     </div>
-                    <div className="profile_navmx-auto">
+                    <div className="profile_navmx-auto flex justify-center">
                         {/* 게시물, 좋아요, 댓글 디테일 */}
                         {postClickStatus ? <ProfilePosts user_id={profileData.user_id} /> : null}
                         {likeClickStatus ? <ProfileLikes user_id={profileData.user_id} /> : null}
@@ -347,10 +346,6 @@ function ProfileSettingModal({ username }) {
     /* states */
     const [scroll, setScroll] = useState();
 
-    /* SERVER */
-    const SERVER_WITHDRAW = `${SERVER}/user/${username}/withdraw/`
-    const SERVER_ACCOUNTS_LOGOUT = `${SERVER}/accounts/logout/`
-
     /* etc */
     const navigate = useNavigate()
 
@@ -374,35 +369,19 @@ function ProfileSettingModal({ username }) {
     // 로그아웃
     const handleLogout = async (e) => {
         e.preventDefault();
-        try {
-            const response = await axios.post(SERVER_ACCOUNTS_LOGOUT, {
-                session_key: session_key
-            })
-            deleteCookie('session_key');
-            deleteCookie('username');
-            navigate('/accounts/login');
-        } catch (error) {
-            console.error(error)
-        }
-    }
-    // 회원 탈퇴
-    const handleWithdraw = async (e) => {
-        e.preventDefault();
-        await axios.post(SERVER_WITHDRAW, null, {
-            headers: {
-                'Authorization': session_key
-            },
-        })
-            .then(response => {
-                console.log(response.data)
-                console.log('회원 탈퇴 완료');
-                handleLogout();
-            })
-            .catch(error => {
-                // 잘못된 접근
+        await axios.delete('/accounts/logout/')
+        .then(
+            response =>  {
+                deleteCookie('session_key');
+                deleteCookie('username');
+                navigate('/accounts/login');
+            }
+        )
+        .catch(
+            error =>  {
                 console.log(error.response.data);
-                dispatch(changeProfileSettingModal(profileSettingModal));
-            });
+            }
+        )
     }
 
     return (

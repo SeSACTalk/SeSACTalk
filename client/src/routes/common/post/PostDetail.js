@@ -71,56 +71,91 @@ const PostDetail = function () {
                             <li className='flex flex-row items-center'>
                                 <span className='hidden'>좋아요</span>
                                 <i className="fa fa-gratipay mr-1 text-rose-500" aria-hidden="true"></i>
-                                <span className='text-sm'>{post.like_set.length}</span>
+                                <span className='text-sm'>{post.like_set == undefined ? 0 : post.like_set.length}</span>
                             </li>
                             <li className='flex flex-row items-center'>
                                 <span className='hidden'>댓글</span>
                                 <i className="fa fa-comment-o mr-1" aria-hidden="true"></i>
-                                <span className='text-sm'>{post.reply_set.length}</span>
+                                <span className='text-sm'>{post.reply_set == undefined ? 0 : post.reply_set.length}</span>
                             </li>
                         </ul>
                     </div>
                 </div>
                 {/* 여기까지가 */}
-                <div className="reply_container flex flex-col w-1/2">
-                    <div className="h-full overflow-y-scroll">
-                        {/* 댓글map 돌린거 조건에 따라 신고하기, 더보기로 변경되야함 */}
-                        {/* for문 돌려야함 */}
-                        <div className='reply_container relative  px-5 border-solid border-b border-gray-200'>
-                            <div className='reply_author'>
-                                <div className='inline-flex gap-5'>
+                <div className="reply_container flex flex-col justify-between w-1/2 h-full ">
+                    {/* 게시물 주인 & 댓글 영역 */}
+                    <div className="flex flex-col">
+                        {/* 게시물 주인 */}
+                        <div className='post_author flex justify-between items-end w-full reply_author pb-2 px-5 border-solid border-b border-gray-200'>
+                            <div className='flex gap-5'>
+                                <div className='img_wrap w-14 h-14 p-2 rounded-full overflow-hidden border border-solid border-gray-200'>
                                     <Link to={`/profile/${post.username}`}>
-                                        <div className='img_wrap w-24 h-24 p-2 rounded-full overflow-hidden border border-solid border-gray-200'>
-                                            <img src={`${process.env.PUBLIC_URL}/img/default_profile.png`} alt='작성자명' />
-                                        </div>
+                                        <img src={`${process.env.PUBLIC_URL}/img/default_profile.png`} alt='작성자명' />
                                     </Link>
-                                    <p className='flex flex-col gap-1 text_wrap justify-center'>
-                                        <span className="text-lg">{post.name}</span>
-                                        <span className='flex gap-5 font-bold text-sesac-green'>
-                                            <span>{post.campusname} 캠퍼스</span>
-                                            <span className="text-sesac-sub">n일전</span>
-                                        </span>
+                                </div>
+                                <div className="flex flex-col justify-center">
+                                    <span className="text-base font-semibold">{post.name}</span>
+                                    <p className='flex gap-2 text_wrap justify-between items-center'>
+                                        <span className='flex text-sm font-semibold gap-3 text-sesac-green'>{post.campusname} 캠퍼스</span>
+                                        <span className="text-slate-400 text-xs font-medium">n일전 게시물</span>
                                     </p>
                                 </div>
-                                <p className='reply_content mt-5 text-sm py-5'>댓글내용</p>
                             </div>
-                            {/* 댓글 작성자 조건에 따라 신고하기/삭제하기 */}
-                            {
-                                isPostMine ?
-                                    <button className='absolute right-5 top-3'>
-                                        <span className='hidden'>댓글 세부설정</span>
-                                        <span>삭제하기</span> | <span>수정하기</span>
-                                    </button>
-                                    : <button className='absolute right-5 top-3'>
-                                        <span className='hidden'>댓글 신고</span>
-                                        <div className="img_wrap w-6 h-6">
-                                            {/* <img src={`${process.env.PUBLIC_URL}/img/siren.png`} alt="신고" /> */}
-                                            <span>신고하기</span>
+                            <div className="post_option">
+                                <h3 className='hidden'>좋아요, 댓글</h3>
+                                <ul className='post_option flex flex-row justify-end gap-3 text-xl h-10'>
+                                    <li className='flex flex-row items-center'>
+                                        <span className='hidden'>좋아요</span>
+                                        <i className="fa fa-gratipay mr-1 text-rose-500" aria-hidden="true"></i>
+                                        <span className='text-sm'>{post.like_set.length}</span>
+                                    </li>
+                                    <li className='flex flex-row items-center'>
+                                        <span className='hidden'>댓글</span>
+                                        <i className="fa fa-comment-o mr-1" aria-hidden="true"></i>
+                                        <span className='text-sm'>{post.reply_set.length}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div className="overflow-y-clip hover:overflow-y-scroll py-3 px-2 h-72">
+                            {/* 댓글 */}
+                            <div className='reply_container flex flex-col gap-2'>
+                                {/* start for statement */}
+                                <div className=" bg-[#e9f3d8] py-3 rounded-lg relative">
+                                    <div className='reply_author px-3 '>
+                                        <div className='flex gap-4'>
+                                            <div className='img_wrap w-9 h-9 p-1 rounded-full overflow-hidden border-[1.5px] border-solid border-white'>
+                                                <Link to={`/profile/${post.username}`}>
+                                                    <img src={`${process.env.PUBLIC_URL}/img/default_profile.png`} alt='작성자명' />
+                                                </Link>
+                                            </div>
+                                            <div className="flex flex-col justify-center">
+                                                <p className='flex gap-2 text_wrap justify-between items-center'>
+                                                    <span className="text-xs">{post.name}</span>
+                                                    <span className="text-slate-400 text-[0.6rem] font-light">n일전</span>
+                                                </p>
+                                                <p className='reply_content font-semibold text-sm'>댓글내용</p>
+                                            </div>
                                         </div>
-                                    </button>
-                            }
+                                        {/* 댓글 작성자 조건에 따라 신고하기/삭제하기 */}
+                                        {
+                                            isPostMine ?
+                                                <button className='absolute right-3 top-2 text-xs text-gray-600'>
+                                                    <span className='hidden'>댓글 세부설정</span>
+                                                    <span>삭제하기</span> | <span>수정하기</span>
+                                                </button>
+                                                : <button className='absolute right-3 top-2'>
+                                                    <span className='hidden'>댓글 신고</span>
+                                                    <span>신고하기</span>
+                                                </button>
+                                        }
+                                    </div>
+                                </div>
+                                {/* end for statement */}
+                            </div>
                         </div>
                     </div>
+                    {/* 댓글 input 영역 */}
                     <div className="reply_input_container">
                         <input className="w-full h-10 rounded-md border border-solid border-black p-3" type="text" placeholder="댓글 달기" />
                     </div>

@@ -36,7 +36,7 @@ const PostOption = function ({ isPostMine, postInfo }) {
                 <div className="absolute flex justify-center items-center rounded-lg w-1/4 h-80 bg-zinc-50">
                     <ul className="post_option flex-row gap-2 w-5/6 h-4/5 bg-zinc-50 border border-solid border-black text-xl">
                         <li className="border-b border-black h-1/4">
-                            <Link to={`post/${postInfo.uuid}`} className="flex justify-center items-center w-full h-full" onClick={() => {
+                            <Link to={`/post/${postInfo.uuid}`} className="flex justify-center items-center w-full h-full" onClick={() => {
                                 dispatch(changeOptionModal(optionModal))
                             }}>상세보기</Link>
                         </li>
@@ -71,7 +71,7 @@ const PostOption = function ({ isPostMine, postInfo }) {
                 <div className="absolute flex justify-center items-center rounded-lg w-1/4 h-80 bg-zinc-50">
                     <ul className="post_option flex-row gap-2 w-5/6 h-4/5 bg-zinc-50 border border-solid border-black text-xl">
                         <li className="border-b border-black h-1/4">
-                            <Link to={`post/${postInfo.uuid}`} className="flex justify-center items-center w-full h-full" onClick={() => {
+                            <Link to={`/post/${postInfo.uuid}`} className="flex justify-center items-center w-full h-full" onClick={() => {
                                 dispatch(changeOptionModal(optionModal))
                             }}>상세보기</Link>
                         </li>

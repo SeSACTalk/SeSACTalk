@@ -143,17 +143,22 @@ function WithdrawalConfirmationModal({ SERVER_WITHDRAW, setWithdrawalConfirmatio
             });
     }
 
-    const handleLogout = async (e) => { // 로그아웃
+    // 로그아웃
+    const handleLogout = async (e) => {
         e.preventDefault();
-        try {
-            const response = await axios.post(SERVER_ACCOUNTS_LOGOUT, {
-                session_key: session_key
-            })
-            deleteCookie('session_key');
-            deleteCookie('username');
-        } catch (error) {
-            console.error(error)
-        }
+        await axios.delete('/accounts/logout/')
+        .then(
+            response =>  {
+                deleteCookie('session_key');
+                deleteCookie('username');
+                navigate('/accounts/login');
+            }
+        )
+        .catch(
+            error =>  {
+                console.log(error.response.data);
+            }
+        )
     }
     // 로그인 페이지로 이동 : navigate('/accounts/login');
 

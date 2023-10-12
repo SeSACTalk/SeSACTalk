@@ -45,10 +45,6 @@ const Posts = function () {
       )
   })
 
-  // console.log(post.data)
-  // console.log(post.isLoading)
-  // console.log(post.error)
-
   useEffect(() => {
     if (post.data && typeof post.data.message == 'undefined') {
       setPostList(post.data);

@@ -40,6 +40,8 @@ const EditProfile = function () {
     const [firstCampusName, setFirstCampusName] = useState('');
     const [secondCourseName, setSecondCourseName] = useState('');
     const [secondCampusName, setSecondCampusName] = useState('');
+    // 처음 second campus name 상태
+    const [courseApplicationStatus, setCourseApplicationStatus] = useState('');
     const [campusList, setCampusList] = useState([])
     const [courseList, setCourseList] = useState({ first: [], second: [] })
 
@@ -48,7 +50,6 @@ const EditProfile = function () {
     const inputNotMatchStyle = "mt-1 px-3 py-2 text-gray-400 bg-white border-2 shadow-sm border-red-300 placeholder-slate-400 focus:outline-none focus:border-red-300 focus:ring-red-300 block rounded-md sm:text-sm focus:ring-1"
 
     // url
-    const SERVER_PROFILE_EDIT = `${SERVER}/profile/${username}/edit/`
 
     const redirectToLogin = () => {
         navigate('/accounts/login'); // 로그인 페이지로 이동
@@ -72,56 +73,44 @@ const EditProfile = function () {
     }, [secondCourseName])
 
 
+    // 프로필 데이터 가져오기
     useEffect(() => {
-        async function fetchData() {
-            try {
-                const response = await axios.get(SERVER_PROFILE_EDIT, {
-                    headers: {
-                        'Authorization': `${session_key}`
+           axios.get(`/profile/${username}/edit/`)
+                .then(
+                    response => {
+                        const data = response.data;
+                        console.log(data)
+                        setName(data.profile.name)
+                        setBirthdate(data.profile.birthdate)
+                        setPhoneNumber(data.profile.phone_number)
+                        setEmail(data.profile.email)
+
+                        setProfileImgpath(data.profile.profile_img_path)
+                        setEditProfileImg(SERVER + data.profile.profile_img_path)
+                        setProfileContent(data.profile.profile_content)
+                        setProfileLink(data.profile.profile_link)
+                        setProfileCourseStatus(data.profile.profile_course_status)
+
+                        setFirstCourseName(data.profile.first_course__name)
+                        setFirstCampusName(data.profile.first_course__campus__name)
+                        setSecondCourseName(data.profile.second_course__name)
+                        setSecondCampusName(data.profile.second_course__campus__name)
+
+                        setCourseApplicationStatus(data.profile.second_course__name == "")
+                        console.log(data.profile.profile_course_status)
+
+                        setCampusList(data.campus);
                     }
-                });
-
-                if (response.status === 200) {
-                    const data = response.data;
-                    console.log(data)
-                    setName(data.profile.name)
-                    setBirthdate(data.profile.birthdate)
-                    setPhoneNumber(data.profile.phone_number)
-                    setEmail(data.profile.email)
-
-                    setProfileImgpath(data.profile.profile_img_path)
-                    setEditProfileImg(SERVER + data.profile.profile_img_path)
-                    setProfileContent(data.profile.profile_content)
-                    setProfileLink(data.profile.profile_link)
-                    setProfileCourseStatus(data.profile.profile_course_status)
-
-                    setFirstCourseName(data.profile.first_course__name)
-                    setFirstCampusName(data.profile.first_course__campus__name)
-                    setSecondCourseName(data.profile.second_course__name)
-                    setSecondCampusName(data.profile.second_course__campus__name)
-
-                    setCampusList(data.campus);
-                } else {
-                    console.error('Error fetching edit profile data');
-                }
-            } catch (error) {
-                console.error('Error fetching edit profile data:', error);
-            }
-        }
-        fetchData();
-    }, []); // username을 종속성 배열에 추가
+                )
+                .catch(
+                    error => console.error(error)
+                )
+    }, []); 
 
 
     // functions
     const requestCoursesByCampus = (selectName, campusId) => { /* 캠퍼스에 해당하는 과정 가져오기 */
-        axios.get(SERVER_PROFILE_EDIT, {
-            headers: {
-                'Authorization': `${session_key}`
-            },
-            params: {
-                campus_id: campusId
-            }
-        })
+    axios.get(`/profile/${username}/edit/?campus_id=${campusId}`)
             .then(response => {
                 setCourseList(prevCourseList => ({
                     ...prevCourseList,
@@ -192,7 +181,7 @@ const EditProfile = function () {
                 'phone_number': phoneNumber,
                 'password': hashedPw,
                 'second_course': secondCourseName,
-                'course_status' : profileCourseStatus,
+                'course_status': profileCourseStatus,
                 'img_path': profileImgpath,
                 'content': profileContent,
                 'link': profileLink,
@@ -212,18 +201,18 @@ const EditProfile = function () {
             // profileFormData.append("content", profileContent);
             // profileFormData.append("link", profileLink);
 
-            axios.put(SERVER_PROFILE_EDIT, formData, {
+            axios.put(`/profile/${username}/edit/`, formData, {
                 headers: {
                     'Content-Type': "multipart/form-data",
                     'Authorization': session_key
                 }
-              })
+            })
                 .then(response => {
                     console.log(response.data);
                     // navigate(`/profile/${username}`);
                 })
                 .catch(error => {
-                  console.log(error.response.data);
+                    console.log(error.response.data);
                 });
         }
     };
@@ -264,7 +253,7 @@ const EditProfile = function () {
                                             file:bg-sesac-sub file:text-sesac-green
                                             hover:file:bg-green-200"
                                         onChange={
-                                            (e) => { 
+                                            (e) => {
                                                 setProfileImgpath(e.target.files[0]);
                                                 changeImagePreview(e);
                                             }
@@ -336,8 +325,8 @@ const EditProfile = function () {
                                     }
                                 }
                                 value={confirmPassword}
-                                readOnly = { isPasswordEmpty ? true : false } 
-                                disable =  { isPasswordEmpty ? true : false } 
+                                readOnly={isPasswordEmpty ? true : false}
+                                disable={isPasswordEmpty ? true : false}
                             />
                         </div>
                         {/* 한줄소개 */}
@@ -403,7 +392,7 @@ const EditProfile = function () {
                         </div>
                         <div className="text-sm">
                             <div className="font-bold text-sesac-green">캠퍼스 2</div>
-                            {profileCourseStatus ? (secondCampusName == undefined ? (
+                            {profileCourseStatus ? (courseApplicationStatus ? (
                                 <div className="flex gap-3">
                                     {generateCampusSelectAndOptionsElements('second')}
                                     <select
@@ -456,7 +445,7 @@ const EditProfile = function () {
                                 }
                             }
                             }
-                            disable = {`${!matchPasswordStatus | isSecondCourseEmpty ? true : false}`}
+                            disable={`${!matchPasswordStatus | isSecondCourseEmpty ? true : false}`}
                         />
                     </div>
                 </form>

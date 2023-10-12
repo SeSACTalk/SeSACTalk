@@ -111,6 +111,7 @@ class EditProfileView(APIView, SessionDecoderMixin):
                 if not course_status and (key == 'second_course'):
                     result[key] = int(value)
                 elif key == 'course_status':
+                    print(course_status)
                     if bool(value):
                         result[key] = course_status
                 elif key == 'img_path':
@@ -136,13 +137,10 @@ class EditProfileView(APIView, SessionDecoderMixin):
         # update
         userSerializer = UserSerializer(user, data = user_querydict, partial=True)
         profileSerializer = ProfileSerializer(profile, data = profile_querydict, partial=True)
-        
-        if userSerializer.is_valid():
+
+        if userSerializer.is_valid() and profileSerializer.is_valid():
             userSerializer.save()
-        elif profileSerializer.is_valid():
             profileSerializer.save()
-            print(f"profile_querydict : {profile_querydict}")
-            print(f"profileSerializer : {profileSerializer.data}")
         else:
             errors = {
                 'user_errors': userSerializer.errors,
