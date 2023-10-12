@@ -56,7 +56,6 @@ const UserList = function () {
                             })
                         }
                     </select>
-                    <label className="hidden" htmlFor="latest">날짜선택</label>
                     <input id="date"
                         className="border border-black h-6"
                         type="date" onChange={(e) => setDate(e.target.value)} />
