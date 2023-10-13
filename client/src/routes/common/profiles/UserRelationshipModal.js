@@ -19,9 +19,6 @@ const OwnFollowerModal = function ({ user_pk, isProfileMine, followerCount, setF
     const [scroll, setScroll] = useState();
     const [followerList, setFollowerList] = useState([]);
 
-    /* SERVER */
-    const SERVER_FOLLOWER = `${SERVER}/user/${user_pk}/follower/`
-
     // window.scroll는 순수 자바스크립트 문법 -> setScroll로 계속 계산
     // document.body.style.overflow = 'hidden';을 없앰
     useEffect(() => {
@@ -40,14 +37,7 @@ const OwnFollowerModal = function ({ user_pk, isProfileMine, followerCount, setF
     /* functions */
     // follower가져오기 
     const getFollowerList = async () => {
-        axios.get(SERVER_FOLLOWER, {
-            params: {
-                'is_profile_mine': isProfileMine
-            },
-            headers: {
-                'Authorization': session_key
-            }
-        }).then((response) => {
+        axios.get(`/user/${user_pk}/follower/`).then((response) => {
             console.log(response.data);
             setFollowerList(response.data)
         }).catch((error) => {
@@ -57,11 +47,7 @@ const OwnFollowerModal = function ({ user_pk, isProfileMine, followerCount, setF
     // 삭제하기
     const deleteFollower = async (e, target_id) => {
         e.preventDefault();
-        await axios.delete(`${SERVER}/user/${target_id}/follower/`, {
-            headers: {
-                'Authorization': session_key
-            },
-        })
+        await axios.delete(`/user/${target_id}/follower/`)
             .then(
                 response => {
                     console.log(response.data);
@@ -132,9 +118,6 @@ const OwnFollowModal = function ({ user_pk, isProfileMine, followCount, setFollo
     const [scroll, setScroll] = useState();
     const [followList, setFollowList] = useState([]);
 
-    /* SERVER */
-    const SERVER_FOLLOW = `${SERVER}/user/${user_pk}/follow/`
-
     useEffect(() => {
         setScroll(window.scrollY)
         document.body.style.overflow = 'hidden';
@@ -150,14 +133,7 @@ const OwnFollowModal = function ({ user_pk, isProfileMine, followCount, setFollo
     
     // follow가져오기 
     const getFollowList = async () => {
-        axios.get(SERVER_FOLLOW, {
-            params: {
-                'is_profile_mine': isProfileMine
-            },
-            headers: {
-                'Authorization': session_key
-            }
-        })
+        axios.get(`/user/${user_pk}/follow/`)
         .then((response) => {
             console.log(response.data);
             setFollowList(response.data);
@@ -176,11 +152,7 @@ const OwnFollowModal = function ({ user_pk, isProfileMine, followCount, setFollo
     // 언팔로우하기
     const unfollow = async (e, target_id) => {
         e.preventDefault();
-        await axios.delete(`${SERVER}/user/${target_id}/follow/`, {
-            headers: {
-                'Authorization': session_key
-            },
-        })
+        await axios.delete(`/user/${target_id}/follow/`)
             .then(
                 response => {
                     console.log(response.data);
@@ -251,9 +223,6 @@ const OtherFollowerModal = function ({ user_pk, isProfileMine, followerCount, se
     const [scroll, setScroll] = useState();
     const [followerList, setFollowerList] = useState([]);
 
-    /* SERVER */
-    const SERVER_FOLLOWER = `${SERVER}/user/${user_pk}/follower/`
-
     // window.scroll는 순수 자바스크립트 문법 -> setScroll로 계속 계산
     // document.body.style.overflow = 'hidden';을 없앰
     useEffect(() => {
@@ -272,14 +241,7 @@ const OtherFollowerModal = function ({ user_pk, isProfileMine, followerCount, se
     /* functions */
     // follower가져오기 
     const getFollowerList = async () => {
-        axios.get(SERVER_FOLLOWER, {
-            params: {
-                'is_profile_mine': isProfileMine
-            },
-            headers: {
-                'Authorization': session_key
-            }
-        }).then((response) => {
+        axios.get(`/user/${user_pk}/follower/`).then((response) => {
             console.log(response.data);
             setFollowerList(response.data)
         }).catch((error) => {
@@ -305,17 +267,17 @@ const OtherFollowerModal = function ({ user_pk, isProfileMine, followerCount, se
                             ? <p className="text-center mt-4 text-zinc-400 text-base">팔로워가 없습니다.</p>
                             : followerList.map((element, i) => {
                                 return (
-                                    <Link to={`/profile/${element[i].user_info.follower_user_username}`}>
+                                    <Link to={`/profile/${element.follower_user_username}`}>
                                         <div className="flex items-center gap-3 px-4 py-2">
                                             <div className="w-[20%] rounded-full overflow-hidden border-2 border-solid border-gray-200">
-                                                <img className="w-full h-full p-2" src={`${SERVER + element[i].user_info.follower_user_img_path}`} />
+                                                <img className="w-full h-full p-2" src={`${SERVER + element.follower_user_img_path}`} />
                                             </div>
                                             <div className="w-[50%] flex flex-col">
-                                                <strong className="text-slate-900 text-lg font-medium dark:text-slate-200">{element[i].user_info.follower_user_name}</strong>
-                                                <span className="text-sesac-green text-sm font-medium dark:text-slate-400">{element[i].user_info.follower_user_campusname} 캠퍼스</span>
+                                                <strong className="text-slate-900 text-lg font-medium dark:text-slate-200">{element.follower_user_name}</strong>
+                                                <span className="text-sesac-green text-sm font-medium dark:text-slate-400">{element.follower_user_campusname} 캠퍼스</span>
                                             </div>
                                             <div class="w-[30%] flex justify-end">
-                                                <OtherUserRelationshipBtn user_id = {element[i].user_info.follower_user_id} follow_status = {element[i].follow_status} is_current_user = {element[i].is_current_user}/>
+                                                <OtherUserRelationshipBtn user_id = {element.follower_user_id} follow_status = {element.follow_status} is_current_user = {element.is_current_user}/>
                                             </div>
                                         </div>
                                     </Link>
@@ -340,9 +302,6 @@ const OtherFollowModal = function ({ user_pk, isProfileMine, followCount, setFol
     const [scroll, setScroll] = useState();
     const [followList, setFollowList] = useState([]);
 
-    /* SERVER */
-    const SERVER_FOLLOW = `${SERVER}/user/${user_pk}/follow/`
-
     useEffect(() => {
         setScroll(window.scrollY)
         document.body.style.overflow = 'hidden';
@@ -358,14 +317,7 @@ const OtherFollowModal = function ({ user_pk, isProfileMine, followCount, setFol
     
     // follow가져오기 
     const getFollowList = async () => {
-        axios.get(SERVER_FOLLOW, {
-            params: {
-                'is_profile_mine': isProfileMine
-            },
-            headers: {
-                'Authorization': session_key
-            }
-        })
+        axios.get(`/user/${user_pk}/follow/`)
         .then((response) => {
             console.log(response.data);
             setFollowList(response.data);
@@ -399,17 +351,17 @@ const OtherFollowModal = function ({ user_pk, isProfileMine, followCount, setFol
                             ? <p className="text-center mt-4 text-zinc-400 text-base">팔로우가 없습니다.</p>
                             : followList.map((element, i) => {
                                 return (
-                                    <Link to={`/profile/${element[i].user_info.follow_user_username}`}>
+                                    <Link to={`/profile/${element.follow_user_username}`}>
                                         <div className="flex items-center gap-3 px-4 py-2">
                                             <div className="w-[20%] rounded-full overflow-hidden border-2 border-solid border-gray-200">
-                                                <img className="w-full h-full p-2" src={`${SERVER + element[i].user_info.follow_user_img_path}`} />
+                                                <img className="w-full h-full p-2" src={`${SERVER + element.follow_user_img_path}`} />
                                             </div>
                                             <div className="w-[50%] flex flex-col">
-                                                <strong className="text-slate-900 text-lg font-medium dark:text-slate-200">{element[i].user_info.follow_user_name}</strong>
-                                                <span className="text-sesac-green text-sm font-medium dark:text-slate-400">{element[i].user_info.follow_user_campusname} 캠퍼스</span>
+                                                <strong className="text-slate-900 text-lg font-medium dark:text-slate-200">{element.follow_user_name}</strong>
+                                                <span className="text-sesac-green text-sm font-medium dark:text-slate-400">{element.follow_user_campusname} 캠퍼스</span>
                                             </div>
                                             <div class="w-[30%] flex justify-end">
-                                                <OtherUserRelationshipBtn user_id = {element[i].user_info.follow_user_id} follow_status = {element[i].follow_status} is_current_user = {element[i].is_current_user}/>
+                                                <OtherUserRelationshipBtn user_id = {element.follow_user_id} follow_status = {element.follow_status} is_current_user = {element.is_current_user}/>
                                             </div>
                                         </div>
                                     </Link>
@@ -437,11 +389,7 @@ function OtherUserRelationshipBtn({user_id, follow_status, is_current_user}) {
     // 팔로우하기
     const follow = async (e, target_id) => {
         e.preventDefault();
-        await axios.post(`${SERVER}/user/${target_id}/follow/`, null, {
-            headers: {
-                'Authorization': `${session_key}`
-            }
-        })
+        await axios.post(`/user/${target_id}/follow/`)
             .then(
                 response => {
                     console.log(response.data);
@@ -457,11 +405,7 @@ function OtherUserRelationshipBtn({user_id, follow_status, is_current_user}) {
     // 언팔로우하기
     const unfollow = async (e, target_id) => {
         e.preventDefault();
-        await axios.delete(`${SERVER}/user/${target_id}/follow/`, {
-            headers: {
-                'Authorization': session_key
-            },
-        })
+        await axios.delete(`/user/${target_id}/follow/`)
             .then(
                 response => {
                     console.log(response.data);

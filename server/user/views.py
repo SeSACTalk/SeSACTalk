@@ -33,14 +33,11 @@ class RegistreFCMTokenView(APIView, SessionDecoderMixin):
 #TODO: 나중에 팔로워, 팔로우 리스트를 limit 10등으로 끊어서 보여주기
 class Follow(APIView, UserRelationshipDataHandlerMixin):
     def get(self, request:HttpRequest, profile_user_id):
-        is_profile_mine = bool(request.GET['is_profile_mine'].lower() == "true")
         response_data = self.get_response_data(
                                                 request.META.get('HTTP_AUTHORIZATION', ''),
                                                 'follow',
-                                                profile_user_id,
-                                                is_profile_mine
+                                                profile_user_id
                                             )
-
         return Response(response_data, status = status.HTTP_200_OK)
 
     def post(self, request:HttpRequest, profile_user_id):
@@ -62,12 +59,10 @@ class Follow(APIView, UserRelationshipDataHandlerMixin):
 
 class Follower(APIView, UserRelationshipDataHandlerMixin):
     def get(self, request: HttpRequest, profile_user_id):
-        is_profile_mine = bool(request.GET['is_profile_mine'].lower() == "true")
         response_data = self.get_response_data(
                                                 request.META.get('HTTP_AUTHORIZATION', ''),
                                                 'follower',
-                                                profile_user_id,
-                                                is_profile_mine
+                                                profile_user_id
                                             )
         return Response(response_data, status = status.HTTP_200_OK)
 
