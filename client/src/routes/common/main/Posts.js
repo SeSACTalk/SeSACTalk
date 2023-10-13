@@ -24,7 +24,6 @@ const SERVER = process.env.REACT_APP_BACK_BASE_URL
 
 const Posts = function () {
   // states
-  const [postList, setPostList] = useState([]);
   const [postInfo, setPostInfo] = useState({});
   const [isPostMine, setIsPostMine] = useState(false);
 

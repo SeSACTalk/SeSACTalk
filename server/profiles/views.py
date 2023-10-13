@@ -158,12 +158,11 @@ class ProfilePost(APIView, SessionDecoderMixin):
                             .prefetch_related('tags')\
                             .order_by('-date')
 
-        postSerializer = PostSerializer(posts, many = True)
+        postSerializer = PostSerializer(posts, many = True, context={'login_user_id' : user_pk})
 
         # QuerySet이 비어있을 경우
         if not bool(posts):
             return Response({'message': ResponseMessages.POST_NO_POSTS_TO_DISPLAY}, status=status.HTTP_200_OK)
-        print(postSerializer.data)
         return Response(postSerializer.data, status=status.HTTP_200_OK)
 
 class ProfileLike(APIView, SessionDecoderMixin):
