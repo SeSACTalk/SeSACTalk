@@ -1,3 +1,4 @@
+from django.contrib.sessions.models import Session
 from django.http import QueryDict
 from django.db.models import Count
 from rest_framework import serializers
@@ -65,6 +66,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     # like & reply field
     like_set = serializers.IntegerField(source='like_set.count', read_only=True)
+    like_status = serializers.SerializerMethodField(read_only=True)
     reply_set = serializers.IntegerField(source='reply_set.count', read_only=True)
 
     class Meta:
@@ -105,6 +107,14 @@ class PostSerializer(serializers.ModelSerializer):
             profile_img_path = '/media/profile/default_profile.png'
 
         return profile_img_path
+
+    def get_like_status(self, post):
+        login_user_id = self.context.get('login_user_id')
+        if login_user_id:
+            like_status = Like.objects.filter(post_id = post.id, user_id = login_user_id).exists()
+            return like_status
+        return None
+
     def __init__(self, *args, **kwargs)-> None:
         self.user = None
         super().__init__(*args, **kwargs)

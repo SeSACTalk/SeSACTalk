@@ -66,7 +66,7 @@ const PostDetail = function () {
             setPost(copy);
 
             // set like
-            setLikeStatus(response.data.likeStatus);
+            setLikeStatus(response.data.post.like_status);
             setLikeCount(response.data.post.like_set);
         }).catch((error) => {
             console.error(error)

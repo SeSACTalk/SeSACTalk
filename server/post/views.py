@@ -80,13 +80,14 @@ class Post(APIView, OwnerPermissionMixin):
             return Response({'message': ResponseMessages.POST_NO_POSTS_TO_DISPLAY}, status=status.HTTP_200_OK)
 
         # 반환할 게시물이 있는 경우
-        postSerializer = PostSerializer(posts, many=True)
+        postSerializer = PostSerializer(posts, many=True, context={'login_user_id': access_user.id})
 
         data = {
             'result':postSerializer.data,
             'page': int(page_value)
         }
 
+        print(postSerializer.data)
         return Response(data = data, status=status.HTTP_200_OK)
 
     def post(self, request: HttpRequest, username) -> Response:
@@ -109,19 +110,16 @@ class Post(APIView, OwnerPermissionMixin):
 
 class PostDetail(APIView, OwnerPermissionMixin):
     def get(self, request: HttpRequest, **kwargs) -> Response:
+        access_user, condition = self.check_post_owner(request.META.get('HTTP_AUTHORIZATION'), kwargs['username'], 'get_owner')
         post = PostModel.objects.get(id = kwargs['pk'])
-        postSerializer = PostSerializer(post)
-
-        like_status = LikeModel.objects.filter(post_id=post.id, user_id=post.user_id).exists()
+        postSerializer = PostSerializer(post, context={'login_user_id': access_user.id})
 
         # 권한 확인(게시물 주인 확인)
-        access_user_condition = self.check_post_owner(request.META.get('HTTP_AUTHORIZATION'), kwargs['username'])
         response_data = {
             'post': postSerializer.data,
-            'likeStatus' : like_status,
-            'isPostMine': access_user_condition
+            'isPostMine': condition
             }
-
+        print(postSerializer.data)
         return Response(response_data, status.HTTP_200_OK)
 
     def put(self, request, **kwargs) -> Response:
