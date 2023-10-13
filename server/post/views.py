@@ -70,7 +70,7 @@ class Post(APIView, OwnerPermissionMixin):
         end_index = int(page_value) + (9*int(page_value))
 
         # 팔로우 기반 또는 자신의 게시물 포스트를 가져오는 쿼리문 수행, order by의 - 기호는 역순을 의미
-        user_s_follows = UserRelationship.objects.filter(user_follower=access_user.id)
+        user_s_follows = UserRelationship.objects.filter(user_follower = access_user.id)
         posts = PostModel.objects.filter(
             Q(user=access_user.id) | Q(user__in=user_s_follows.values('user_follow'))
         ).prefetch_related('tags').select_related('user').order_by('-date')[start_index:end_index]

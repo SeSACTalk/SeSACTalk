@@ -24,7 +24,6 @@ const SERVER = process.env.REACT_APP_BACK_BASE_URL
 
 const Posts = function () {
   // states
-  const [postList, setPostList] = useState([]);
   const [postInfo, setPostInfo] = useState({});
   const [isPostMine, setIsPostMine] = useState(false);
 
@@ -125,25 +124,25 @@ const Posts = function () {
                           </div>
                       }
 
-<h3 className='hidden'>좋아요, 댓글</h3>
-                    <ul className='post_option flex justify-end gap-4 h-12 text-xl'>
-                      <li className='flex items-center cursor-pointer'>
-                        <span className='hidden'>좋아요</span>
-                        <i class="fa fa-heart-o mr-[0.3rem] text-rose-500" aria-hidden="true"></i>
-                        {/* <i class="fa fa-heart mr-[0.3rem] text-rose-500" aria-hidden="true"></i> */}
-                        <span className='text-sm'>{
-                          element.like_set
-                        }</span>
-                      </li>
-                      <li className='flex items-center cursor-pointer' onClick={()=>{
-                        navigate(`/post/${element.uuid}`)
-                      }}>
-                        <span className='hidden'>댓글</span>
-                        <i className="fa fa-comment-o mr-1" aria-hidden="true"></i>
-                        <span className="text-sm">{element.reply_set}</span>
-                      </li>
-                    </ul>
-                  </div>
+                      <h3 className='hidden'>좋아요, 댓글</h3>
+                      <ul className='post_option flex justify-end gap-4 h-12 text-xl'>
+                        <li className='flex items-center cursor-pointer'>
+                          <span className='hidden'>좋아요</span>
+                          <i class="fa fa-heart-o mr-[0.3rem] text-rose-500" aria-hidden="true"></i>
+                          {/* <i class="fa fa-heart mr-[0.3rem] text-rose-500" aria-hidden="true"></i> */}
+                          <span className='text-sm'>{
+                            element.like_set
+                          }</span>
+                        </li>
+                        <li className='flex items-center cursor-pointer' onClick={() => {
+                          navigate(`/post/${element.uuid}`)
+                        }}>
+                          <span className='hidden'>댓글</span>
+                          <i className="fa fa-comment-o mr-1" aria-hidden="true"></i>
+                          <span className="text-sm">{element.reply_set}</span>
+                        </li>
+                      </ul>
+                    </div>
                     <button className='absolute right-5 top-8' onClick={
                       async () => {
                         try {
@@ -176,7 +175,7 @@ const Posts = function () {
         <div className="h-[1rem]" ref={bottom}></div>
         {/* Modals */}
         {optionModal && <PostOption isPostMine={isPostMine} postInfo={postInfo} />}
-        {reportModal && <ReportContent contentType = {'post'} contentInfo = {postInfo} />}
+        {reportModal && <ReportContent contentType={'post'} contentInfo={postInfo} />}
         {postEditModal && <PostEdit />}
       </section>
     </div >
