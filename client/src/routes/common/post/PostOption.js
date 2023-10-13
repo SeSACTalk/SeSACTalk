@@ -19,6 +19,12 @@ const PostOption = function ({ isPostMine, postInfo }) {
     let dispatch = useDispatch();
 
     useEffect(() => {
+        if (optionModal) {
+            dispatch(changeOptionModal(optionModal))
+        }
+    }, [])
+
+    useEffect(() => {
         setScroll(window.scrollY)
         document.body.style.overflow = 'hidden';
         return () => { document.body.style.overflow = 'unset'; }

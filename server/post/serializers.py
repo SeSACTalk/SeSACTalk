@@ -5,6 +5,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from PIL import Image
 import io
+from datetime import datetime, timedelta
 
 from accounts.models import User, Campus
 from post.models import Post, Like, View, Reply, HashTag, Report
@@ -51,6 +52,7 @@ class PostSerializer(serializers.ModelSerializer):
         required = False,
     )
     hash_tag_name = serializers.SerializerMethodField(read_only = True)
+    date = serializers.SerializerMethodField(read_only=True)
 
     # user field
     user_id = serializers.IntegerField(source='user.id', read_only=True)
@@ -62,13 +64,12 @@ class PostSerializer(serializers.ModelSerializer):
     profile_img_path = serializers.SerializerMethodField()
 
     # like & reply field
-    like_set = serializers.SerializerMethodField()
-    reply_set = serializers.SerializerMethodField()
+    like_set = serializers.IntegerField(source='like_set.count', read_only=True)
+    reply_set = serializers.IntegerField(source='reply_set.count', read_only=True)
 
     class Meta:
         model = Post
         fields = '__all__'
-
     def get_campusname(self, post):
         user = post.user
         try:
@@ -76,19 +77,25 @@ class PostSerializer(serializers.ModelSerializer):
         except Exception:
             campus_name = user.first_course.campus.name
         return campus_name
-    def get_campus_name(self, post):
-        user = post.user
-        if user.second_course:
-            return user.second_course.campus.name
-        return user.first_course.campus.name
 
-    def get_like_set(self, obj):
-        likes = obj.like_set.all()  # Post 객체의 like_set을 가져옴
-        return LikeSerializer(likes, many=True).data
+    def get_date(self, post):
+        date = post.date
+        today = datetime.now(date.tzinfo)
+        difference = today - date
 
-    def get_reply_set(self, obj):
-        replies = obj.reply_set.all()  # Post 객체의 reply_set을 가져옴
-        return ReplySerializer(replies, many=True).data
+        if 7 <= difference.days < 28:
+            return f"{difference.days // 7}주"
+        elif 1 <= difference.days < 7:
+            return f"{difference.days}일"
+        elif 0 <= difference.total_seconds() < 86400:
+            hours, remainder = divmod(difference.seconds, 3600)
+            minutes = remainder // 60
+            if hours >= 1:
+                return f"{hours}시간"
+            else:
+                return f"{minutes}분"
+        else:
+            return date.strftime('%Y년 %m월 %d일')
 
     def get_profile_img_path(self, post):
         profile = Profile.objects.get(user = post.user.id)

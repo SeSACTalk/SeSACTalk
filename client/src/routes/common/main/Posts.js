@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useQuery } from '@tanstack/react-query'
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { getCookie } from "../../../modules/handle_cookie";
@@ -11,7 +11,7 @@ import { changeOptionModal } from "../../../store/modalSlice";
 /* components */
 import StaffProfile from "../../general/StaffProfile";
 import PostOption from "../post/PostOption";
-import ReportPost from "../post/ReportPost";
+import ReportContent from "../post/ReportContent";
 import PostEdit from "../post/PostEdit";
 
 // cookie
@@ -31,6 +31,7 @@ const Posts = function () {
   let postEditModal = useSelector((state) => state.postEditModal);
 
   let dispatch = useDispatch();
+  const navigate = useNavigate()
 
   // post 실시간으로 받아오기
   let post = useQuery(['post'], () => {
@@ -56,7 +57,7 @@ const Posts = function () {
       <StaffProfile />
       <section className='post mt-8 mx-24 '>
         <h2 className='hidden'>게시글</h2>
-        {
+        { 
           postList.length === 0
             ? <p className="text-center">SeSACTalk과 함께하게 되어 반가워요! 다양한 사람들과 팔로우를 맺고 새로운 글을 작성해보세요!</p>
             : postList.map((element, i) => {
@@ -96,16 +97,21 @@ const Posts = function () {
                     }
 
                     <h3 className='hidden'>좋아요, 댓글</h3>
-                    <ul className='post_option flex justify-end gap-3 h-12 text-xl'>
-                      <li className='flex items-center'>
+                    <ul className='post_option flex justify-end gap-4 h-12 text-xl'>
+                      <li className='flex items-center cursor-pointer'>
                         <span className='hidden'>좋아요</span>
-                        <i className="fa fa-gratipay mr-1 text-rose-500" aria-hidden="true"></i>
-                        <span className='text-sm'>{element.like_set.length}</span>
+                        <i class="fa fa-heart-o mr-[0.3rem] text-rose-500" aria-hidden="true"></i>
+                        {/* <i class="fa fa-heart mr-[0.3rem] text-rose-500" aria-hidden="true"></i> */}
+                        <span className='text-sm'>{
+                          element.like_set
+                        }</span>
                       </li>
-                      <li className='flex items-center'>
+                      <li className='flex items-center cursor-pointer' onClick={()=>{
+                        navigate(`/post/${element.uuid}`)
+                      }}>
                         <span className='hidden'>댓글</span>
                         <i className="fa fa-comment-o mr-1" aria-hidden="true"></i>
-                        <span className='text-sm'>{element.reply_set.length}</span>
+                        <span className="text-sm">{element.reply_set}</span>
                       </li>
                     </ul>
                   </div>
@@ -138,7 +144,7 @@ const Posts = function () {
         }
         {/* Modals */}
         {optionModal && <PostOption isPostMine={isPostMine} postInfo={postInfo} />}
-        {reportModal && <ReportPost isPostMine={isPostMine} postInfo={postInfo} />}
+        {reportModal && <ReportContent contentType = {'post'} contentInfo = {postInfo} />}
         {postEditModal && <PostEdit />}
       </section>
     </div >

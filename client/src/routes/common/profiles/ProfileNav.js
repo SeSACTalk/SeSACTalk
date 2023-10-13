@@ -54,7 +54,7 @@ function ProfilePosts({ user_id }) {
         <h2 className='hidden'>게시글</h2>
         {
           postList.length === 0
-          ? <p className="text-center">아직 등록된 게시물이 없어요!</p>
+            ? <p className="text-center">아직 등록된 게시물이 없어요!</p>
             : postList.map((element, i) => {
               return (
                 <article className='relative post_container p-5 h-96 border-solid border-b border-gray-200' key={i}>
@@ -96,12 +96,16 @@ function ProfilePosts({ user_id }) {
                       <li className='flex items-center'>
                         <span className='hidden'>좋아요</span>
                         <i className="fa fa-gratipay mr-1 text-rose-500" aria-hidden="true"></i>
-                        <span className='text-sm'>{element.like_set.length}</span>
+                        <span className='text-sm'>{
+                          element.like_set
+                        }</span>
                       </li>
                       <li className='flex items-center'>
                         <span className='hidden'>댓글</span>
                         <i className="fa fa-comment-o mr-1" aria-hidden="true"></i>
-                        <span className='text-sm'>{element.reply_set.length}</span>
+                        <span className='text-sm'>{
+                          element.reply_set
+                        }</span>
                       </li>
                     </ul>
                   </div>
@@ -118,9 +122,9 @@ function ProfilePosts({ user_id }) {
                         console.error(error)
                       }
                       // 상세경로 저장
-                      dispatch(setDetailPath(`${element.username}/${element.id}`)) 
+                      dispatch(setDetailPath(`${element.username}/${element.id}`))
                       // 게시글 세부정보 저장
-                      let copy = {...element};
+                      let copy = { ...element };
                       setPostInfo(copy)
                       // 옵션 모달 띄우기
                       dispatch(changeOptionModal(optionModal))
