@@ -155,7 +155,7 @@ class ProfilePost(APIView, SessionDecoderMixin):
     def get(self, request:HttpRequest, user_pk: int) -> Response:
         posts = Post.objects.filter(user = user_pk)\
                             .select_related('user')\
-                            .prefetch_related('tags', 'like_set', 'reply_set')\
+                            .prefetch_related('tags')\
                             .order_by('-date')
 
         postSerializer = PostSerializer(posts, many = True)

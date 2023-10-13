@@ -43,6 +43,7 @@ function ProfilePosts({ user_id }) {
 
   useEffect(() => {
     if (post.data && typeof post.data.message == 'undefined') {
+      let copy = [...postList]
       setPostList(post.data);
     }
   }, [post.data])
@@ -50,7 +51,7 @@ function ProfilePosts({ user_id }) {
 
   return (
     <div className='main_content_container w-[90%]'>
-      <section className='profile_post mt-8 mx-24 '>
+      <section className='profile_post mt-3 mx-24 '>
         <h2 className='hidden'>게시글</h2>
         {
           postList.length === 0
@@ -147,6 +148,7 @@ function ProfilePosts({ user_id }) {
 function ProfileLikes({ user_id }) {
   const [likeList, setLikeList] = useState([]);
   const SERVER_PROFILE_LIKES = `${SERVER}/profile/${user_id}/like/`;
+  let dispatch = useDispatch();
 
   useEffect(() => {
     axios.get(SERVER_PROFILE_LIKES, {
@@ -170,14 +172,14 @@ function ProfileLikes({ user_id }) {
 
   return (
     <div className='main_content_container'>
-      <section className='like mt-8 mx-24 '>
+      <section className='like mt-3'>
         <h2 className='hidden'>프로필 좋아요</h2>
         {
           likeList.length === 0
             ? <p className="text-center">이웃 새싹에게 좋아요한 게시물이 없어요!</p>
             : likeList.map((element, i) => {
               return (
-                <div className={`like_container flex gap-6 items-center p-5 h-24 ${i == 1 ? 'border-solid border-b border-gray-200' : ''}`} key={i}>
+                <div className={`like_container flex gap-6 items-center p-5 h-24 ${((i + 1) != likeList.length) ? 'border-solid border-b border-gray-200' : ''}`} key={i}>
                   <Link to={`/profile/${element.post_user_username}`}>
                     <div className='img_wrap w-16 h-16 p-2 rounded-full overflow-hidden border border-solid border-gray-200'>
                       <img src={SERVER + element.post_user_profile_img_path} alt={element.post_user_username} />
@@ -186,15 +188,25 @@ function ProfileLikes({ user_id }) {
                   <div className="flex flex-col align-middle gap-1">
                     <div className='post_owner_info'>
                       <p className='flex items-center gap-3 text_wrap justify-center text-zinc-500'>
-                        <div>
-                          <i className="fa fa-gratipay text-rose-500" aria-hidden="true"></i>
+                        <i className="fa fa-gratipay text-rose-500" aria-hidden="true"></i>
+                        <div className='text-base'>
+                          <span className="text-sesac-green 800 font-semibold">{element.post_user_name}</span>
+                          <span>님의 게시물</span>
                         </div>
-                        <div className='text-base'><span className="text-sesac-green 800 font-semibold">{element.post_user_name}</span><span>님의 게시물</span></div>
-                        <div className="text-xs">{element.format_date}</div>
+                        <div className="text-xs">
+                          {element.format_date}
+                          {
+                            element.format_date != undefined ?
+                              (!(element.format_date.includes("년")) ? " 전" : "") : ""
+                          }
+                        </div>
                       </p>
                     </div>
                     <article className="like_content">
-                      <Link>
+                      <Link to={`/post/${element.post_uuid}`} onClick={() => {
+                        // 상세경로 저장
+                        dispatch(setDetailPath(`${element.post_user_username}/${element.post_id}`))
+                      }}>
                         <p className='flex flex-col gap-1 text_wrap justify-center'>
                           <span className='text-lg'>{
                             element.post_content.length > 20 ? element.post_content.substring(0, 20) + '...' : element.post_content
@@ -215,6 +227,7 @@ function ProfileLikes({ user_id }) {
 function ProfileReplys({ user_id }) {
   const [replyList, setReplyList] = useState([]);
   const SERVER_PROFILE_REPLYS = `${SERVER}/profile/${user_id}/reply/`;
+  let dispatch = useDispatch();
 
   useEffect(() => {
     axios.get(SERVER_PROFILE_REPLYS, {
@@ -238,14 +251,14 @@ function ProfileReplys({ user_id }) {
 
   return (
     <div className='main_content_container'>
-      <section className='reply mt-8 mx-24 '>
+      <section className='reply mt-3'>
         <h2 className='hidden'>프로필 댓글</h2>
         {
           replyList.length === 0
             ? <p className="text-center">이웃 새싹에게 단 댓글이 없어요!</p>
             : replyList.map((element, i) => {
               return (
-                <div className={`reply_container flex gap-6 items-center p-5 h-24 ${i == 1 ? 'border-solid border-b border-gray-200' : ''}`} key={i}>
+                <div className={`reply_container flex gap-6 items-center p-3 h-24 ${((i + 1) != replyList.length) ? 'border-solid border-b border-gray-200' : ''}`} key={i}>
                   <Link to={`/profile/${element.post_user_username}`}>
                     <div className='img_wrap w-16 h-16 p-2 rounded-full overflow-hidden border border-solid border-gray-200'>
                       <img src={SERVER + element.post_user_profile_img_path} alt={element.post_user_username} />
@@ -258,11 +271,20 @@ function ProfileReplys({ user_id }) {
                           <i class="fa fa-reply" aria-hidden="true"></i>
                         </div>
                         <div className='text-base'><span className="text-sesac-green 800 font-semibold">{element.post_user_name}</span><span>님의 게시물</span></div>
-                        <div className="text-xs">{element.format_date}</div>
+                        <div className="text-xs">
+                          {element.format_date}
+                          {
+                            element.format_date != undefined ?
+                              (!(element.format_date.includes("년")) ? " 전" : "") : ""
+                          }
+                        </div>
                       </p>
                     </div>
                     <article className="reply_content">
-                      <Link>
+                      <Link to={`/post/${element.post_uuid}`} onClick={() => {
+                        // 상세경로 저장
+                        dispatch(setDetailPath(`${element.post_user_username}/${element.post_id}`))
+                      }}>
                         <p className='flex flex-col gap-1 text_wrap justify-center'>
                           <span className='text-lg'>{
                             element.content.length > 20 ? element.content.substring(0, 20) + '...' : element.content

@@ -271,20 +271,36 @@ class RecommendPostSerilaier(serializers.ModelSerializer):
         return user.first_course.campus.name
 
 class ReplysSetSerializer(ReplySerializer):
-    format_date = serializers.SerializerMethodField()
+    format_date = serializers.SerializerMethodField(read_only=True)
     post_id = serializers.IntegerField(source='post.id', read_only=True)
+    post_uuid = serializers.UUIDField(source='post.uuid', read_only=True)
     post_user_username = serializers.CharField(read_only=True)
     post_user_name = serializers.CharField(read_only=True)
     post_user_profile_img_path = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = Reply
         fields = (
-            'id', 'content', 'date', 'format_date', 'report_status', 'post_id',
+            'id', 'content', 'date', 'format_date', 'report_status', 'post_id', 'post_uuid',
             'post_user_username', 'post_user_name', 'post_user_profile_img_path'
         )
     def get_format_date(self, reply):
-        parsed_date = datetime.fromisoformat(str(reply.date))
-        return parsed_date.strftime("%Y년 %m월 %d일")
+        date = reply.date
+        today = datetime.now(date.tzinfo)
+        difference = today - date
+
+        if 7 <= difference.days < 28:
+            return f"{difference.days // 7}주"
+        elif 1 <= difference.days < 7:
+            return f"{difference.days}일"
+        elif 0 <= difference.total_seconds() < 86400:
+            hours, remainder = divmod(difference.seconds, 3600)
+            minutes = remainder // 60
+            if hours >= 1:
+                return f"{hours}시간"
+            else:
+                return f"{minutes}분"
+        else:
+            return date.strftime('%Y년 %m월 %d일')
 
     def get_post_user_profile_img_path(self, reply):
         profile = Profile.objects.get(user = reply.post.user.id)
@@ -298,6 +314,7 @@ class ReplysSetSerializer(ReplySerializer):
 class LikesSetSerializer(LikeSerializer):
     format_date = serializers.SerializerMethodField()
     post_id = serializers.IntegerField(source='post.id', read_only=True)
+    post_uuid = serializers.UUIDField(source='post.uuid', read_only=True)
     post_content = serializers.CharField(source='post.content', read_only=True)
     post_user_username = serializers.CharField(read_only=True)
     post_user_name = serializers.CharField(read_only=True)
@@ -305,15 +322,30 @@ class LikesSetSerializer(LikeSerializer):
     class Meta:
         model = Like
         fields = (
-            'id', 'date', 'format_date', 'post_id', 'post_content',
+            'id', 'date', 'format_date', 'post_id', 'post_content', 'post_uuid',
             'post_user_username', 'post_user_name', 'post_user_profile_img_path',
         )
-    def get_format_date(self, reply):
-        parsed_date = datetime.fromisoformat(str(reply.date))
-        return parsed_date.strftime("%Y년 %m월 %d일")
+    def get_format_date(self, like):
+        date = like.date
+        today = datetime.now(date.tzinfo)
+        difference = today - date
 
-    def get_post_user_profile_img_path(self, reply):
-        profile = Profile.objects.get(user = reply.post.user.id)
+        if 7 <= difference.days < 28:
+            return f"{difference.days // 7}주"
+        elif 1 <= difference.days < 7:
+            return f"{difference.days}일"
+        elif 0 <= difference.total_seconds() < 86400:
+            hours, remainder = divmod(difference.seconds, 3600)
+            minutes = remainder // 60
+            if hours >= 1:
+                return f"{hours}시간"
+            else:
+                return f"{minutes}분"
+        else:
+            return date.strftime('%Y년 %m월 %d일')
+
+    def get_post_user_profile_img_path(self, like):
+        profile = Profile.objects.get(user = like.post.user.id)
         if profile.img_path:
             profile_img_path = profile.img_path
         else:

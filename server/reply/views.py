@@ -28,6 +28,7 @@ class ReplyView(APIView, SessionDecoderMixin):
         return Response(data=response_data, status=status.HTTP_200_OK)
 
     def post(self, request: HttpRequest, p_sq: int)-> Response:
+        print(p_sq)
         user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
         content = request.data.get('content')
 

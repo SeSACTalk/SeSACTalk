@@ -10,7 +10,7 @@ class ReplySerializer(serializers.ModelSerializer):
     username = serializers.CharField(source = 'user.username', read_only=True)
     name = serializers.CharField(source = 'user.name', read_only=True)
 
-    post_id = serializers.IntegerField(source='post.id')
+    post_id = serializers.IntegerField(source='post.id', read_only=True)
     class Meta:
         model = Reply
         fields = '__all__'

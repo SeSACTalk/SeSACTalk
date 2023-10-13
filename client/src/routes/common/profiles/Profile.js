@@ -311,7 +311,7 @@ function Profile() {
                             <span>댓글</span>
                         </Link>
                     </div>
-                    <div className="profile_navmx-auto flex justify-center">
+                    <div className="profile_nav flex justify-center">
                         {/* 게시물, 좋아요, 댓글 디테일 */}
                         {postClickStatus ? <ProfilePosts user_id={profileData.user_id} /> : null}
                         {likeClickStatus ? <ProfileLikes user_id={profileData.user_id} /> : null}
