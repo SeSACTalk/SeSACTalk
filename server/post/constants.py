@@ -8,6 +8,10 @@ class ResponseMessages():
 
     REPORT_CREATE_SUCCESS = 'REPORT SUCCESS: 게시물 신고에 성공했습니다.'
 
+    LIKE_CREATE_SUCCESS = 'CREATE SUCCESS: 게시물 좋아요에 성공했습니다.'
+    LIKE_DELETE_SUCCESS = 'DELETE SUCCESS: 게시물 좋아요 취소에 성공했습니다.'
+    LIKE_CONFLICT = 'CREATE FAIL: 게시물 좋아요를 이미 한 상태로, 좋아요에 실패하였습니다.'
+
     POST_NOT_UPDATE = 'NOT UPDATE: 요청한 게시물 업데이트 내용이 전과 다르지 않아 업데이트를 진행하지 않았습니다.'
     POST_NO_POSTS_TO_DISPLAY = 'NO POSTS TO DISPLAY: 보여줄 게시물이 없습니다.'
 

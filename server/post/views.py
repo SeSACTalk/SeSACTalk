@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from post.models import Post as PostModel
+from post.models import Post as PostModel, Like as LikeModel
 from accounts.models import User
 from user.models import UserRelationship
 
@@ -112,12 +112,16 @@ class PostDetail(APIView, OwnerPermissionMixin):
         post = PostModel.objects.get(id = kwargs['pk'])
         postSerializer = PostSerializer(post)
 
+        like_status = LikeModel.objects.filter(post_id=post.id, user_id=post.user_id).exists()
+
         # 권한 확인(게시물 주인 확인)
         access_user_condition = self.check_post_owner(request.META.get('HTTP_AUTHORIZATION'), kwargs['username'])
         response_data = {
             'post': postSerializer.data,
+            'likeStatus' : like_status,
             'isPostMine': access_user_condition
             }
+
         return Response(response_data, status.HTTP_200_OK)
 
     def put(self, request, **kwargs) -> Response:
@@ -176,3 +180,17 @@ class RecommendPost(APIView, SessionDecoderMixin):
         serializer = RecommendPostSerilaier(posts, many = True)
         
         return Response(serializer.data, status = status.HTTP_200_OK)
+
+class Like(APIView, SessionDecoderMixin):
+    def post(self, request, pk, user_pk):
+        like, created = LikeModel.objects.get_or_create(post_id=pk, user_id=user_pk)
+
+        if not created:
+            return Response({'message': ResponseMessages.LIKE_CONFLICT}, status=status.HTTP_409_CONFLICT)
+
+        return Response({'message': ResponseMessages.LIKE_CREATE_SUCCESS}, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, pk, user_pk):
+        like = LikeModel.objects.filter(post_id=pk, user_id=user_pk)
+        like.delete()
+        return Response({'message': ResponseMessages.LIKE_DELETE_SUCCESS}, status = status.HTTP_204_NO_CONTENT)

@@ -18,7 +18,7 @@ const PostDetail = function () {
     const [post, setPost] = useState([]);
     const [replys, setReplys] = useState([]);
     const [replyUploadStauts, setReplyUploadStauts] = useState(false);
-    const [likeStauts, setLikeStauts] = useState(false);
+    const [likeStatus, setLikeStatus] = useState();
     const [likeCount, setLikeCount] = useState();
     const [replyInfo, setReplyInfo] = useState(false);
     const [replyContent, setReplyContent] = useState('');
@@ -61,9 +61,13 @@ const PostDetail = function () {
     // 게시물 요청
     let getPost = () => {
         axios.get(`/post/${detailPath}?request_post`).then((response) => {
-            let copy = { ...response.data.post }
-            setPost(copy)
-            setLikeCount(response.data.post.like_set)
+            // set post
+            let copy = { ...response.data.post };
+            setPost(copy);
+
+            // set like
+            setLikeStatus(response.data.likeStatus);
+            setLikeCount(response.data.post.like_set);
         }).catch((error) => {
             console.error(error)
         })
@@ -102,7 +106,26 @@ const PostDetail = function () {
     }
 
     // 좋아요 추가
+    let likePost = (e, postId, userId) => {
+        e.preventDefault();
+        axios.post(`/post/${postId}/${userId}/like/`).then((response) => {
+            setLikeCount(prevLikeCount => prevLikeCount + 1);
+            setLikeStatus(prevLikeStatus => !prevLikeStatus);
+        }).catch((error) => {
+            console.error(error)
+        })
+    }
+
     // 좋아요 삭제
+    let unlikePost = (e, postId, userId) => {
+        e.preventDefault();
+        axios.delete(`/post/${postId}/${userId}/like/`).then((response) => {
+            setLikeCount(prevLikeCount => prevLikeCount - 1);
+            setLikeStatus(prevLikeStatus => !prevLikeStatus);
+        }).catch((error) => {
+            console.error(error)
+        })
+    }
 
     return (
         <div className="modal detail_modal flex justify-center items-center absolute left-0 z-30 w-full h-screen" style={{ top: scroll }} ref={modalPopup} onClick={closeModal}>
@@ -157,11 +180,10 @@ const PostDetail = function () {
                                     <li className='flex flex-row items-center'>
                                         <span className='hidden'>좋아요</span>
                                         <i 
-                                            class={`fa fa-heart${likeStauts ? '' : emptyHeart} mr-[0.3rem] text-rose-500 cursor-pointer`} 
+                                            class={`fa fa-heart${likeStatus ? '' : emptyHeart} mr-[0.3rem] text-rose-500 cursor-pointer`} 
                                             aria-hidden="true"
-                                            onClick={() => {
-                                                setLikeCount(prevLikeCount => likeStauts ? prevLikeCount - 1 : prevLikeCount + 1);
-                                                setLikeStauts(prevLikeStatus => !prevLikeStatus);
+                                            onClick={(e) => {
+                                                likeStatus ? unlikePost(e, post.id, post.user_id) : likePost(e, post.id, post.user_id);
                                               }}                                              
                                         ></i>
                                         <span className='text-sm'>{
