@@ -180,7 +180,8 @@ class RecommendPost(APIView, SessionDecoderMixin):
         return Response(serializer.data, status = status.HTTP_200_OK)
 
 class Like(APIView, SessionDecoderMixin):
-    def post(self, request, pk, user_pk):
+    def post(self, request, pk):
+        user_pk = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
         like, created = LikeModel.objects.get_or_create(post_id=pk, user_id=user_pk)
 
         if not created:
@@ -188,7 +189,13 @@ class Like(APIView, SessionDecoderMixin):
 
         return Response({'message': ResponseMessages.LIKE_CREATE_SUCCESS}, status=status.HTTP_201_CREATED)
 
-    def delete(self, request, pk, user_pk):
+    def delete(self, request, pk):
+        user_pk = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
         like = LikeModel.objects.filter(post_id=pk, user_id=user_pk)
+        condition = like.exists()
+
+        if not condition:
+            return Response({'error': ResponseMessages.FORBIDDEN_ACCESS}, status.HTTP_403_FORBIDDEN)
+
         like.delete()
         return Response({'message': ResponseMessages.LIKE_DELETE_SUCCESS}, status = status.HTTP_204_NO_CONTENT)

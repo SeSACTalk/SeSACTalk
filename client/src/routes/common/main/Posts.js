@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -124,26 +124,8 @@ const Posts = function () {
                           <div className="invisible">
                           </div>
                       }
-
-<h3 className='hidden'>좋아요, 댓글</h3>
-                    <ul className='post_option flex justify-end gap-4 h-12 text-xl'>
-                      <li className='flex items-center cursor-pointer'>
-                        <span className='hidden'>좋아요</span>
-                        <i class="fa fa-heart-o mr-[0.3rem] text-rose-500" aria-hidden="true"></i>
-                        {/* <i class="fa fa-heart mr-[0.3rem] text-rose-500" aria-hidden="true"></i> */}
-                        <span className='text-sm'>{
-                          element.like_set
-                        }</span>
-                      </li>
-                      <li className='flex items-center cursor-pointer' onClick={()=>{
-                        navigate(`/post/${element.uuid}`)
-                      }}>
-                        <span className='hidden'>댓글</span>
-                        <i className="fa fa-comment-o mr-1" aria-hidden="true"></i>
-                        <span className="text-sm">{element.reply_set}</span>
-                      </li>
-                    </ul>
-                  </div>
+                      <UserFeedback postId={element.id} postUuid = {element.uuid} username = {element.username} replySet={element.reply_set} likeStatus={element.like_status} likeCount={element.like_set} />
+                    </div>
                     <button className='absolute right-5 top-8' onClick={
                       async () => {
                         try {
@@ -176,11 +158,77 @@ const Posts = function () {
         <div className="h-[1rem]" ref={bottom}></div>
         {/* Modals */}
         {optionModal && <PostOption isPostMine={isPostMine} postInfo={postInfo} />}
-        {reportModal && <ReportContent contentType = {'post'} contentInfo = {postInfo} />}
+        {reportModal && <ReportContent contentType={'post'} contentInfo={postInfo} />}
         {postEditModal && <PostEdit />}
       </section>
     </div >
   )
 }
 
+function UserFeedback({ postId, postUuid, username, replySet, likeStatus, likeCount }) {
+  const [likestatus, setLikestatus] = useState(likeStatus);
+  const [likecount, setLikecount] = useState(likeCount);
+  let emptyHeart = '-o'
+  let dispatch = useDispatch();
+
+  // 게시글 불러오기
+  useEffect(() => {
+    setLikestatus(likeStatus);
+    setLikecount(likeCount);
+  }, [])
+
+  // 좋아요 추가
+  let likePost = (e) => {
+    e.preventDefault();
+    axios.post(`/post/${postId}/like/`).then((response) => {
+      setLikecount(prevLikecount => prevLikecount + 1);
+      setLikestatus(prevLikestatus => !prevLikestatus);
+    }).catch((error) => {
+      console.error(error)
+    })
+  }
+
+  // 좋아요 삭제
+  let unlikePost = (e) => {
+    e.preventDefault();
+    axios.delete(`/post/${postId}/like/`).then((response) => {
+      setLikestatus(prevLikecount => prevLikecount - 1);
+      setLikestatus(prevLikestatus => !prevLikestatus);
+    }).catch((error) => {
+      console.error(error)
+    })
+  }
+  return (
+    <>
+      <h3 className='hidden'>좋아요, 댓글</h3>
+      <ul className='post_option flex flex-row justify-end gap-4 text-xl h-10'>
+        <li className='flex flex-row items-center'>
+          <span className='hidden'>좋아요</span>
+          <i
+            className={`fa fa-heart${likestatus ? '' : emptyHeart} mr-[0.3rem] text-rose-500 cursor-pointer`}
+            aria-hidden="true"
+            onClick={(e) => {
+              likestatus ? unlikePost(e) : likePost(e);
+            }}
+          ></i>
+          <span className='text-sm'>{
+            likecount
+          }</span>
+        </li>
+        <li className='flex flex-row items-center'>
+          <Link to={`/post/${postUuid}`} onClick={() => {
+            // 상세경로 저장
+            dispatch(setDetailPath(`${username}/${postId}`))
+          }}>
+          <span className='hidden'>댓글</span>
+          <i className="fa fa-comment-o mr-1" aria-hidden="true"></i>
+          <span className='text-sm'>{
+            replySet
+          }</span>
+          </Link>
+        </li>
+      </ul>
+    </>
+  )
+}
 export default Posts

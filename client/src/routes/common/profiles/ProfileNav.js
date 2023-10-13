@@ -27,26 +27,19 @@ function ProfilePosts({ user_id }) {
   let postEditModal = useSelector((state) => state.postEditModal);
 
   let dispatch = useDispatch();
-
-  // post 실시간으로 받아오기
-  let post = useQuery(['post'], () => {
-    return axios.get(`/profile/${user_id}/post/`)
-      .then(
-        response => {
-          return response.data
-        }
-      )
-      .catch(
-        error => console.error(error)
-      )
-  })
-
+  
   useEffect(() => {
-    if (post.data && typeof post.data.message == 'undefined') {
-      let copy = [...postList]
-      setPostList(post.data);
-    }
-  }, [post.data])
+    axios.get(`/profile/${user_id}/post/`)
+    .then(
+      response => {
+        let copy = [...response.data]
+        setPostList(copy);
+      }
+    )
+    .catch(
+      error => console.error(error)
+    )
+  }, [])
 
 
   return (
@@ -91,24 +84,7 @@ function ProfilePosts({ user_id }) {
                         <div className="invisible">
                         </div>
                     }
-
-                    <h3 className='hidden'>좋아요, 댓글</h3>
-                    <ul className='post_option flex justify-end gap-3 h-12 text-xl'>
-                      <li className='flex items-center'>
-                        <span className='hidden'>좋아요</span>
-                        <i className="fa fa-gratipay mr-1 text-rose-500" aria-hidden="true"></i>
-                        <span className='text-sm'>{
-                          element.like_set
-                        }</span>
-                      </li>
-                      <li className='flex items-center'>
-                        <span className='hidden'>댓글</span>
-                        <i className="fa fa-comment-o mr-1" aria-hidden="true"></i>
-                        <span className='text-sm'>{
-                          element.reply_set
-                        }</span>
-                      </li>
-                    </ul>
+                  <UserFeedback postId = {element.id} postUuid = {element.uuid} username = {element.username} replySet = {element.reply_set} likeStatus = {element.like_status} likeCount = {element.like_set} />
                   </div>
                   <button className='absolute right-5 top-8' onClick={
                     async () => {
@@ -299,6 +275,73 @@ function ProfileReplys({ user_id }) {
         }
       </section>
     </div>
+  )
+}
+
+function UserFeedback({ postId, postUuid, username, replySet, likeStatus, likeCount }) {
+  const [likestatus, setLikestatus] = useState(likeStatus);
+  const [likecount, setLikecount] = useState(likeCount);
+  let emptyHeart = '-o'
+  let dispatch = useDispatch();
+
+  // 게시글 불러오기
+  useEffect(() => {
+    setLikestatus(likeStatus);
+    setLikecount(likeCount);
+  }, [])
+
+  // 좋아요 추가
+  let likePost = (e) => {
+    e.preventDefault();
+    axios.post(`/post/${postId}/like/`).then((response) => {
+      setLikecount(prevLikecount => prevLikecount + 1);
+      setLikestatus(prevLikestatus => !prevLikestatus);
+    }).catch((error) => {
+      console.error(error)
+    })
+  }
+
+  // 좋아요 삭제
+  let unlikePost = (e) => {
+    e.preventDefault();
+    axios.delete(`/post/${postId}/like/`).then((response) => {
+      setLikestatus(prevLikecount => prevLikecount - 1);
+      setLikestatus(prevLikestatus => !prevLikestatus);
+    }).catch((error) => {
+      console.error(error)
+    })
+  }
+  return (
+    <>
+      <h3 className='hidden'>좋아요, 댓글</h3>
+      <ul className='post_option flex flex-row justify-end gap-4 text-xl h-10'>
+        <li className='flex flex-row items-center'>
+          <span className='hidden'>좋아요</span>
+          <i
+            className={`fa fa-heart${likestatus ? '' : emptyHeart} mr-[0.3rem] text-rose-500 cursor-pointer`}
+            aria-hidden="true"
+            onClick={(e) => {
+              likestatus ? unlikePost(e) : likePost(e);
+            }}
+          ></i>
+          <span className='text-sm'>{
+            likecount
+          }</span>
+        </li>
+        <li className='flex flex-row items-center'>
+          <Link to={`/post/${postUuid}`} onClick={() => {
+            // 상세경로 저장
+            dispatch(setDetailPath(`${username}/${postId}`))
+          }}>
+          <span className='hidden'>댓글</span>
+          <i className="fa fa-comment-o mr-1" aria-hidden="true"></i>
+          <span className='text-sm'>{
+            replySet
+          }</span>
+          </Link>
+        </li>
+      </ul>
+    </>
   )
 }
 

@@ -106,9 +106,9 @@ const PostDetail = function () {
     }
 
     // 좋아요 추가
-    let likePost = (e, postId, userId) => {
+    let likePost = (e, postId) => {
         e.preventDefault();
-        axios.post(`/post/${postId}/${userId}/like/`).then((response) => {
+        axios.post(`/post/${postId}/like/`).then((response) => {
             setLikeCount(prevLikeCount => prevLikeCount + 1);
             setLikeStatus(prevLikeStatus => !prevLikeStatus);
         }).catch((error) => {
@@ -117,9 +117,9 @@ const PostDetail = function () {
     }
 
     // 좋아요 삭제
-    let unlikePost = (e, postId, userId) => {
+    let unlikePost = (e, postId) => {
         e.preventDefault();
-        axios.delete(`/post/${postId}/${userId}/like/`).then((response) => {
+        axios.delete(`/post/${postId}/like/`).then((response) => {
             setLikeCount(prevLikeCount => prevLikeCount - 1);
             setLikeStatus(prevLikeStatus => !prevLikeStatus);
         }).catch((error) => {
@@ -183,7 +183,7 @@ const PostDetail = function () {
                                             class={`fa fa-heart${likeStatus ? '' : emptyHeart} mr-[0.3rem] text-rose-500 cursor-pointer`} 
                                             aria-hidden="true"
                                             onClick={(e) => {
-                                                likeStatus ? unlikePost(e, post.id, post.user_id) : likePost(e, post.id, post.user_id);
+                                                likeStatus ? unlikePost(e, post.id) : likePost(e, post.id);
                                               }}                                              
                                         ></i>
                                         <span className='text-sm'>{
