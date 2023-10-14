@@ -12,12 +12,24 @@ from user.serializers import NotificationSerializer
 
 
 class RegistreFCMTokenView(APIView, SessionDecoderMixin):
+    # TODO: 이것도 나중에 10개씩 끊어 보여주는 것도 좋을 듯!
     def get(self, request: HttpRequest, username):
-        # 0==신고 요구, 10==승인, 20==보류, 30==거절 / 신고 요구된 것만 보여줌? 또는 신고 처리된 것도 알려줌?
-        notification = Notification.objects.filter(targeted_user__username=username)
-        notification_serializer = NotificationSerializer(notification, many=True)
+        # 읽지 않은 알림
+        not_read_notification = Notification.objects.filter(
+            Q(targeted_user__username=username) & Q(read_date__isnull=True)
+        ).order_by('-occur_date')
 
-        return Response(notification_serializer.data, status = status.HTTP_200_OK)
+        # 읽은 알림
+        read_notification = Notification.objects.filter(
+            Q(targeted_user__username=username) & Q(read_date__isnull=False)
+        ).order_by('-occur_date')
+
+        response_data = {
+            'notRead' : NotificationSerializer(not_read_notification, many=True).data,
+            'read' : NotificationSerializer(read_notification, many=True).data,
+        }
+
+        return Response(response_data, status = status.HTTP_200_OK)
 
     def post(self, request:HttpRequest, **kwargs) -> Response:
         username = kwargs['username']
