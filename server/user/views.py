@@ -10,6 +10,11 @@ from sesactalk.mixins import SessionDecoderMixin
 from user.constants import ResponseMessages
 
 class RegistreFCMTokenView(APIView, SessionDecoderMixin):
+    def get(self, request: HttpRequest, username):
+        # 0==신고 요구, 10==승인, 20==보류, 30==거절 / 신고 요구된 것만 보여줌? 또는 신고 처리된 것도 알려줌?
+        pk = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
+        return Response('response_data', status = status.HTTP_200_OK)
+
     def post(self, request:HttpRequest, **kwargs) -> Response:
         username = kwargs['username']
         user_exist = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))

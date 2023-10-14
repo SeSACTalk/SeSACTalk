@@ -59,10 +59,10 @@ class PostSerializer(serializers.ModelSerializer):
     user_id = serializers.IntegerField(source='user.id', read_only=True)
     username = serializers.CharField(source='user.username', read_only=True)
     name = serializers.CharField(source='user.name', read_only=True)
-    campusname = serializers.SerializerMethodField()
+    campusname = serializers.SerializerMethodField(read_only=True)
 
     # profile field
-    profile_img_path = serializers.SerializerMethodField()
+    profile_img_path = serializers.SerializerMethodField(read_only=True)
 
     # like & reply field
     like_set = serializers.IntegerField(source='like_set.count', read_only=True)

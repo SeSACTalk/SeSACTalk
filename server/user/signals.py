@@ -3,8 +3,19 @@ from django.dispatch import receiver
 
 from user.utils import send_fcm_notification
 from chat.models import Chat, ChatRoom
-from user.models import UserRelationship
+from user.models import UserRelationship, Notification
 from post.models import Reply, Like, Report
+
+def create_notification(targeted_user, targeting_user, content_id, type_, uri):
+    # 내가 나한테 댓글, 좋아요한 경우 알림을 생성하지 않음
+    if not targeted_user == targeting_user :
+        Notification.objects.create(
+            targeted_user = targeted_user,
+            targeting_user = targeting_user,
+            content_id = content_id,
+            type = type_,
+            uri = uri,
+        )
 
 @receiver(post_save, sender = Reply) # 댓글 생성알림
 def send_fcm_on_new_reply(sender, instance, created, **kwargs):
@@ -24,6 +35,16 @@ def send_fcm_on_new_reply(sender, instance, created, **kwargs):
         }
 
         send_fcm_notification(post_author_token, message_title, message_body, data_message)
+@receiver(post_save, sender = Reply) # notification에 insert
+def create_notification_on_new_reply(sender, instance, created, **kwargs):
+    if created:
+        create_notification(
+            instance.post.user,
+            instance.user,
+            instance.id,
+            'reply',
+            f'/post/{instance.post.uuid}'
+        )
 
 @receiver(post_save, sender = Like) # 좋아요 알림
 def send_fcm_on_new_like(sender, instance, created, **kwargs):
@@ -43,6 +64,16 @@ def send_fcm_on_new_like(sender, instance, created, **kwargs):
 
         send_fcm_notification(post_author_token, message_title, message_body, data_message)
 
+@receiver(post_save, sender = Like) # notification에 insert
+def create_notification_on_new_like(sender, instance, created, **kwargs):
+    if created:
+        create_notification(
+            instance.post.user,
+            instance.user,
+            instance.id,
+            'like',
+            f'/post/{instance.post.uuid}'
+        )
 @receiver(post_save, sender = UserRelationship) # 팔로우 알림
 def send_fcm_on_new_follow(sender, instance, created, **kwargs):
     if created:
@@ -61,6 +92,16 @@ def send_fcm_on_new_follow(sender, instance, created, **kwargs):
 
         send_fcm_notification(user_token, message_title, message_body, data_message)
 
+@receiver(post_save, sender = UserRelationship) # notification에 insert
+def create_notification_on_new_follow(sender, instance, created, **kwargs):
+    if created:
+        create_notification(
+            instance.user_follow,
+            instance.user_follower,
+            instance.id,
+            'follow',
+            f'/profile/{instance.user_follow.username}'
+        )
 @receiver(post_save, sender = Chat) # 채팅 알림
 def send_fcm_on_new_chat(sender, instance, created, **kwargs):
     if created:
@@ -106,3 +147,17 @@ def send_fcm_on_new_report(sender, instance, **kwargs):
     }
 
     send_fcm_notification(reported_token, message_title, message_body, data_message)
+
+
+# TODO: 관리자 report 알림 구현 후, 오류 없는 지 확인해봐야할 시그널
+@receiver(post_save, sender = Report)
+def create_notification_on_new_report(sender, instance, created, **kwargs):
+    # report가 report_status가 10으로 update될 때 처리(notification에 insert)
+    if (not created) and (instance.report_status == 10):
+        create_notification(
+            instance.reported,
+            instance.reporter,
+            instance.id,
+            'report',
+            None
+        )

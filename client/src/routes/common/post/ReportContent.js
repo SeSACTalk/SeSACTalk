@@ -23,7 +23,7 @@ const ReportContent = function ({ contentType, contentInfo }) {
     let getUrl = (contentType) => {
         switch (contentType) {
             case 'post':
-                return `/post/${contentInfo.Id}/report/`
+                return `/post/${contentInfo.id}/report/`
             case 'reply':
                 return `/reply/${contentInfo.post_id}/${contentInfo.id}/report/`
         }

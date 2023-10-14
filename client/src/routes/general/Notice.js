@@ -4,8 +4,12 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 
 import { setDetailPath } from "../../store/postSlice";
+import { getCookie } from "../../modules/handle_cookie";
 
 const Notice = function () {
+    // cookie
+    let username = getCookie('username')
+
     // 상태
     const [dataResult, setDataResult] = useState([]);
     const [isNotice, setIsNotice] = useState(true);
@@ -15,6 +19,16 @@ const Notice = function () {
 
     useEffect(() => {
         if (isNotice) { // notice경로로 요청
+            axios.get(`/user/${username}/notify/`)
+                .then(
+                    response => {
+                        let copy = [...response.data];
+                        setDataResult(copy);
+                    }
+                )
+                .catch(
+                    error => console.error(error)
+                )
             return
         } else { // 추천게시물 경로로 요청
             axios.get(`/post/recommend/`)
@@ -83,7 +97,7 @@ const Notice = function () {
                                                     <span className="text-lg mr-1">{element.name}</span>
                                                     <span className="text-sm text-sesac-green">{element.campus_name} 캠퍼스</span>
                                                 </p>
-                                                <p>{element.content.length > 10 ? element.content.slice(0, 10) : element.content}</p>
+                                                <p>{element.content && element.content.length > 10 ? `${element.content.slice(0, 10) } ...`: element.content}</p>
                                                 <p className="text-red-300">
                                                     <i className="fa fa-heart" aria-hidden="true"></i> 좋아요 {element.like}개
                                                 </p>

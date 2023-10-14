@@ -87,7 +87,6 @@ class Post(APIView, OwnerPermissionMixin):
             'page': int(page_value)
         }
 
-        print(postSerializer.data)
         return Response(data = data, status=status.HTTP_200_OK)
 
     def post(self, request: HttpRequest, username) -> Response:
@@ -119,7 +118,6 @@ class PostDetail(APIView, OwnerPermissionMixin):
             'post': postSerializer.data,
             'isPostMine': condition
             }
-        print(postSerializer.data)
         return Response(response_data, status.HTTP_200_OK)
 
     def put(self, request, **kwargs) -> Response:

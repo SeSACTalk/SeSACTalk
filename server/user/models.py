@@ -17,9 +17,9 @@ class Notification(models.Model):
     targeted_user = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'targeted_user_id')
     content_id = models.IntegerField()
     type = models.CharField(max_length = 20, choices = category.choices)
-    uri = models.TextField(max_length = 500)
+    uri = models.TextField(null = True, max_length = 500)
     occur_date = models.DateTimeField(auto_now_add = True)
-    read_date = models.DateTimeField()
+    read_date = models.DateTimeField(null = True)
 
 class FCMToken(models.Model):
     user = models.OneToOneField(User, on_delete = models.CASCADE)
