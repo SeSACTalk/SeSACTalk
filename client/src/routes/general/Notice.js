@@ -6,6 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setDetailPath } from "../../store/postSlice";
 import { getCookie } from "../../modules/handle_cookie";
 
+const SERVER = process.env.REACT_APP_BACK_BASE_URL
+
 const Notice = function () {
     // cookie
     let username = getCookie('username')
@@ -23,6 +25,7 @@ const Notice = function () {
                 .then(
                     response => {
                         let copy = [...response.data];
+                        console.log([...response.data])
                         setDataResult(copy);
                     }
                 )
@@ -58,26 +61,43 @@ const Notice = function () {
                     setIsNotice(!isNotice)
                 }}>추천게시물</button>
             </div>
-            <div className="h-4/5 mt-6 overflow-scroll">
+            <div className="h-4/5 mt-6 px-1 overflow-scroll-auto">
                 <ul>
                     {
                         dataResult.map((element, i) => {
                             if (isNotice) {
                                 return (
-                                    <li key={i}>
-                                        <Link to="#" className="flex items-center gap-4">
-                                            <div className="img_wrap w-1/5 h-1/5 rounded-full border border-gray-200 overflow-hidden p-1.5">
-                                                <img src="" alt="사용자명" />
-                                            </div>
-                                            <div className="sender_info">
-                                                <p>
-                                                    <span className="text-lg mr-1">사용자명</span>
-                                                    <span className="text-sm text-gray-500">날짜</span>
-                                                </p>
-                                                <div className="chat_info flex gap-2">
-                                                    <p className="text-sm text-gray-500">내용</p>
-                                                </div>
-                                            </div>
+                                    <li className="mb-3 flex items-center justify-center " key={i}>
+                                        <Link to={element.uri} className="flex items-center gap-4">
+                                            {
+                                                element.type == 'report' ?
+                                                    (<Report notification={element} />)
+                                                    :
+                                                    (
+                                                        <>
+                                                            <div className="img_wrap w-1/5 h-1/5 rounded-full border border-gray-200 overflow-hidden p-1.5">
+                                                                <img src={SERVER + element.profile_img_path} alt={element.targeting_user_name} />
+                                                            </div>
+                                                            <div className="sender_info">
+                                                                <p>
+                                                                    <span className="text-xs text-gray-500">
+                                                                        {element.occur_date}
+                                                                        {
+                                                                            element.occur_date != undefined ?
+                                                                                (!(element.occur_date.includes("년")) ? " 전" : "") : ""
+                                                                        }
+                                                                    </span>
+                                                                </p>
+                                                                <div className="chat_info flex gap-2">
+                                                                    <p className="text-[0.85rem] text-gray-500">
+                                                                        <span className="text-black font-b">{`${element.targeting_user_name}`}</span>님이 회원님
+                                                                        <NotifycationContent type={element.type} />
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </>
+                                                    )
+                                            }
                                         </Link>
                                     </li>
                                 )
@@ -97,7 +117,7 @@ const Notice = function () {
                                                     <span className="text-lg mr-1">{element.name}</span>
                                                     <span className="text-sm text-sesac-green">{element.campus_name} 캠퍼스</span>
                                                 </p>
-                                                <p>{element.content && element.content.length > 10 ? `${element.content.slice(0, 10) } ...`: element.content}</p>
+                                                <p>{element.content && element.content.length > 10 ? `${element.content.slice(0, 10)} ...` : element.content}</p>
                                                 <p className="text-red-300">
                                                     <i className="fa fa-heart" aria-hidden="true"></i> 좋아요 {element.like}개
                                                 </p>
@@ -113,6 +133,49 @@ const Notice = function () {
             </div>
         </div>
     )
+}
+
+function Report({ notification }) {
+    return (
+        <>
+            <div className="w-1/5 h-1/5 flex justify-center items-center rounded-full border border-gray-200 overflow-hidden p-1.5">
+                <i class="fa fa-ban text-rose-600 text-4xl font-extrabold" aria-hidden="true"></i>
+            </div>
+            <div className="sender_info">
+                <p>
+                    <span className="text-xs text-gray-500">
+                        {notification.occur_date}
+                        {
+                            notification.occur_date != undefined ?
+                                (!(notification.occur_date.includes("년")) ? " 전" : "") : ""
+                        }
+                    </span>
+                </p>
+                <div className="chat_info flex gap-2">
+                    <p className="text-[0.85rem] text-gray-500">
+                        회원님 게시물이 <span className="text-red-600">신고</span>처리되어 삭제됐습니다.
+                    </p>
+                </div>
+            </div>
+        </>
+    )
+}
+
+function NotifycationContent({ type }) {
+    switch (type) {
+        case 'reply':
+            return (
+                <> 게시물에 <span className="text-green-600">댓글</span>을 남겼습니다.</>
+            )
+        case 'like':
+            return (
+                <> 게시물에 <span className="text-red-600">좋아요</span>를 눌렀습니다.</>
+            )
+        case 'follow':
+            return (
+                <>을 <span className="text-blue-600">팔로우</span>하기 시작했습니다.</>
+            )
+    }
 }
 
 export default Notice;
