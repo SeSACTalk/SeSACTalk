@@ -25,13 +25,6 @@ const Main = function () {
             .then(
                 response => {
                     dispatch(setRole(response.data.role));
-                    if (response.data.role === 'USER') {
-                        return
-                    } else if (location.pathname.includes('profile')) {
-                        return
-                    } else {
-                        // navigate('/admin')
-                    }
                 }
             )
             .catch(

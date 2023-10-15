@@ -60,7 +60,7 @@ const Posts = function () {
     queryKey: ['post'],
     queryFn: fetchPost,
     getNextPageParam: (lastPage, pages) => {
-      console.log(pages[0])
+      console.log(pages[0], lastPage)
       return lastPage.data.page !== pages[0].totalPage ? lastPage.data.page + 1 : 1
     },
   })
