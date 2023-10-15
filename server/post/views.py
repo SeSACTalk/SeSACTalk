@@ -65,9 +65,11 @@ class Post(APIView, OwnerPermissionMixin):
         if not condition:
             return Response({'error': ResponseMessages.FORBIDDEN_ACCESS}, status.HTTP_403_FORBIDDEN)
 
+        #TODO 인덱싱 수정하는거랑 끊임없는 무한스크롤 되는 현상 수정
         page_value = request.query_params.get('page')
         start_index = int(page_value) + (9*(int(page_value) - 1))
         end_index = int(page_value) + (9*int(page_value))
+        print(f'시작페이지{start_index}, 마지막페이지{end_index}')
 
         # 팔로우 기반 또는 자신의 게시물 포스트를 가져오는 쿼리문 수행, order by의 - 기호는 역순을 의미
         user_s_follows = UserRelationship.objects.filter(user_follower = access_user.id)
@@ -167,6 +169,7 @@ class ReportPost(APIView, OwnerPermissionMixin):
         # 한 사람이 같은 게시물을 연속적으로 신고 가능?
         return Response({'message': ResponseMessages.REPORT_CREATE_SUCCESS}, status=status.HTTP_201_CREATED)
     
+#TODO : 추천게시물이 좋아요순으로 정렬될 수 있게 수정
 class RecommendPost(APIView, SessionDecoderMixin):
     def get(self, request: HttpRequest) -> Response:
         user = self.get_user_by_pk(request.META.get('HTTP_AUTHORIZATION', ''))

@@ -35,7 +35,6 @@ const Posts = function () {
   const bottom = useRef(null);
 
   let dispatch = useDispatch();
-  const navigate = useNavigate()
 
   const fetchPost = ({ pageParam = 1 }) => {
     return axios.get(`/post/${username}?page=${pageParam}`)
@@ -61,6 +60,7 @@ const Posts = function () {
     queryKey: ['post'],
     queryFn: fetchPost,
     getNextPageParam: (lastPage, pages) => {
+      console.log(pages[0])
       return lastPage.data.page !== pages[0].totalPage ? lastPage.data.page + 1 : 1
     },
   })
@@ -105,7 +105,6 @@ const Posts = function () {
                     <div className="post_content_wrap h-1/2">
                       <p className='post_content mt-5 text-sm'>{element.content}</p>
                     </div>
-                    {/* TODO 데이터 바인딩 + 해시태그 클릭시 검색결과창 이동 */}
                     <div className="post_footer flex justify-between items-center">
                       <h3 className="hidden">해시태그</h3>
                       {
@@ -123,7 +122,7 @@ const Posts = function () {
                           <div className="invisible">
                           </div>
                       }
-                      <UserFeedback postId={element.id} postUuid = {element.uuid} username = {element.username} replySet={element.reply_set} likeStatus={element.like_status} likeCount={element.like_set} />
+                      <UserFeedback postId={element.id} postUuid={element.uuid} username={element.username} replySet={element.reply_set} likeStatus={element.like_status} likeCount={element.like_set} />
                     </div>
                     <button className='absolute right-5 top-8' onClick={
                       async () => {
@@ -219,11 +218,11 @@ function UserFeedback({ postId, postUuid, username, replySet, likeStatus, likeCo
             // 상세경로 저장
             dispatch(setDetailPath(`${username}/${postId}`))
           }}>
-          <span className='hidden'>댓글</span>
-          <i className="fa fa-comment-o mr-1" aria-hidden="true"></i>
-          <span className='text-sm'>{
-            replySet
-          }</span>
+            <span className='hidden'>댓글</span>
+            <i className="fa fa-comment-o mr-1" aria-hidden="true"></i>
+            <span className='text-sm'>{
+              replySet
+            }</span>
           </Link>
         </li>
       </ul>

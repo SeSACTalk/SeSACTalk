@@ -40,21 +40,19 @@ function App() {
           </Route>
           {/* 프로필 */}
           <Route path="profile/:username" element={<ProfileLayout />} >
-            <Route path="" element={<Profile/>}>
-              <Route path="withdraw" element={<WithdrawModal/>} />
+            <Route path="" element={<Profile />}>
+              <Route path="withdraw" element={<WithdrawModal />} />
             </Route>
-            <Route path="edit" element={<EditProfile/>} />
+            <Route path="edit" element={<EditProfile />} />
+          </Route>
+          {/* 관리자 */}
+          <Route path='/admin' element={<Admin />}>
+            <Route index element={<UserList />} />
+            <Route path='user/course' element={<CourseApproval />} />
+            <Route path='auth/user' element={<UserVerify />} />
           </Route>
         </Route>
         {/* 관리자 */}
-        <Route path='/admin' element={<Admin />}>
-          <Route index element={<UserList />} />
-          <Route path='user/course' element={<CourseApproval />} />
-          <Route path='auth/user' element={<UserVerify />} />
-          <Route path='chat' element={<Chat />} >
-            <Route path=':chatRoom' element={<ChatDetail />} />
-          </Route>
-        </Route>
         <Route path='*' element={<div>없는 페이지에요</div>}></Route>
       </Routes>
     </div >
