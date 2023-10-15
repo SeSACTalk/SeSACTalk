@@ -60,8 +60,10 @@ const Posts = function () {
     queryKey: ['post'],
     queryFn: fetchPost,
     getNextPageParam: (lastPage, pages) => {
-      console.log(pages[0], lastPage)
-      return lastPage.data.page !== pages[0].totalPage ? lastPage.data.page + 1 : 1
+      if (lastPage.data.next) {
+        const next_page = Number(lastPage.data.next.slice(-1))
+        return lastPage = next_page;
+      }
     },
   })
 
@@ -87,8 +89,8 @@ const Posts = function () {
         {
           status == 'success' && data &&
           data.pages.map((group, i) => {
-            if (group && group.data.result) {
-              return group.data.result.map((element) => {
+            if (group && group.data.results) {
+              return group.data.results.map((element) => {
                 return (
                   <article className='relative post_container p-5 h-96 border-solid border-b border-gray-200' key={element.id}>
                     <div className='post_author'>

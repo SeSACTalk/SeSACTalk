@@ -7,6 +7,7 @@ import requests
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 
 from post.models import Post as PostModel, Like as LikeModel
 from accounts.models import User
@@ -58,38 +59,35 @@ class RecruitView(APIView, SessionDecoderMixin):
     
         return Response(status = status.HTTP_200_OK)
 
-class Post(APIView, OwnerPermissionMixin):
+class CustomPagination(PageNumberPagination):
+    page_size = 10
+
+class Post(APIView, OwnerPermissionMixin):    
     def get(self, request: HttpRequest, username) -> Response:
         # 권한 확인
         access_user, condition = self.check_post_owner(request.META.get('HTTP_AUTHORIZATION'), username, 'get_owner')
         if not condition:
             return Response({'error': ResponseMessages.FORBIDDEN_ACCESS}, status.HTTP_403_FORBIDDEN)
 
-        #TODO 인덱싱 수정하는거랑 끊임없는 무한스크롤 되는 현상 수정
-        page_value = request.query_params.get('page')
-        start_index = int(page_value) + (9*(int(page_value) - 1))
-        end_index = int(page_value) + (9*int(page_value))
-        print(f'시작페이지{start_index}, 마지막페이지{end_index}')
-
         # 팔로우 기반 또는 자신의 게시물 포스트를 가져오는 쿼리문 수행, order by의 - 기호는 역순을 의미
         user_s_follows = UserRelationship.objects.filter(user_follower = access_user.id)
+        
         posts = PostModel.objects.filter(
             Q(user=access_user.id) | Q(user__in=user_s_follows.values('user_follow'))
-        ).prefetch_related('tags').select_related('user').order_by('-date')[start_index:end_index]
+        ).prefetch_related('tags').select_related('user').order_by('-date').all()
+        
+
+        paginator = CustomPagination()
+        result_page = paginator.paginate_queryset(posts, request)
 
         # QuerySet이 비어있을 경우
         if not bool(posts):
             return Response({'message': ResponseMessages.POST_NO_POSTS_TO_DISPLAY}, status=status.HTTP_200_OK)
 
         # 반환할 게시물이 있는 경우
-        postSerializer = PostSerializer(posts, many=True, context={'login_user_id': access_user.id})
+        postSerializer = PostSerializer(result_page, many=True, context={'login_user_id': access_user.id})
 
-        data = {
-            'result':postSerializer.data,
-            'page': int(page_value)
-        }
-
-        return Response(data = data, status=status.HTTP_200_OK)
+        return paginator.get_paginated_response(postSerializer.data)
 
     def post(self, request: HttpRequest, username) -> Response:
         # 권한 확인

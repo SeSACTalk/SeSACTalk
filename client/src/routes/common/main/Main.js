@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from "react-redux";
 import axios from 'axios';
 
@@ -13,8 +13,7 @@ import AdminNavbar from '../../admin/AdminNavbar';
 const Main = function () {
     let navigate = useNavigate();
     let dispatch = useDispatch();;
-    let location = useLocation();
-    console.log(location)
+
     // States
     let role = useSelector((state) => state.role);
     let writeModal = useSelector((state) => state.writeModal);
