@@ -197,6 +197,7 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class LikeSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Like
         fields = '__all__'
@@ -287,12 +288,10 @@ class ReplysSetSerializer(ReplySerializer):
     post_user_username = serializers.CharField(read_only=True)
     post_user_name = serializers.CharField(read_only=True)
     post_user_profile_img_path = serializers.SerializerMethodField(read_only=True)
+    is_current_user = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = Reply
-        fields = (
-            'id', 'content', 'date', 'format_date', 'report_status', 'post_id', 'post_uuid',
-            'post_user_username', 'post_user_name', 'post_user_profile_img_path'
-        )
+        fields = '__all__'
     def get_format_date(self, reply):
         date = reply.date
         today = datetime.now(date.tzinfo)
@@ -321,6 +320,12 @@ class ReplysSetSerializer(ReplySerializer):
 
         return profile_img_path
 
+    def get_is_current_user(self, reply):
+        login_user_id = self.context.get('login_user_id')
+        if login_user_id:
+            return (reply.post.user.id == login_user_id)
+        return None
+
 class LikesSetSerializer(LikeSerializer):
     format_date = serializers.SerializerMethodField()
     post_id = serializers.IntegerField(source='post.id', read_only=True)
@@ -329,12 +334,10 @@ class LikesSetSerializer(LikeSerializer):
     post_user_username = serializers.CharField(read_only=True)
     post_user_name = serializers.CharField(read_only=True)
     post_user_profile_img_path = serializers.SerializerMethodField(read_only=True)
+    is_current_user = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = Like
-        fields = (
-            'id', 'date', 'format_date', 'post_id', 'post_content', 'post_uuid',
-            'post_user_username', 'post_user_name', 'post_user_profile_img_path',
-        )
+        fields = '__all__'
     def get_format_date(self, like):
         date = like.date
         today = datetime.now(date.tzinfo)
@@ -362,3 +365,9 @@ class LikesSetSerializer(LikeSerializer):
             profile_img_path = '/media/profile/default_profile.png'
 
         return profile_img_path
+
+    def get_is_current_user(self, like):
+        login_user_id = self.context.get('login_user_id')
+        if login_user_id:
+            return (like.post.user.id == login_user_id)
+        return None

@@ -166,8 +166,10 @@ function ProfileLikes({ user_id }) {
                       <p className='flex items-center gap-3 text_wrap justify-center text-zinc-500'>
                         <i className="fa fa-gratipay text-rose-500" aria-hidden="true"></i>
                         <div className='text-base'>
-                          <span className="text-sesac-green 800 font-semibold">{element.post_user_name}</span>
-                          <span>님의 게시물</span>
+                          <span className="text-sesac-green 800 font-semibold">{
+                            element.is_current_user ? '내' :  element.post_user_name + '님의'
+                          }</span>
+                          <span> 게시물</span>
                         </div>
                         <div className="text-xs">
                           {element.format_date}
@@ -246,7 +248,11 @@ function ProfileReplys({ user_id }) {
                         <div>
                           <i class="fa fa-reply" aria-hidden="true"></i>
                         </div>
-                        <div className='text-base'><span className="text-sesac-green 800 font-semibold">{element.post_user_name}</span><span>님의 게시물</span></div>
+                        <div className='text-base'><span className="text-sesac-green 800 font-semibold">
+                        {
+                            element.is_current_user ? '내' :  element.post_user_name + '님의'
+                          }
+                          </span><span> 게시물</span></div>
                         <div className="text-xs">
                           {element.format_date}
                           {

@@ -173,12 +173,11 @@ class ProfileLike(APIView, SessionDecoderMixin):
             .annotate(post_user_username=F('post__user__username'), post_user_name=F('post__user__name')) \
             .order_by('-date')
 
-        likesSetSerializer = LikesSetSerializer(likes, many=True)
+        likesSetSerializer = LikesSetSerializer(likes, many=True, context={'login_user_id' : user_pk})
 
         # QuerySet이 비어있을 경우
         if not bool(likes):
             return Response({'message': ResponseMessages.NO_LIKES_TO_DISPLAY}, status=status.HTTP_200_OK)
-
         return Response(likesSetSerializer.data, status=status.HTTP_200_OK)
 
 class ProfileReply(APIView, SessionDecoderMixin):
@@ -189,7 +188,7 @@ class ProfileReply(APIView, SessionDecoderMixin):
             .annotate(post_user_username=F('post__user__username'), post_user_name=F('post__user__name')) \
             .order_by('-date')
 
-        replysSetSerializer = ReplysSetSerializer(replys, many=True)
+        replysSetSerializer = ReplysSetSerializer(replys, many=True, context={'login_user_id' : user_pk})
 
         # QuerySet이 비어있을 경우
         if not bool(replys):
