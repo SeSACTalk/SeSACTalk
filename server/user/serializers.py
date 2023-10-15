@@ -105,11 +105,11 @@ class FollowerSerializer(serializers.ModelSerializer):
         return is_current_user
 
 class NotificationSerializer(serializers.ModelSerializer):
-    targeting_user_name = serializers.SerializerMethodField(read_only=True)
+    targeted_user_name = serializers.SerializerMethodField(read_only=True)
     occur_date = serializers.SerializerMethodField(read_only=True)
     profile_img_path = serializers.SerializerMethodField(read_only=True)
     post_id = serializers.SerializerMethodField(read_only=True)
-    targeting_user_username = serializers.SerializerMethodField(read_only=True)
+    targeted_user_username = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Notification
@@ -117,9 +117,9 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     def get_type_list(self, required_fields):
         types = ['reply', 'like', 'follow', 'report']
-        if required_fields in ['targeting_user_name', 'profile_img_path']:
+        if required_fields in ['targeted_user_name', 'profile_img_path']:
             return types[:3]
-        elif required_fields in ['post_id', 'targeting_user_username']:
+        elif required_fields in ['post_id', 'targeted_user_username']:
             return types[:2]
         else:
             return types[3]
@@ -134,9 +134,9 @@ class NotificationSerializer(serializers.ModelSerializer):
 
         return obj
 
-    def get_targeting_user_name(self, notification):
-        if notification.type in self.get_type_list('targeting_user_name') :
-            return notification.targeting_user.name
+    def get_targeted_user_name(self, notification):
+        if notification.type in self.get_type_list('targeted_user_name') :
+            return notification.targeted_user.name
         return None
 
     def get_occur_date(self, notification):
@@ -172,11 +172,11 @@ class NotificationSerializer(serializers.ModelSerializer):
 
         return post_id
 
-    def get_targeting_user_username(self, notification):
+    def get_targeted_user_username(self, notification):
         type_ = notification.type
-        targeting_user_username = None
+        targeted_user_username = None
 
-        if type_ in self.get_type_list('targeting_user_username') :
-            targeting_user_username = self.get_model_obj(type_, notification.content_id).user.username
+        if type_ in self.get_type_list('targeted_user_username') :
+            targeted_user_username = self.get_model_obj(type_, notification.content_id).user.username
 
-        return targeting_user_username
+        return targeted_user_username

@@ -151,7 +151,7 @@ function Notification({ element, i }) {
         <li className="mb-3 flex items-center justify-center" key={i}>
             <Link to={element.uri} className="flex items-center gap-3" onClick={() => {
                 if (!(element.type == 'follow')) {
-                    dispatch(setDetailPath(`${element.targeting_user_username}/${element.post_id}`));
+                    dispatch(setDetailPath(`${element.targeted_user_username}/${element.post_id}`));
                 }
             }}>
                 {element.type == 'report' ? (
@@ -159,7 +159,7 @@ function Notification({ element, i }) {
                 ) : (
                     <>
                         <div className="img_wrap w-1/5 h-1/5 rounded-full border border-gray-200 overflow-hidden p-1.5">
-                            <img src={SERVER + element.profile_img_path} alt={element.targeting_user_name} />
+                            <img src={SERVER + element.profile_img_path} alt={element.targeted_user_name} />
                         </div>
                         <div className="sender_info">
                             <p>
@@ -170,7 +170,7 @@ function Notification({ element, i }) {
                             </p>
                             <div className="chat_info flex gap-2">
                                 <p className="text-[0.85rem] text-gray-500">
-                                    <span className="text-black font-b">{`${element.targeting_user_name}`}</span>님이 회원님
+                                    <span className="text-black font-b">{`${element.targeted_user_name}`}</span>님이 회원님
                                     <NotifycationContent type={element.type} />
                                 </p>
                             </div>
