@@ -75,7 +75,7 @@ const UserList = function () {
                         <th scope="col" className="px-6 py-3">이메일</th>
                         <th scope="col" className="px-6 py-3">캠퍼스</th>
                         <th scope="col" className="px-6 py-3">과정명</th>
-                        <th scope="col" className="px-6 py-3">가입일</th>
+                        <th scope="col" className="px-6 py-3">가입승인일</th>
                         <th scope="col" className="px-6 py-3">활성화 여부</th>
                         <th scope="col" className="px-6 py-3">관리자 여부</th>
                     </tr>
