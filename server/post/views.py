@@ -172,10 +172,10 @@ class RecommendPost(APIView, SessionDecoderMixin):
     def get(self, request: HttpRequest) -> Response:
         user = self.get_user_by_pk(request.META.get('HTTP_AUTHORIZATION', ''))
 
-        posts = PostModel.objects.filter(date__startswith = date.today()).prefetch_related('like_set').select_related('user').annotate(like_count = Count('like')).order_by('like_count').all()[:10]
+        posts = PostModel.objects.filter(date__startswith = date.today()).prefetch_related('like_set').select_related('user').annotate(like_count = Count('like')).order_by('-like_count').all()[:10]
         
         serializer = RecommendPostSerilaier(posts, many = True)
-        
+
         return Response(serializer.data, status = status.HTTP_200_OK)
 
 class Like(APIView, SessionDecoderMixin):

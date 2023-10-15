@@ -29,7 +29,7 @@ class RegistreFCMTokenView(APIView, SessionDecoderMixin):
             'notRead' : NotificationSerializer(not_read_notification, many=True).data,
             'read' : NotificationSerializer(read_notification, many=True).data,
         }
-        print(response_data)
+
         return Response(response_data, status = status.HTTP_200_OK)
 
     def post(self, request:HttpRequest, **kwargs) -> Response:

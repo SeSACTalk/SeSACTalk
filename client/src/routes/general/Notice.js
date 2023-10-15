@@ -31,9 +31,10 @@ const Notice = function () {
                 .then(
                     response => {
                         let copy = [...response.data];
+                        console.log(copy)
                         setRecommendDataResult(copy);
                         // get요청 뒤 read_date update
-                        requestReadNotification();
+                        // requestReadNotification();
                     }
                 )
                 .catch(
@@ -51,7 +52,6 @@ const Notice = function () {
         axios.get(`/user/${username}/notify/`)
             .then(
                 response => {
-                    // response data set
                     let copy = { ...response.data };
                     setNotReadNotificationDataResult([...copy.notRead])
                     setReadNotificationDataResult([...copy.read])
