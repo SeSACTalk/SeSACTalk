@@ -10,6 +10,7 @@ from sesactalk.mixins import SessionDecoderMixin
 from user.constants import ResponseMessages
 from user.serializers import NotificationSerializer
 
+from django.utils import timezone
 
 class RegistreFCMTokenView(APIView, SessionDecoderMixin):
     # TODO: 이것도 나중에 10개씩 끊어 보여주는 것도 좋을 듯!
@@ -28,7 +29,7 @@ class RegistreFCMTokenView(APIView, SessionDecoderMixin):
             'notRead' : NotificationSerializer(not_read_notification, many=True).data,
             'read' : NotificationSerializer(read_notification, many=True).data,
         }
-
+        print(response_data)
         return Response(response_data, status = status.HTTP_200_OK)
 
     def post(self, request:HttpRequest, **kwargs) -> Response:
@@ -50,6 +51,14 @@ class RegistreFCMTokenView(APIView, SessionDecoderMixin):
             return Response({'message': ResponseMessages.FCM_TOKEN_REGISTER}, status = status.HTTP_201_CREATED)
         else:
             return Response({'message': ResponseMessages.REQUIRES_FCM_TOKEN}, status = status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request:HttpRequest, username) -> Response:
+        not_read_notification = Notification.objects.filter(
+            Q(targeted_user__username=username) & Q(read_date__isnull = True)
+        )
+        not_read_notification.update(read_date = timezone.now())
+
+        return Response({'message' : ResponseMessages.READ_NOTIFICATION}, status=status.HTTP_304_NOT_MODIFIED)
 
 #TODO: 나중에 팔로워, 팔로우 리스트를 limit 10등으로 끊어서 보여주기
 class Follow(APIView, UserRelationshipDataHandlerMixin):

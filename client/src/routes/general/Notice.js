@@ -24,17 +24,7 @@ const Notice = function () {
 
     useEffect(() => {
         if (isNotice) { // notice경로로 요청
-            axios.get(`/user/${username}/notify/`)
-                .then(
-                    response => {
-                        let copy = { ...response.data };
-                        setNotReadNotificationDataResult([...copy.notRead])
-                        setReadNotificationDataResult([...copy.read])
-                    }
-                )
-                .catch(
-                    error => console.error(error)
-                )
+            getNotification();
             return
         } else { // 추천게시물 경로로 요청
             axios.get(`/post/recommend/`)
@@ -42,6 +32,8 @@ const Notice = function () {
                     response => {
                         let copy = [...response.data];
                         setRecommendDataResult(copy);
+                        // get요청 뒤 read_date update
+                        requestReadNotification();
                     }
                 )
                 .catch(
@@ -55,6 +47,31 @@ const Notice = function () {
         }
     }, [isNotice])
 
+    let getNotification = () => {
+        axios.get(`/user/${username}/notify/`)
+            .then(
+                response => {
+                    // response data set
+                    let copy = { ...response.data };
+                    setNotReadNotificationDataResult([...copy.notRead])
+                    setReadNotificationDataResult([...copy.read])
+                }
+            )
+            .catch(
+                error => console.error(error)
+            )
+    }
+    let requestReadNotification = () => {
+        axios.put(`/user/${username}/notify/`)
+            .then(
+                response => {
+                    console.log('읽음 처리')
+                }
+            )
+            .catch(
+                error => console.error(error)
+            )
+    }
     return (
         <div className={`w-[350%] h-screen absolute z-20 left-full top-0 border border-gray-300 p-5 rounded-r-2xl bg-white shadow-min-nav ${noticeNav ? 'animate-intro' : 'hidden'}`}>
             <h2 className="text-2xl my-5">알림</h2>

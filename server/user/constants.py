@@ -8,3 +8,5 @@ class ResponseMessages():
     FOLLOW_CREATE_SUCCESS = 'FOLLOW CREATE SUCCESS: 팔로우에 성공하였습니다.'
     FOLLOW_DELETE_SUCCESS = 'FOLLOW DELETE SUCCESS: 언팔로우에 성공하였습니다.'
     FOLLOWER_DELETE_SUCCESS = 'FOLLOWER DELETE SUCCESS: 팔로워 삭제에 성공했습니다.'
+
+    READ_NOTIFICATION = 'READ NOTIFICATION: 알림을 모두 읽음 처리하였습니다.'
