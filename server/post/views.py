@@ -73,7 +73,7 @@ class Post(APIView, OwnerPermissionMixin):
         user_s_follows = UserRelationship.objects.filter(user_follower = access_user.id)
         
         posts = PostModel.objects.filter(
-            Q(user=access_user.id) | Q(user__in=user_s_follows.values('user_follow'))
+            Q(user = access_user.id) | Q(user__in = user_s_follows.values('user_follow'))
         ).prefetch_related('tags').select_related('user').order_by('-date').all()
         
 
@@ -82,10 +82,10 @@ class Post(APIView, OwnerPermissionMixin):
 
         # QuerySet이 비어있을 경우
         if not bool(posts):
-            return Response({'message': ResponseMessages.POST_NO_POSTS_TO_DISPLAY}, status=status.HTTP_200_OK)
+            return Response({'message': ResponseMessages.POST_NO_POSTS_TO_DISPLAY}, status = status.HTTP_200_OK)
 
         # 반환할 게시물이 있는 경우
-        postSerializer = PostSerializer(result_page, many=True, context={'login_user_id': access_user.id})
+        postSerializer = PostSerializer(result_page, many = True, context={'login_user_id': access_user.id})
 
         return paginator.get_paginated_response(postSerializer.data)
 
@@ -103,7 +103,7 @@ class Post(APIView, OwnerPermissionMixin):
             postSerializer.save()
         else:
             print(f'<<CHECK INVALID DATA>>\n{postSerializer.errors}')
-            return Response({'error': ResponseMessages.INVALID_DATA}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': ResponseMessages.INVALID_DATA}, status = status.HTTP_400_BAD_REQUEST)
 
         return Response({'message': ResponseMessages.POST_CREATE_SUCCESS}, status = status.HTTP_201_CREATED)
 
@@ -111,7 +111,7 @@ class PostDetail(APIView, OwnerPermissionMixin):
     def get(self, request: HttpRequest, **kwargs) -> Response:
         access_user, condition = self.check_post_owner(request.META.get('HTTP_AUTHORIZATION'), kwargs['username'], 'get_owner')
         post = PostModel.objects.get(id = kwargs['pk'])
-        postSerializer = PostSerializer(post, context={'login_user_id': access_user.id})
+        postSerializer = PostSerializer(post, context = {'login_user_id': access_user.id})
 
         # 권한 확인(게시물 주인 확인)
         response_data = {
@@ -165,9 +165,8 @@ class ReportPost(APIView, OwnerPermissionMixin):
         reportSerializer.save()
 
         # 한 사람이 같은 게시물을 연속적으로 신고 가능?
-        return Response({'message': ResponseMessages.REPORT_CREATE_SUCCESS}, status=status.HTTP_201_CREATED)
+        return Response({'message': ResponseMessages.REPORT_CREATE_SUCCESS}, status = status.HTTP_201_CREATED)
     
-#TODO : 추천게시물이 좋아요순으로 정렬될 수 있게 수정
 class RecommendPost(APIView, SessionDecoderMixin):
     def get(self, request: HttpRequest) -> Response:
         user = self.get_user_by_pk(request.META.get('HTTP_AUTHORIZATION', ''))
@@ -190,7 +189,7 @@ class Like(APIView, SessionDecoderMixin):
 
     def delete(self, request, pk):
         user_pk = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
-        like = LikeModel.objects.filter(post_id=pk, user_id=user_pk)
+        like = LikeModel.objects.filter(post_id = pk, user_id=user_pk)
         condition = like.exists()
 
         if not condition:

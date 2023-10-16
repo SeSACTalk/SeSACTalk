@@ -13,7 +13,6 @@ const Notice = function () {
     let username = getCookie('username')
 
     // 상태
-    // const [dataResult, setDataResult] = useState([]);
     const [readNotificationDataResult, setReadNotificationDataResult] = useState([]);
     const [notReadNotificationDataResult, setNotReadNotificationDataResult] = useState([]);
     const [recommendDataResult, setRecommendDataResult] = useState([]);
@@ -31,10 +30,9 @@ const Notice = function () {
                 .then(
                     response => {
                         let copy = [...response.data];
-                        console.log(copy)
                         setRecommendDataResult(copy);
                         // get요청 뒤 read_date update
-                        // requestReadNotification();
+                        requestReadNotification();
                     }
                 )
                 .catch(
