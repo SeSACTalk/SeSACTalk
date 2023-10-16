@@ -17,6 +17,7 @@ import ChatDetail from './routes/common/chat/ChatDetail';
 import Admin from './routes/admin/Admin';
 import UserList from './routes/admin/UserList';
 import UserVerify from './routes/admin/UserVerify';
+import AdminNotice from './routes/admin/AdminNotice';
 import CourseApproval from './routes/admin/CourseApproval';
 import { ProfileLayout, Profile } from './routes/common/profiles/Profile';
 import EditProfile from './routes/common/profiles/EditProfile';
@@ -54,6 +55,7 @@ function App() {
           <Route path='chat' element={<Chat />} >
             <Route path=':chatRoom' element={<ChatDetail />} />
           </Route>
+          <Route path='user/notify' element={<AdminNotice/>} />
         </Route>
         <Route path='*' element={<div>없는 페이지에요</div>}></Route>
       </Routes>

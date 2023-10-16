@@ -63,7 +63,7 @@ const AdminNavbar = function () {
                     </Link>
                 </li>
                 <li>
-                    <Link to='#' className="block w-full h-full">
+                    <Link to='user/notify' className="block w-full h-full">
                         <i className="fa fa-bell-o inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>알림</span>
                     </Link>

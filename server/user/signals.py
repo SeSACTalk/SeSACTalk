@@ -16,6 +16,10 @@ def create_notification(targeted_user, targeting_user, content_id, type_, uri):
             type = type_,
             uri = uri,
         )
+def update_delete_status_notification(content_id):
+    notification = Notification.objects.get(content_id=content_id)
+    notification.delete_status = True
+    notification.save()
 
 @receiver(post_save, sender = Reply) # 댓글 생성알림
 def send_fcm_on_new_reply(sender, instance, created, **kwargs):
@@ -45,6 +49,9 @@ def create_notification_on_new_reply(sender, instance, created, **kwargs):
             'reply',
             f'/post/{instance.post.uuid}'
         )
+@receiver(post_delete, sender = Reply)
+def update_delete_status_notification_on_reply(sender, instance, **kwargs):
+    update_delete_status_notification(instance.id)
 
 @receiver(post_save, sender = Like) # 좋아요 알림
 def send_fcm_on_new_like(sender, instance, created, **kwargs):
@@ -74,6 +81,10 @@ def create_notification_on_new_like(sender, instance, created, **kwargs):
             'like',
             f'/post/{instance.post.uuid}'
         )
+@receiver(post_delete, sender = Like)
+def update_delete_status_notification_on_like(sender, instance, **kwargs):
+    update_delete_status_notification(instance.id)
+
 @receiver(post_save, sender = UserRelationship) # 팔로우 알림
 def send_fcm_on_new_follow(sender, instance, created, **kwargs):
     if created:
@@ -102,6 +113,10 @@ def create_notification_on_new_follow(sender, instance, created, **kwargs):
             'follow',
             f'/profile/{instance.user_follow.username}'
         )
+@receiver(post_delete, sender = UserRelationship)
+def update_delete_status_notification_on_follow(sender, instance, **kwargs):
+    update_delete_status_notification(instance.id)
+
 @receiver(post_save, sender = Chat) # 채팅 알림
 def send_fcm_on_new_chat(sender, instance, created, **kwargs):
     if created:

@@ -105,7 +105,7 @@ class FollowerSerializer(serializers.ModelSerializer):
         return is_current_user
 
 class NotificationSerializer(serializers.ModelSerializer):
-    targeted_user_name = serializers.SerializerMethodField(read_only=True)
+    targeting_user_name = serializers.SerializerMethodField(read_only=True)
     occur_date = serializers.SerializerMethodField(read_only=True)
     profile_img_path = serializers.SerializerMethodField(read_only=True)
     post_id = serializers.SerializerMethodField(read_only=True)
@@ -117,7 +117,7 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     def get_type_list(self, required_fields):
         types = ['reply', 'like', 'follow', 'report']
-        if required_fields in ['targeted_user_name', 'profile_img_path']:
+        if required_fields in ['targeting_user_name', 'profile_img_path']:
             return types[:3]
         elif required_fields in ['post_id', 'targeted_user_username']:
             return types[:2]
@@ -134,9 +134,9 @@ class NotificationSerializer(serializers.ModelSerializer):
 
         return obj
 
-    def get_targeted_user_name(self, notification):
-        if notification.type in self.get_type_list('targeted_user_name') :
-            return notification.targeted_user.name
+    def get_targeting_user_name(self, notification):
+        if notification.type in self.get_type_list('targeting_user_name') :
+            return notification.targeting_user.name
         return None
 
     def get_occur_date(self, notification):
@@ -160,7 +160,7 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     def get_profile_img_path(self, notification):
         if notification.type in self.get_type_list('profile_img_path') :
-            return get_img_path(notification.targeted_user.profile_set.first())
+            return get_img_path(notification.targeting_user.profile_set.first())
         return None
 
     def get_post_id(self, notification):

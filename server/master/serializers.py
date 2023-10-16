@@ -65,20 +65,31 @@ class UserCourseSerializer(serializers.ModelSerializer):
         return serializer.data
 
 class ReportDetailSerializer(serializers.ModelSerializer):
+    date = serializers.SerializerMethodField(read_only=True)
+    content_type = serializers.SerializerMethodField(read_only=True)
     reported_name = serializers.CharField(source='reported.name', read_only=True)
     reported_username = serializers.CharField(source='reported.username', read_only=True)
     reporter_name = serializers.CharField(source='reporter.name', read_only=True)
     reporter_username = serializers.CharField(source='reporter.username', read_only=True)
 
-    reported_content = serializers.SerializerMethodField()
-    post_id = serializers.SerializerMethodField()
+    reported_content = serializers.SerializerMethodField(read_only=True)
+    post_id = serializers.SerializerMethodField(read_only=True)
 
+    uri = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = Report
-        fields = ('id', 'date', 'content_type', 'category', 'content_id', 'report_status',
-                  'reported_id', 'reported_name', 'reported_username',
-                  'reporter_id', 'reporter_name', 'reporter_username',
-                  'reported_content', 'post_id')
+        fields = '__all__'
+
+    def get_date(self, report):
+        return report.date.strftime('%Y-%m-%d %p %I:%M:%S')
+
+    def get_content_type(self, report):
+        content_type = report.content_type
+                
+        if content_type == 'reply':
+            return '댓글'
+        if content_type == 'post':
+            return '게시물'
 
     def get_reported_content(self, report):
         if report.content_type == 'post':
@@ -92,3 +103,13 @@ class ReportDetailSerializer(serializers.ModelSerializer):
         elif report.content_type == 'reply':
             reply = Reply.objects.filter(id=report.content_id).select_related('post').first()
             return reply.post.id
+    def get_reply_id(self, report):
+        reply_id = None
+        if report.content_type == 'reply':
+            reply_id = Reply.objects.get(id=report.content_id).id
+        return reply_id
+
+    def get_uri(self, report):
+        post_id = self.get_post_id(report)
+        post_uuid = Post.objects.get(pk = post_id).uuid
+        return f"/post/{post_uuid}"

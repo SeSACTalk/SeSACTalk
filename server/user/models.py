@@ -20,6 +20,7 @@ class Notification(models.Model):
     uri = models.TextField(null = True, max_length = 500)
     occur_date = models.DateTimeField(auto_now_add = True)
     read_date = models.DateTimeField(null = True)
+    delete_status = models.BooleanField(default = False)
 
 class FCMToken(models.Model):
     user = models.OneToOneField(User, on_delete = models.CASCADE)

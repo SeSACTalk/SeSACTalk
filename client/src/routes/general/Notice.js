@@ -32,8 +32,6 @@ const Notice = function () {
                     response => {
                         let copy = [...response.data];
                         setRecommendDataResult(copy);
-                        // get요청 뒤 read_date update
-                        requestReadNotification();
                     }
                 )
                 .catch(
@@ -55,6 +53,8 @@ const Notice = function () {
                     let copy = { ...response.data };
                     setNotReadNotificationDataResult([...copy.notRead])
                     setReadNotificationDataResult([...copy.read])
+                    // get요청 뒤 read_date update
+                    requestReadNotification();
                 }
             )
             .catch(
@@ -88,6 +88,16 @@ const Notice = function () {
                     <div className="p-2">
                         <ul>
                             {
+                                (notReadNotificationDataResult && readNotificationDataResult) ? (
+                                    (notReadNotificationDataResult.length === 0 && readNotificationDataResult.length === 0) ? (
+                                        <div className="mb-12">
+                                            <div className="text-center text-gray-500">도착한 알림이 없어요.</div>
+                                        </div>
+                                    ) : null
+                                ) : null
+                            }
+
+                            {
                                 notReadNotificationDataResult && notReadNotificationDataResult.length !== 0 ? (
                                     <div className="mb-12">
                                         <div className="flex items-center w-full pb-1 mb-2">
@@ -119,25 +129,30 @@ const Notice = function () {
                     </div>
                 ) : (
                     <ul>
-                        {recommendDataResult.map((element, i) => (
-                            <li className="mb-3" key={i}>
-                                <Link to={`/post/${element.uuid}`} className="flex items-center gap-4" onClick={(e) => {
-                                    dispatch(setDetailPath(`${element.username}/${element.id}`));
-                                }}>
-                                    <span className="flex justify-center w-1/6 text-5xl text-gray-500">{i + 1}</span>
-                                    <article className="text-sm">
-                                        <p>
-                                            <span className="text-lg mr-1">{element.name}</span>
-                                            <span className="text-sm text-sesac-green">{element.campus_name} 캠퍼스</span>
-                                        </p>
-                                        <p>{element.content && element.content.length > 10 ? `${element.content.slice(0, 10)} ...` : element.content}</p>
-                                        <p className="text-red-300">
-                                            <i className="fa fa-heart" aria-hidden="true"></i> 좋아요 {element.like}개
-                                        </p>
-                                    </article>
-                                </Link>
-                            </li>
-                        ))}
+                        {
+                            recommendDataResult && recommendDataResult.length === 0 ? (
+                                <div className="mb-12">
+                                    <div className="text-center text-gray-500">아직 추천 게시물이 없어요.</div>
+                                </div>
+                            ) : (recommendDataResult.map((element, i) => (
+                                <li className="mb-3" key={i}>
+                                    <Link to={`/post/${element.uuid}`} className="flex items-center gap-4" onClick={(e) => {
+                                        dispatch(setDetailPath(`${element.username}/${element.id}`));
+                                    }}>
+                                        <span className="flex justify-center w-1/6 text-5xl text-gray-500">{i + 1}</span>
+                                        <article className="text-sm">
+                                            <p>
+                                                <span className="text-lg mr-1">{element.name}</span>
+                                                <span className="text-sm text-sesac-green">{element.campus_name} 캠퍼스</span>
+                                            </p>
+                                            <p>{element.content && element.content.length > 10 ? `${element.content.slice(0, 10)} ...` : element.content}</p>
+                                            <p className="text-red-300">
+                                                <i className="fa fa-heart" aria-hidden="true"></i> 좋아요 {element.like}개
+                                            </p>
+                                        </article>
+                                    </Link>
+                                </li>
+                            )))}
                     </ul>
                 )}
             </div>
@@ -159,7 +174,7 @@ function Notification({ element, i }) {
                 ) : (
                     <>
                         <div className="img_wrap w-1/5 h-1/5 rounded-full border border-gray-200 overflow-hidden p-1.5">
-                            <img src={SERVER + element.profile_img_path} alt={element.targeted_user_name} />
+                            <img src={SERVER + element.profile_img_path} alt={element.targeting_user_name} />
                         </div>
                         <div className="sender_info">
                             <p>
@@ -170,7 +185,7 @@ function Notification({ element, i }) {
                             </p>
                             <div className="chat_info flex gap-2">
                                 <p className="text-[0.85rem] text-gray-500">
-                                    <span className="text-black font-b">{`${element.targeted_user_name}`}</span>님이 회원님
+                                    <span className="text-black font-b">{`${element.targeting_user_name}`}</span>님이 회원님
                                     <NotifycationContent type={element.type} />
                                 </p>
                             </div>

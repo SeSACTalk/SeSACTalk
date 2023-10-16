@@ -17,12 +17,12 @@ class RegistreFCMTokenView(APIView, SessionDecoderMixin):
     def get(self, request: HttpRequest, username):
         # 읽지 않은 알림
         not_read_notification = Notification.objects.filter(
-            Q(targeted_user__username=username) & Q(read_date__isnull=True)
+            Q(targeted_user__username=username) & Q(read_date__isnull=True) & Q(delete_status = False)
         ).order_by('-occur_date')
 
         # 읽은 알림
         read_notification = Notification.objects.filter(
-            Q(targeted_user__username=username) & Q(read_date__isnull=False)
+            Q(targeted_user__username=username) & Q(read_date__isnull=False) & Q(delete_status = False)
         ).order_by('-occur_date')
 
         response_data = {
