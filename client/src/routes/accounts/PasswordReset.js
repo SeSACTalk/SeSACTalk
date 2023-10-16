@@ -28,7 +28,7 @@ const PasswordReset = function () {
                     email: email
                 })
                 console.log(response.data);
-                navigate(-1);
+                navigate('/account/login');
             } catch (error) {
                 console.error(error.response.data);
             }
