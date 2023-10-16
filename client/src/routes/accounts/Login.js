@@ -104,7 +104,7 @@ const Login = function () {
                                     }} ></input>
                                     <span className='block h-6 text-xs text-red-500' ref={pwAlert}></span>
                                 </div>
-                                <button className='w-full h-10 text-white bg-sesac-green rounded-lg text-sm hover:bg-sesac-dark-green hover:transition-colors' type='submit'>로그인</button>
+                                <button className='w-full h-10 text-white bg-sesac-sub2 rounded-lg text-sm hover:bg-sesac-dark-green hover:transition-colors' type='submit'>로그인</button>
                                 <h3 className='hidden'>아이디/비밀번호 찾기</h3>
                                 <ul className='flex justify-center mt-5 text-sesac-sub2 text-sm'>
                                     <li className='after:content-["|"] after:mx-1'>
