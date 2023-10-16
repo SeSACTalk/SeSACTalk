@@ -36,7 +36,7 @@ const Main = function () {
 
     return (
         <div className='main_container flex relative'>
-            {role === 'USER' ? minNav ? <MinNavbar /> : <Navbar /> : <AdminNavbar />}
+            {role === 'STAFF' ? <AdminNavbar /> : minNav ? <MinNavbar /> : <Navbar />}
             <Outlet />
             {/* Modals */}
             {writeModal && <WritePost />}

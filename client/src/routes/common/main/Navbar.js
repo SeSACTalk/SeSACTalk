@@ -24,7 +24,7 @@ const Navbar = function () {
         axios.get('/')
             .then(
                 response => {
-                    let copy = {...response.data.info}
+                    let copy = { ...response.data.info }
                     setInfo(copy)
                 }
             )
@@ -43,9 +43,17 @@ const Navbar = function () {
                             <img src={`${process.env.PUBLIC_URL}/img/logo.png`} alt='청년취업사관학교' />
                         </Link>
                     </div>
-                    <div className='logo_wrap w-32 rounded-full overflow-hidden border border-solid border-gray-200'>
-                        <Link className="block w-full h-full p-2" to={`/profile/${info['username']}`}>
-                            <img src={SERVER + info['profile_set']} alt={info['username']} />
+                    <div className='logo_wrap w-32 h-32 rounded-full overflow-hidden border border-solid border-gray-200'>
+                        <Link className={`block w-full h-full p-2 ${info['profile_set'] ? '' : 'animate-pulse'}`} to={`/profile/${info['username']}`}>
+                            {
+                                // 로딩중
+                                info['profile_set'] ?
+                                    <img src={SERVER + info['profile_set']} alt={info['username']} /> :
+                                    <div className="w-full h-full flex justify-center items-center">
+                                        <i className="fa fa-spinner fa-pulse fa-3x fa-fw text-5xl text-sesac-sub"></i>
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                            }
                         </Link>
                     </div>
                 </div>

@@ -81,11 +81,13 @@ const Posts = function () {
       <StaffProfile />
       <section className='post mt-8 mx-24 '>
         <h2 className='hidden'>게시글</h2>
-        {status == 'loading' &&
-          <>
+        {
+          status == 'loading' &&
+          <div className="w-full flex justify-center items-center">
             <i className="fa fa-spinner fa-pulse fa-3x fa-fw text-9xl text-sesac-sub"></i>
             <span className="sr-only">Loading...</span>
-          </>}
+          </div>
+        }
         {
           status == 'success' && data &&
           data.pages.map((group, i) => {
