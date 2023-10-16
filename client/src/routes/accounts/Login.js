@@ -74,7 +74,7 @@ const Login = function () {
     }
 
     return (
-        <div className='w-screen h-screen flex justify-center items-center'>
+        <div className='w-full h-screen flex justify-center items-center'>
             <div className='flex justify-center items-center w-3/4 h-3/5'>
                 <div className='h-5/6 overflow-hidden'>
                     <img src={`${process.env.PUBLIC_URL}/img/intro.gif`} alt='새싹이' />
@@ -91,20 +91,20 @@ const Login = function () {
                         <form className='container mx-auto' onSubmit={handleLogin}>
                             <div>
                                 <div>
-                                    <input type='text' name='username' id='username' placeholder='아이디' className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5' maxLength="20" value={username} onChange={(e) => {
+                                    <input className='block w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm' type='text' name='username' id='username' placeholder='아이디' maxLength="20" value={username} onChange={(e) => {
                                         idAlert.current.innerHTML = '';
                                         setUsername(e.target.value);
                                     }} ></input>
                                     <span className='block h-6 text-xs text-red-500' ref={idAlert} ></span>
                                 </div>
                                 <div>
-                                    <input type='password' name='password' id='password' placeholder='비밀번호' className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ' maxLength="20" value={password} onChange={(e) => {
+                                    <input className='block w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm' type='password' name='password' id='password' placeholder='비밀번호' maxLength="20"  value={password} onChange={(e) => {
                                         pwAlert.current.innerHTML = '';
                                         setPassword(e.target.value);
                                     }} ></input>
                                     <span className='block h-6 text-xs text-red-500' ref={pwAlert}></span>
                                 </div>
-                                <button type='submit' className='w-full h-10 text-white bg-sesac-green rounded-lg text-sm hover:bg-sesac-dark-green hover:transition-colors'>로그인</button>
+                                <button className='w-full h-10 text-white bg-sesac-green rounded-lg text-sm hover:bg-sesac-dark-green hover:transition-colors' type='submit'>로그인</button>
                                 <h3 className='hidden'>아이디/비밀번호 찾기</h3>
                                 <ul className='flex justify-center mt-5 text-sesac-sub2 text-sm'>
                                     <li className='after:content-["|"] after:mx-1'>
