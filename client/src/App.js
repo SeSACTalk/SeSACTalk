@@ -21,14 +21,16 @@ import CourseApproval from './routes/admin/CourseApproval';
 import { ProfileLayout, Profile } from './routes/common/profiles/Profile';
 import EditProfile from './routes/common/profiles/EditProfile';
 import WithdrawModal from './routes/common/profiles/WithdrawModal';
+import PasswordReset from './routes/accounts/PasswordReset';
 
 function App() {
   return (
     <div className="App">
       <Routes>
         {/* 계정관련 */}
-        <Route path='/accounts' element={<Accounts />}>
+        <Route path='/account' element={<Accounts />}>
           <Route path='login' element={<Login />} />
+          <Route path='password/reset' element={<PasswordReset />} />
         </Route>
         {/* 일반 사용자 */}
         <Route path='/' element={<Main />}>
@@ -52,7 +54,6 @@ function App() {
             <Route path='auth/user' element={<UserVerify />} />
           </Route>
         </Route>
-        {/* 관리자 */}
         <Route path='*' element={<div>없는 페이지에요</div>}></Route>
       </Routes>
     </div >

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
 const SERVER_ACCOUNTS_FIND_PASSWORD = SERVER + '/accounts/find/user/password/'
 
-const FindPassword = function () {
+const PasswordReset = function () {
     {/* 
         TODO: 프론트 전달 사항
         
@@ -54,4 +54,4 @@ const FindPassword = function () {
     );
 };
 
-export default FindPassword;
+export default PasswordReset;

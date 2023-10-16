@@ -74,49 +74,56 @@ const Login = function () {
     }
 
     return (
-        <div className='w-screen h-screen flex flex-col items-center place-content-center gap-5'>
-            <div className='w-2/5 p-[2rem] border-2'>
-                <div className='flex items-center place-content-center mb-10'>
-                    <div className='w-10'>
-                        <img src={`${process.env.PUBLIC_URL}/img/logo.png`} alt='새싹톡' />
+        <div className='w-screen h-screen flex justify-center items-center'>
+            <div className='flex justify-center items-center w-3/4 h-3/5'>
+                <div className='h-5/6 overflow-hidden'>
+                    <img src={`${process.env.PUBLIC_URL}/img/intro.gif`} alt='새싹이' />
+                </div>
+                <div className='flex flex-col justify-center gap-5 w-2/5 h-full'>
+                    <div className='border p-5'>
+                        <div className='flex items-center place-content-center mb-10'>
+                            <div className='w-10'>
+                                <img src={`${process.env.PUBLIC_URL}/img/logo.png`} alt='새싹톡' />
+                            </div>
+                            <h1 className='font-bold text-lg'>SeSAC Talk</h1>
+                        </div>
+                        <h2 className='hidden'>로그인</h2>
+                        <form className='container mx-auto' onSubmit={handleLogin}>
+                            <div>
+                                <div>
+                                    <input type='text' name='username' id='username' placeholder='아이디' className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5' maxLength="20" value={username} onChange={(e) => {
+                                        idAlert.current.innerHTML = '';
+                                        setUsername(e.target.value);
+                                    }} ></input>
+                                    <span className='block h-6 text-xs text-red-500' ref={idAlert} ></span>
+                                </div>
+                                <div>
+                                    <input type='password' name='password' id='password' placeholder='비밀번호' className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ' maxLength="20" value={password} onChange={(e) => {
+                                        pwAlert.current.innerHTML = '';
+                                        setPassword(e.target.value);
+                                    }} ></input>
+                                    <span className='block h-6 text-xs text-red-500' ref={pwAlert}></span>
+                                </div>
+                                <button type='submit' className='w-full h-10 text-white bg-sesac-green rounded-lg text-sm hover:bg-sesac-dark-green hover:transition-colors'>로그인</button>
+                                <h3 className='hidden'>아이디/비밀번호 찾기</h3>
+                                <ul className='flex justify-center mt-5 text-sesac-sub2 text-sm'>
+                                    <li className='after:content-["|"] after:mx-1'>
+                                        <Link to="/account/find/id">아이디 찾기</Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/account/password/reset">비밀번호 찾기</Link>
+                                    </li>
+                                </ul>
+                            </div>
+                        </form>
                     </div>
-                    <div className='font-bold text-lg'>
-                        <span>SeSAC Talk</span>
+                    <div className='flex justify-evenly border p-5 text-base'>
+                        <span>계정이 없으신가요?</span>
+                        <Link to="/account/signup" className='font-semibold text-sesac-green cursor-pointer'>가입하기</Link>
                     </div>
                 </div>
-
-                <form className='container mx-auto' onSubmit={handleLogin}>
-                    <div>
-                        <div>
-                            <input type='text' name='username' id='username' placeholder='아이디' className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5' maxLength="20" value={username} onChange={(e) => {
-                                idAlert.current.innerHTML = '';
-                                setUsername(e.target.value);
-                            }} ></input>
-                            <span className='block h-6 text-xs text-red-500' ref={idAlert} ></span>
-                        </div>
-                        <div>
-                            <input type='password' name='password' id='password' placeholder='비밀번호' className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ' maxLength="20" value={password} onChange={(e) => {
-                                pwAlert.current.innerHTML = '';
-                                setPassword(e.target.value);
-                            }} ></input>
-                            <span className='block h-6 text-xs text-red-500' ref={pwAlert}></span>
-                        </div>
-                        <button type='submit' className='w-full text-white bg-sesac-green hover:bg-sesac-dark-green focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2'>로그인</button>
-                    </div>
-                </form>
             </div>
-
-            <div className='w-2/5 p-[2rem] border-2'>
-                <div className='grid grid-cols-2 justify-items-center'>
-                    <div>계정이 없으신가요?</div>
-                    <div>
-                        <Link to="/accounts/signup" className='text-sesac-green cursor-pointer'>가입하기</Link>
-                    </div>
-                </div>
-            </div>
-
         </div>
-
     )
 }
 

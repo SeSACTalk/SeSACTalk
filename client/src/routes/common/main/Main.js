@@ -29,7 +29,7 @@ const Main = function () {
             .catch(
                 error => {
                     console.error(error.message)
-                    navigate('/accounts/login');
+                    navigate('/account/login');
                 }
             )
     }, []);
