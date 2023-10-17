@@ -63,4 +63,4 @@ const FindId = function () {
     );
 };
 
-export default FindId
+export default FindId;

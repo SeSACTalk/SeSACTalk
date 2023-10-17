@@ -11,7 +11,7 @@ const Login = function () {
     // states
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-
+    const [loginModal, setLoginModal] = useState(false);
 
     // DOM
     const idAlert = useRef();
@@ -68,8 +68,7 @@ const Login = function () {
 
                 window.location.href = '/';
             } catch (error) {
-                //TODO INVALID CREDENTIALS: 지워지게
-                alert(error.response.data.error)
+                setLoginModal(!loginModal)
             }
         }
     }
@@ -124,8 +123,32 @@ const Login = function () {
                     </div>
                 </div>
             </div>
+            {loginModal && <LoginModal loginModal={loginModal} setLoginModal={setLoginModal} />}
         </div>
     )
 }
 
-export default Login
+const LoginModal = function ({ loginModal, setLoginModal }) {
+    const modalPopup = useRef(null);
+
+    /**
+     * 검은배경 클릭시 모달창 닫기
+     * @param {Event} e 
+     */
+    const closeModal = (e) => {
+        if (modalPopup.current === e.target) {
+            setLoginModal(!loginModal);
+        }
+    }
+    return (
+        <div className="modal post_modal flex justify-center items-center absolute w-full h-screen z-50" ref={modalPopup} onClick={closeModal}>
+            <div className='flex flex-col justify-center items-center w-1/3 h-52 p-5 bg-zinc-50 rounded-xl text-red-500'>
+                <p>아이디 또는 비밀번호를 잘못 입력했습니다.
+                </p>
+                <p>입력하신 내용을 다시 확인해주세요.</p>
+            </div>
+        </div>
+    )
+}
+
+export default Login;
