@@ -61,7 +61,7 @@ const Posts = function () {
     queryFn: fetchPost,
     getNextPageParam: (lastPage, pages) => {
       if (lastPage.data.next) {
-        const next_page = Number(lastPage.data.next.slice(-1))
+        const next_page = Number(lastPage.data.next.slice(-1));
         return lastPage = next_page;
       }
     },

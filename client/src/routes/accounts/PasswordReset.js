@@ -47,7 +47,7 @@ const PasswordReset = function () {
 
     return (
         <div className='w-full h-screen flex flex-col justify-center items-center'>
-            <div className='w-1/3 h-4/5 border border-black'>
+            <div className='w-1/3 border'>
                 <div className='p-5'>
                     <div className='w-32 h-32 border-[3px] border-black rounded-full p-5 mx-auto mt-10'>
                         <img src={`${process.env.PUBLIC_URL}/img/lock.png`} />
@@ -66,7 +66,7 @@ const PasswordReset = function () {
                         <Link to='/account/signup'>새 계정 만들기</Link>
                     </div>
                 </div>
-                <div className='p-5 border-t border-black bg-gray-50 text-center'>
+                <div className='p-5 border-t bg-gray-50 text-center'>
                     <Link to='/account/login'>로그인으로 돌아가기</Link>
                 </div>
             </div>

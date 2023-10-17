@@ -21,6 +21,7 @@ import CourseApproval from './routes/admin/CourseApproval';
 import { ProfileLayout, Profile } from './routes/common/profiles/Profile';
 import EditProfile from './routes/common/profiles/EditProfile';
 import WithdrawModal from './routes/common/profiles/WithdrawModal';
+import FindId from './routes/accounts/FindId';
 import PasswordReset from './routes/accounts/PasswordReset';
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
         {/* 계정관련 */}
         <Route path='/account' element={<Accounts />}>
           <Route path='login' element={<Login />} />
+          <Route path='find/id' element={<FindId />} />
           <Route path='password/reset' element={<PasswordReset />} />
         </Route>
         {/* 일반 사용자 */}

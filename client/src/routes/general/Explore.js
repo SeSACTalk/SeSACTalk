@@ -101,7 +101,7 @@ const Explore = function () {
                         exploreResult.map((element, i) => {
                             if (element.campus_name) {
                                 return ( // 사용자 검색
-                                    <ul key={i}>
+                                    <ul className="overflow-x-hidden" key={i}>
                                         <li className="mb-1">
                                             <Link
                                                 to={`/profile/${element.username}`}
@@ -122,7 +122,7 @@ const Explore = function () {
                                 )
                             } else {
                                 return ( // 태그검색
-                                    <ul key={i}>
+                                    <ul className="overflow-x-hidden" key={i}>
                                         <li className="mb-1">
                                             <Link
                                                 to={`/explore/${element.name}`}

@@ -76,7 +76,6 @@ class Post(APIView, OwnerPermissionMixin):
             Q(user = access_user.id) | Q(user__in = user_s_follows.values('user_follow'))
         ).prefetch_related('tags').select_related('user').order_by('-date').all()
         
-
         paginator = CustomPagination()
         result_page = paginator.paginate_queryset(posts, request)
 

@@ -28,7 +28,7 @@ const Main = function () {
             )
             .catch(
                 error => {
-                    console.error(error.message)
+                    console.error(error.message);
                     navigate('/account/login');
                 }
             )
@@ -36,7 +36,9 @@ const Main = function () {
 
     return (
         <div className='main_container flex relative'>
-            {role === 'STAFF' ? <AdminNavbar /> : minNav ? <MinNavbar /> : <Navbar />}
+            {
+                role === 'STAFF' ? <AdminNavbar /> : minNav ? <MinNavbar /> : <Navbar />
+            }
             <Outlet />
             {/* Modals */}
             {writeModal && <WritePost />}

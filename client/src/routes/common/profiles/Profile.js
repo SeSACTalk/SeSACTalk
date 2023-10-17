@@ -11,7 +11,6 @@ import { useDispatch, useSelector } from "react-redux";
 
 // Components
 import { changeVerifyPasswordForWithdrawModal, changeOwnFollowModal, changeOwnFollowerModal, changeOtherFollowModal, changeOtherFollowerModal, changeProfileSettingModal, changeVerifyPasswordForEditProfileModal } from "../../../store/modalSlice";
-import Navbar from '../main/Navbar';
 import { ProfilePosts, ProfileLikes, ProfileReplys } from "./ProfileNav";
 import VerifyPasswordModal from "./VerifyPasswordModal";
 import { OwnFollowerModal, OwnFollowModal, OtherFollowModal, OtherFollowerModal } from "./UserRelationshipModal";
@@ -92,7 +91,6 @@ function Profile() {
                     setFollowStatus(data.followStatus); // 팔로우 상태 설정
                     setFollowerCount(data.follower_count);
                     setFollowCount(data.follow_count);
-                    console.log(data);
                 }
             )
             .catch(
@@ -172,11 +170,11 @@ function Profile() {
 
         return (
             <>
-                <button class="inline-block px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm" onClick={() => {
+                <button className="inline-block px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm" onClick={() => {
                     dispatch(changeVerifyPasswordForEditProfileModal(verifyPasswordForEditProfileModal))
                 }}>프로필 수정
                 </button>
-                <button class="inline-block px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm" onClick={() => {
+                <button className="inline-block px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm" onClick={() => {
                     dispatch(changeProfileSettingModal(profileSettingModal))
                 }}>설정</button>
             </>
@@ -374,7 +372,7 @@ function ProfileSettingModal({ username }) {
             response =>  {
                 deleteCookie('session_key');
                 deleteCookie('username');
-                navigate('/accounts/login');
+                window.location.href = '/account/login'
             }
         )
         .catch(

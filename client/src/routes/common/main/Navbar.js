@@ -51,7 +51,7 @@ const Navbar = function () {
                                     <img src={SERVER + info['profile_set']} alt={info['username']} /> :
                                     <div className="w-full h-full flex justify-center items-center">
                                         <i className="fa fa-spinner fa-pulse fa-3x fa-fw text-5xl text-sesac-sub"></i>
-                                        <span class="sr-only">Loading...</span>
+                                        <span className="sr-only">Loading...</span>
                                     </div>
                             }
                         </Link>

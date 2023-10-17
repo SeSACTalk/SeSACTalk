@@ -68,6 +68,7 @@ const Login = function () {
 
                 window.location.href = '/';
             } catch (error) {
+                //TODO INVALID CREDENTIALS: 지워지게
                 alert(error.response.data.error)
             }
         }
@@ -95,14 +96,14 @@ const Login = function () {
                                         idAlert.current.innerHTML = '';
                                         setUsername(e.target.value);
                                     }} ></input>
-                                    <span className='block h-6 text-xs text-red-500' ref={idAlert} ></span>
+                                    <span className='block h-6 pl-2 text-xs text-red-500' ref={idAlert}></span>
                                 </div>
                                 <div>
-                                    <input className='block w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm' type='password' name='password' id='password' placeholder='비밀번호' maxLength="20"  value={password} onChange={(e) => {
+                                    <input className='block w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm' type='password' name='password' id='password' placeholder='비밀번호' maxLength="20" value={password} onChange={(e) => {
                                         pwAlert.current.innerHTML = '';
                                         setPassword(e.target.value);
                                     }} ></input>
-                                    <span className='block h-6 text-xs text-red-500' ref={pwAlert}></span>
+                                    <span className='block h-6 pl-2 text-xs text-red-500' ref={pwAlert}></span>
                                 </div>
                                 <button className='w-full h-10 text-white bg-sesac-sub2 rounded-lg text-sm hover:bg-sesac-dark-green hover:transition-colors' type='submit'>로그인</button>
                                 <h3 className='hidden'>아이디/비밀번호 찾기</h3>
