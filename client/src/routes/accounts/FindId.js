@@ -1,11 +1,13 @@
 import { React, useState, useRef, useEffect } from 'react'
 import axios from 'axios'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 const FindId = function () {
     // States
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
+    const [findIdModal, setFindIdModal] = useState(false);
     const [isWriting, setIsWriting] = useState(false);
 
     // DOM
@@ -16,10 +18,13 @@ const FindId = function () {
         e.preventDefault();
         try {
             const response = await axios.post('/accounts/find/user/id/', { name, email })
-            
+            setUsername(response.data.result[0].username);
         }
         catch (error) {
-            console.error(error)
+
+        }
+        finally {
+            setFindIdModal(!findIdModal);
         }
     }
 
@@ -32,7 +37,6 @@ const FindId = function () {
             submitButton.current.removeAttribute('disabled')
         }
     }, [name, email])
-
 
     return (
         <div className='w-full h-screen flex flex-col justify-center items-center'>
@@ -59,8 +63,44 @@ const FindId = function () {
                     <Link to='/account/login'>로그인으로 돌아가기</Link>
                 </div>
             </div>
+            {findIdModal && <FindIdModal findIdModal={findIdModal} setFindIdModal={setFindIdModal} username={username} />}
         </div>
     );
 };
+
+const FindIdModal = function ({ findIdModal, setFindIdModal, username }) {
+    const modalPopup = useRef(null);
+
+    /**
+     * 검은배경 클릭시 모달창 닫기
+     * @param {Event} e 
+     */
+    const closeModal = (e) => {
+        if (modalPopup.current === e.target) {
+            setFindIdModal(!findIdModal);
+        }
+    }
+    if (username) {
+        return (
+            <div className="modal post_modal flex justify-center items-center absolute w-full h-screen z-50" ref={modalPopup}>
+                <div className='flex flex-col justify-center items-center w-1/3 h-52 p-5 bg-zinc-50 rounded-xl text-red-500'>
+                    <p>고객님의 정보와 일치하는 아이디입니다.
+                    </p>
+                    <p className='font-bold'>{username}</p>
+                    <Link className='bg-sesac-green rounded-full p-2 mt-5 text-white' to="/account/login">로그인하러 가기</Link>
+                </div>
+            </div>
+        )
+    } else {
+        return (
+            <div className="modal post_modal flex justify-center items-center absolute w-full h-screen z-50" ref={modalPopup} onClick={closeModal}>
+                <div className='flex flex-col justify-center items-center w-1/3 h-52 p-5 bg-zinc-50 rounded-xl text-red-500'>
+                    <p>입력해주신 정보와 일치하는 계정이 없습니다.
+                    </p>
+                </div>
+            </div>
+        )
+    }
+}
 
 export default FindId;

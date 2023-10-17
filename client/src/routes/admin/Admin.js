@@ -6,7 +6,6 @@ function Admin() {
     let navigate = useNavigate();
 
     // States
-    let writeModal = useSelector((state) => state.writeModal);
     let role = useSelector((state) => state.role)
 
     useEffect(() => {

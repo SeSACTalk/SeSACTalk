@@ -17,7 +17,6 @@ const Login = function () {
     const idAlert = useRef();
     const pwAlert = useRef();
 
-    //! 특수문자 유효성만 남기고 레이아웃 수정하기
     /**
      * 아이디 유효성 검사 함수(영문/숫자, 특수문자 불가, 8~20글자)
      * @param {String} text 
@@ -140,6 +139,7 @@ const LoginModal = function ({ loginModal, setLoginModal }) {
             setLoginModal(!loginModal);
         }
     }
+    
     return (
         <div className="modal post_modal flex justify-center items-center absolute w-full h-screen z-50" ref={modalPopup} onClick={closeModal}>
             <div className='flex flex-col justify-center items-center w-1/3 h-52 p-5 bg-zinc-50 rounded-xl text-red-500'>

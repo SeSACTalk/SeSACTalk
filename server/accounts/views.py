@@ -119,13 +119,13 @@ class FindIdView(APIView): # 아이디 찾기
             return Response({'error': ResponseMessages.ID_NOT_FIND}, status = status.HTTP_404_NOT_FOUND)
 
         username = User.objects.filter(name = request.data['name'], email = request.data['email']).values('username')
-        return Response({'username': username} , status = status.HTTP_200_OK)
+        return Response({'result': username} , status = status.HTTP_200_OK)
 
 class FindPasswordView(APIView): # 비밀번호 찾기
     def post(self, request: HttpRequest)-> Response:
         username = request.data['username']
         email = request.data['email']
-        user = User.objects.filter(username=username, email=email).first()
+        user = User.objects.filter(username = username, email = email).first()
 
         if not user:
             return Response({'error': ResponseMessages.USER_NOT_FIND}, status = status.HTTP_404_NOT_FOUND)
