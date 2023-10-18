@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const NotFound = function () {
     return (
@@ -11,7 +11,9 @@ const NotFound = function () {
                 <div className="flex flex-col w-1/2">
                     <div className="flex justify-center items-center gap-3 border-b p-3">
                         <div className="w-20">
-                            <img src={`${process.env.PUBLIC_URL}/img/logo.png`} alt='청년취업사관학교' />
+                            <Link to={-1}>
+                                <img src={`${process.env.PUBLIC_URL}/img/logo.png`} alt='청년취업사관학교' />
+                            </Link>
                         </div>
                         <h1 className="font-semibold text-xl">SeSAC Talk</h1>
                     </div>
