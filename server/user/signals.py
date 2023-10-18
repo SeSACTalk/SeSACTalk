@@ -163,8 +163,6 @@ def send_fcm_on_new_report(sender, instance, **kwargs):
 
     send_fcm_notification(reported_token, message_title, message_body, data_message)
 
-
-# TODO: 관리자 report 알림 구현 후, 오류 없는 지 확인해봐야할 시그널
 @receiver(post_save, sender = Report)
 def create_notification_on_new_report(sender, instance, created, **kwargs):
     # report가 report_status가 10으로 update될 때 처리(notification에 insert)
@@ -173,6 +171,6 @@ def create_notification_on_new_report(sender, instance, created, **kwargs):
             instance.reported,
             instance.reporter,
             instance.id,
-            'report',
+            f'report_{instance.category}',
             None
         )

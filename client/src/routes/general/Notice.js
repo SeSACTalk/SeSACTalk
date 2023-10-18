@@ -21,7 +21,7 @@ const Notice = function () {
     let noticeNav = useSelector((state) => state.noticeNav);
 
     let dispatch = useDispatch();
-    
+
     useEffect(() => {
         if (isNotice) {
           getNotification();
@@ -151,7 +151,7 @@ function Notification({ element, i }) {
                     dispatch(setDetailPath(`${element.targeted_user_username}/${element.post_id}`));
                 }
             }}>
-                {element.type == 'report' ? (
+                {element.type.split('_')[0] == 'report' ? (
                     <Report notification={element} />
                 ) : (
                     <>
@@ -179,6 +179,15 @@ function Notification({ element, i }) {
     )
 }
 function Report({ notification }) {
+    let getKoCategory = (category) => {
+        switch (category.split('_')[1]) {
+            case 'reply':
+                return '댓글';
+            case 'post':
+                return '게시물';
+        }
+    }
+    
     return (
         <>
             <div className="w-1/5 h-1/5 flex justify-center items-center rounded-full border border-gray-200 overflow-hidden p-1.5">
@@ -196,7 +205,7 @@ function Report({ notification }) {
                 </p>
                 <div className="chat_info flex gap-2">
                     <p className="text-[0.85rem] text-gray-500">
-                        회원님 게시물이 <span className="text-red-600">신고</span> 처리되어 삭제됐습니다.
+                        회원님 {`${getKoCategory(notification.type)}`}이 <span className="text-red-600">신고</span> 처리되어 삭제됐습니다.
                     </p>
                 </div>
             </div>

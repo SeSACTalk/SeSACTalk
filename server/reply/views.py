@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.http import HttpRequest
 
 from rest_framework import status
@@ -18,7 +19,9 @@ class ReplyView(APIView, SessionDecoderMixin):
         user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
 
         response_data=[]
-        reply_querysets = Reply.objects.filter(post = p_sq).order_by('-date')
+        reply_querysets = Reply.objects.filter(
+            Q(post = p_sq) & Q(report_status=False)
+        ).order_by('-date')
         for reply in reply_querysets:
             data = {}
             data['reply']=ReplySerializer(reply).data

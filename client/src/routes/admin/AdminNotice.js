@@ -260,10 +260,10 @@ function Report() {
 }
 
 function ReportOption({ report }) {
-    // useEffect(()=>{
-    //     console.log(typeof(report.report_status))
-    // }, []
-    // )
+    useEffect(()=>{
+        console.log(report)
+    }, []
+    )
     // 신고 처리 함수
     const processReport = async (e, content_type, reported_id, reporter_id) => {
         e.preventDefault();
@@ -309,7 +309,7 @@ function ReportOption({ report }) {
                         data-id={report.id}
                         onChange={
                             (e) => {
-                                processReport(e, report.content_type, report.reported_id, report.reporter_id)
+                                processReport(e, report.content_type, report.reported, report.reporter)
                             }
                         }>
                         <option value="">선택(보류)</option>
