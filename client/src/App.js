@@ -22,14 +22,18 @@ import CourseApproval from './routes/admin/CourseApproval';
 import { ProfileLayout, Profile } from './routes/common/profiles/Profile';
 import EditProfile from './routes/common/profiles/EditProfile';
 import WithdrawModal from './routes/common/profiles/WithdrawModal';
+import FindId from './routes/accounts/FindId';
+import PasswordReset from './routes/accounts/PasswordReset';
 
 function App() {
   return (
     <div className="App">
       <Routes>
         {/* 계정관련 */}
-        <Route path='/accounts' element={<Accounts />}>
+        <Route path='/account' element={<Accounts />}>
           <Route path='login' element={<Login />} />
+          <Route path='find/id' element={<FindId />} />
+          <Route path='password/reset' element={<PasswordReset />} />
         </Route>
         {/* 일반 사용자 */}
         <Route path='/' element={<Main />}>
@@ -39,23 +43,21 @@ function App() {
           <Route path='chat' element={<Chat />}>
             <Route path=':chatRoom' element={<ChatDetail />} />
           </Route>
+          <Route path='explore/:tagName' element={<ExploreResult />} />
           {/* 프로필 */}
           <Route path="profile/:username" element={<ProfileLayout />} >
-            <Route path="" element={<Profile/>}>
-              <Route path="withdraw" element={<WithdrawModal/>} />
+            <Route path="" element={<Profile />}>
+              <Route path="withdraw" element={<WithdrawModal />} />
             </Route>
-            <Route path="edit" element={<EditProfile/>} />
+            <Route path="edit" element={<EditProfile />} />
           </Route>
-        </Route>
-        {/* 관리자 */}
-        <Route path='/admin' element={<Admin />}>
-          <Route index element={<UserList />} />
-          <Route path='user/course' element={<CourseApproval />} />
-          <Route path='auth/user' element={<UserVerify />} />
-          <Route path='chat' element={<Chat />} >
-            <Route path=':chatRoom' element={<ChatDetail />} />
+          {/* 관리자 */}
+          <Route path='/admin' element={<Admin />}>
+            <Route index element={<UserList />} />
+            <Route path='user/course' element={<CourseApproval />} />
+            <Route path='auth/user' element={<UserVerify />} />
+            <Route path='user/notify' element={<AdminNotice/>} />
           </Route>
-          <Route path='user/notify' element={<AdminNotice/>} />
         </Route>
         <Route path='*' element={<div>없는 페이지에요</div>}></Route>
       </Routes>

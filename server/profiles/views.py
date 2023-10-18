@@ -173,7 +173,6 @@ class ProfileLike(APIView, SessionDecoderMixin):
         # Reply 쿼리
         likes = Like.objects.filter(user=user_pk) \
             .select_related('user', 'post')\
-            .annotate(post_user_username=F('post__user__username'), post_user_name=F('post__user__name')) \
             .order_by('-date')
 
         likesSetSerializer = LikesSetSerializer(likes, many=True, context={'login_user_id' : user_pk})
@@ -190,7 +189,6 @@ class ProfileReply(APIView, SessionDecoderMixin):
                 Q(user=user_pk) & Q(report_status=False)
             )\
             .select_related('user', 'post')\
-            .annotate(post_user_username=F('post__user__username'), post_user_name=F('post__user__name')) \
             .order_by('-date')
 
         replysSetSerializer = ReplysSetSerializer(replys, many=True, context={'login_user_id' : user_pk})

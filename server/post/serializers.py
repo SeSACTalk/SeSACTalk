@@ -36,6 +36,38 @@ class ImgPathContentTypeValidator:
         if not value.name.lower().endswith(tuple(self.allowed_extensions)):
             raise serializers.ValidationError('Invalid image format. Allowed formats: %s' % ', '.join(self.allowed_extensions))
 
+# post serializer들이 공통적으로 쓰는 field 정의 method
+def get_campus_name(user_obj):
+    try:
+        campus_name = user_obj.second_course.campus.name
+    except Exception:
+        campus_name = user_obj.first_course.campus.name
+    return campus_name
+def get_date(date):
+    today = datetime.now(date.tzinfo)
+    difference = today - date
+
+    if 7 <= difference.days < 28:
+        return f"{difference.days // 7}주"
+    elif 1 <= difference.days < 7:
+        return f"{difference.days}일"
+    elif 0 <= difference.total_seconds() < 86400:
+        hours, remainder = divmod(difference.seconds, 3600)
+        minutes = remainder // 60
+        if hours >= 1:
+            return f"{hours}시간"
+        else:
+            return f"{minutes}분"
+    else:
+        return date.strftime('%Y년 %m월 %d일')
+
+def get_img_path(profileObj):
+    if profileObj.img_path:
+        profile_img_path = profileObj.img_path
+    else:
+        profile_img_path = '/media/profile/default_profile.png'
+
+    return profile_img_path
 
 class PostSerializer(serializers.ModelSerializer):
     # post field
@@ -56,6 +88,7 @@ class PostSerializer(serializers.ModelSerializer):
     date = serializers.SerializerMethodField(read_only=True)
 
     # user field
+    is_staff = serializers.BooleanField(source='user.is_staff', read_only=True)
     user_id = serializers.IntegerField(source='user.id', read_only=True)
     username = serializers.CharField(source='user.username', read_only=True)
     name = serializers.CharField(source='user.name', read_only=True)
@@ -73,40 +106,13 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = '__all__'
     def get_campusname(self, post):
-        user = post.user
-        try:
-            campus_name = user.second_course.campus.name
-        except Exception:
-            campus_name = user.first_course.campus.name
-        return campus_name
+        return get_campus_name(post.user)
 
     def get_date(self, post):
-        date = post.date
-        today = datetime.now(date.tzinfo)
-        difference = today - date
-
-        if 7 <= difference.days < 28:
-            return f"{difference.days // 7}주"
-        elif 1 <= difference.days < 7:
-            return f"{difference.days}일"
-        elif 0 <= difference.total_seconds() < 86400:
-            hours, remainder = divmod(difference.seconds, 3600)
-            minutes = remainder // 60
-            if hours >= 1:
-                return f"{hours}시간"
-            else:
-                return f"{minutes}분"
-        else:
-            return date.strftime('%Y년 %m월 %d일')
+        return get_date(post.date)
 
     def get_profile_img_path(self, post):
-        profile = Profile.objects.get(user = post.user.id)
-        if profile.img_path:
-            profile_img_path = profile.img_path
-        else:
-            profile_img_path = '/media/profile/default_profile.png'
-
-        return profile_img_path
+        return get_img_path(Profile.objects.get(user = post.user.id))
 
     def get_like_status(self, post):
         login_user_id = self.context.get('login_user_id')
@@ -255,13 +261,7 @@ class ManagerProfileSerializer(serializers.ModelSerializer):
         )
 
     def get_profile_img_path(self, user):
-        profile = Profile.objects.get(user=user.id)
-        if profile.img_path:
-            profile_img_path = profile.img_path
-        else:
-            profile_img_path = '/media/profile/default_profile.png'
-
-        return profile_img_path
+        return get_img_path(Profile.objects.get(user=user.id))
     
 class RecommendPostSerilaier(serializers.ModelSerializer):
     username = serializers.CharField(source = 'user.username')
@@ -285,89 +285,58 @@ class ReplysSetSerializer(ReplySerializer):
     format_date = serializers.SerializerMethodField(read_only=True)
     post_id = serializers.IntegerField(source='post.id', read_only=True)
     post_uuid = serializers.UUIDField(source='post.uuid', read_only=True)
-    post_user_username = serializers.CharField(read_only=True)
-    post_user_name = serializers.CharField(read_only=True)
+    post_user_username = serializers.CharField(source='post.user.username', read_only=True)
+    post_user_name = serializers.CharField(source='post.user.name', read_only=True)
     post_user_profile_img_path = serializers.SerializerMethodField(read_only=True)
     is_current_user = serializers.SerializerMethodField(read_only=True)
+    post_user_campusname = serializers.SerializerMethodField(read_only=True)
+    post_user_is_staff = serializers.BooleanField(source='post.user.is_staff',read_only=True)
+
     class Meta:
         model = Reply
         fields = '__all__'
     def get_format_date(self, reply):
-        date = reply.date
-        today = datetime.now(date.tzinfo)
-        difference = today - date
-
-        if 7 <= difference.days < 28:
-            return f"{difference.days // 7}주"
-        elif 1 <= difference.days < 7:
-            return f"{difference.days}일"
-        elif 0 <= difference.total_seconds() < 86400:
-            hours, remainder = divmod(difference.seconds, 3600)
-            minutes = remainder // 60
-            if hours >= 1:
-                return f"{hours}시간"
-            else:
-                return f"{minutes}분"
-        else:
-            return date.strftime('%Y년 %m월 %d일')
+        return get_date(reply.date)
 
     def get_post_user_profile_img_path(self, reply):
-        profile = Profile.objects.get(user = reply.post.user.id)
-        if profile.img_path:
-            profile_img_path = profile.img_path
-        else:
-            profile_img_path = '/media/profile/default_profile.png'
-
-        return profile_img_path
+        return get_img_path(Profile.objects.get(user = reply.post.user.id))
 
     def get_is_current_user(self, reply):
         login_user_id = self.context.get('login_user_id')
         if login_user_id:
             return (reply.post.user.id == login_user_id)
         return None
+    def get_post_user_campusname(self, like):
+        return get_campus_name(like.post.user)
 
 class LikesSetSerializer(LikeSerializer):
     format_date = serializers.SerializerMethodField()
+
     post_id = serializers.IntegerField(source='post.id', read_only=True)
     post_uuid = serializers.UUIDField(source='post.uuid', read_only=True)
     post_content = serializers.CharField(source='post.content', read_only=True)
-    post_user_username = serializers.CharField(read_only=True)
-    post_user_name = serializers.CharField(read_only=True)
+    post_user_username = serializers.CharField(source='post.user.username', read_only=True)
+    post_user_name = serializers.CharField(source='post.user.name', read_only=True)
     post_user_profile_img_path = serializers.SerializerMethodField(read_only=True)
+    post_user_campusname = serializers.SerializerMethodField(read_only=True)
+    post_user_is_staff = serializers.BooleanField(source='post.user.is_staff',read_only=True)
+
     is_current_user = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Like
         fields = '__all__'
     def get_format_date(self, like):
-        date = like.date
-        today = datetime.now(date.tzinfo)
-        difference = today - date
-
-        if 7 <= difference.days < 28:
-            return f"{difference.days // 7}주"
-        elif 1 <= difference.days < 7:
-            return f"{difference.days}일"
-        elif 0 <= difference.total_seconds() < 86400:
-            hours, remainder = divmod(difference.seconds, 3600)
-            minutes = remainder // 60
-            if hours >= 1:
-                return f"{hours}시간"
-            else:
-                return f"{minutes}분"
-        else:
-            return date.strftime('%Y년 %m월 %d일')
+        return get_date(like.date)
 
     def get_post_user_profile_img_path(self, like):
-        profile = Profile.objects.get(user = like.post.user.id)
-        if profile.img_path:
-            profile_img_path = profile.img_path
-        else:
-            profile_img_path = '/media/profile/default_profile.png'
-
-        return profile_img_path
+        return get_img_path(Profile.objects.get(user = like.post.user.id))
 
     def get_is_current_user(self, like):
         login_user_id = self.context.get('login_user_id')
         if login_user_id:
             return (like.post.user.id == login_user_id)
         return None
+
+    def get_post_user_campusname(self, like):
+        return get_campus_name(like.post.user)

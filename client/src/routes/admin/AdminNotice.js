@@ -2,27 +2,21 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { getCookie } from "../../modules/handle_cookie";
 import { useDispatch } from "react-redux";
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { setDetailPath } from "../../store/postSlice";
 
 const AdminNotice = function () {
+    let navigate = useNavigate();
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
-  
-    const page = searchParams.get('page');
+    let page = searchParams.get('page');
 
     const [isNotice, setIsNotice] = useState(true);
 
     useEffect(()=>{
-        console.log(page)
-        console.log(!(page == 'report'))
-        if (!(page == 'report')) {
-            setIsNotice(true);
-        } else {
-            setIsNotice(false);
-        }
-    } ,[])
+        setIsNotice(!(page == 'report'));
+    } ,[page])
 
     return (
         <div className="admin_notification w-4/5 p-10">
@@ -32,15 +26,7 @@ const AdminNotice = function () {
                         className="border border-black h-6"
                         defaultValue=''
                         onChange={(e) => {
-                            let val = e.target.value;
-                            switch (val) {
-                                case 'notify':
-                                    window.location.href = '/admin/user/notify?page=notify'
-                                    break;
-                                case 'report':
-                                    window.location.href = '/admin/user/notify?page=report'
-                                    break;
-                            }
+                            navigate(`?page=${e.target.value}`)
                         }}>
                         <option value='notify' selected = {(isNotice)}>알림</option>
                         <option value='report' selected = {!(isNotice)}>신고 알림</option>
@@ -84,15 +70,17 @@ function Notification() {
     }
 
     let requestReadNotification = () => {
-        axios.put(`/user/${username}/notify/`)
-            .then(
-                response => {
-                    console.log('읽음 처리')
-                }
-            )
-            .catch(
-                error => console.error(error)
-            )
+        if (readNotificationDataResult.length != 0){
+            axios.put(`/user/${username}/notify/`)
+                .then(
+                    response => {
+                        console.log('읽음 처리')
+                    }
+                )
+                .catch(
+                    error => console.error(error)
+                )
+        }
     }
     return (
         <table className="admin_notification_notification w-full mt-5 text-sm text-center text-gray-500">
@@ -186,8 +174,10 @@ function NotificationTd({ element, readStatus }) {
 
 function Report() {
     let dispatch = useDispatch();
+    
     // states
     const [reportDataResult, setReportDataResult] = useState([]);
+    const [reportUpdateStatus, setReportUpdateStatus] = useState(false);
 
     // 알림 불러오기
     useEffect(() => {
@@ -195,7 +185,7 @@ function Report() {
         return () => {
             setReportDataResult([]);
         }
-    }, [])
+    }, [reportUpdateStatus])
 
     let getReport = () => {
         axios.get('/admin/notify/report/')
@@ -263,7 +253,7 @@ function Report() {
                                 </td>
                                 <td className="px-4 py-4">
                                     {/* 신고 처리  */}
-                                    <ReportOption report={element} key={i} />
+                                    <ReportOption report={element} setReportUpdateStatus = {setReportUpdateStatus} key={i} />
                                 </td>
                             </tr>
                         )
@@ -274,7 +264,9 @@ function Report() {
     )
 }
 
-function ReportOption({ report }) {
+function ReportOption({ report, setReportUpdateStatus }) {
+    let navigate = useNavigate();
+
     useEffect(()=>{
         console.log(report)
     }, []
@@ -290,7 +282,7 @@ function ReportOption({ report }) {
                     id: e.target.dataset.id,
                     report_status: report_status,
                 });
-                window.location.href = ''
+                setReportUpdateStatus((prevReportUpdateStatus) => !prevReportUpdateStatus); 
             }
             catch (error) {
                 console.error(error)

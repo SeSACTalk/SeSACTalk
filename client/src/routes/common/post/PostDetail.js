@@ -159,13 +159,16 @@ const PostDetail = function () {
                             <div className='flex gap-5'>
                                 <div className='img_wrap w-14 h-14 p-2 rounded-full overflow-hidden border border-solid border-gray-200'>
                                     <Link to={`/profile/${post.username}`}>
-                                        <img src={SERVER + post.profile_img_path} alt='작성자명' />
+                                        <img src={`${post.is_staff ? (process.env.PUBLIC_URL + "/img/logo.png") : (SERVER + post.profile_img_path)}`} alt={post.username} />
                                     </Link>
                                 </div>
                                 <div className="flex flex-col justify-center">
-                                    <span className="text-base font-semibold">{post.name}</span>
+                                    <span className={`text-base font-semibold ${post.is_staff ? "text-sesac-green" : null}`}>{post.is_staff ? post.campusname + " 캠퍼스" : post.name}</span>
                                     <p className='flex gap-2 text_wrap justify-between items-center'>
-                                        <span className='flex text-sm font-semibold gap-3 text-sesac-green'>{post.campusname} 캠퍼스</span>
+                                        {
+                                            post.is_staff ? (null
+                                            ) :
+                                                <span className='flex text-sm font-semibold gap-3 text-sesac-green'>{post.campusname} 캠퍼스</span>}
                                         <span className="text-slate-400 text-xs font-medium">{post.date}
                                             {
                                                 post.date != undefined ?
@@ -179,12 +182,12 @@ const PostDetail = function () {
                                 <ul className='post_option flex flex-row justify-end gap-4 text-xl h-10'>
                                     <li className='flex flex-row items-center'>
                                         <span className='hidden'>좋아요</span>
-                                        <i 
-                                            class={`fa fa-heart${likeStatus ? '' : emptyHeart} mr-[0.3rem] text-rose-500 cursor-pointer`} 
+                                        <i
+                                            class={`fa fa-heart${likeStatus ? '' : emptyHeart} mr-[0.3rem] text-rose-500 cursor-pointer`}
                                             aria-hidden="true"
                                             onClick={(e) => {
                                                 likeStatus ? unlikePost(e, post.id) : likePost(e, post.id);
-                                              }}                                              
+                                            }}
                                         ></i>
                                         <span className='text-sm'>{
                                             likeCount
@@ -211,12 +214,12 @@ const PostDetail = function () {
                                                 <div className='flex gap-4'>
                                                     <div className='img_wrap w-9 h-9 p-1 rounded-full overflow-hidden border-[1.5px] border-solid border-white'>
                                                         <Link to={`/profile/${element.reply.username}`}>
-                                                            <img src={SERVER + element.reply.img_path} alt={element.reply.username} />
+                                                            <img src={`${element.reply.is_staff ? (process.env.PUBLIC_URL + "/img/logo.png") : (SERVER + element.reply.img_path)}`} alt={element.username} />
                                                         </Link>
                                                     </div>
                                                     <div className="flex flex-col justify-center">
                                                         <p className='flex gap-3 items-center'>
-                                                            <span className="text-xs">{element.reply.name}</span>
+                                                            <span className="text-xs">{element.reply.is_staff ? element.reply.campusname + " 캠퍼스" : element.reply.name}</span>
                                                             <span className="text-slate-400 text-[0.6rem] font-light">
                                                                 {element.reply.date}
                                                                 {

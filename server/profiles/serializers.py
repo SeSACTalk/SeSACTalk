@@ -86,19 +86,18 @@ class ProfileSerializer(serializers.ModelSerializer):
         return InMemoryUploadedFile(img_io, None, input_image.name, input_image.content_type, img_size, None)
 
 class ProfileSetSerializer(serializers.ModelSerializer):
-    img_path = serializers.SerializerMethodField()
-    user_id = serializers.IntegerField(source='user.id')
-    user_name = serializers.CharField(source='user.name')
-    user_campusname = serializers.SerializerMethodField()
-    post_count = serializers.IntegerField()
-    follower_count = serializers.IntegerField()
-    follow_count = serializers.IntegerField()
+    img_path = serializers.SerializerMethodField(read_only=True)
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
+    user_name = serializers.CharField(source='user.name', read_only=True)
+    user_is_staff = serializers.BooleanField(source='user.is_staff', read_only=True)
+    user_campusname = serializers.SerializerMethodField(read_only=True)
+    post_count = serializers.IntegerField(read_only=True)
+    follower_count = serializers.IntegerField(read_only=True)
+    follow_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Profile
-        fields = ['img_path', 'content', 'link', 'date', 'course_status',
-                  'user_name', 'user_campusname','user_id',
-                  'post_count', 'follower_count', 'follow_count']
+        fields = '__all__'
 
     def get_img_path(self, profile):
         if profile.img_path:
@@ -129,6 +128,7 @@ class CourseSerializer(serializers.ModelSerializer):
 class EditProfileSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source='user.id')
     username = serializers.CharField(source='user.username')
+    is_staff = serializers.BooleanField(source='user.is_staff')
     name = serializers.CharField(source='user.name')
     birthdate = serializers.DateField(source='user.birthdate')
     phone_number = serializers.CharField(source='user.phone_number')
@@ -172,9 +172,4 @@ class EditProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile  # 시리얼라이저가 사용할 모델을 지정합니다.
-        fields = [
-            'id', 'username', 'name', 'birthdate', 'phone_number', 'email',
-            'profile_img_path', 'profile_content', 'profile_link', 'profile_course_status',
-            'first_course__name', 'first_course__campus__name',
-            'second_course__name', 'second_course__campus__name',
-        ]
+        fields = '__all__'

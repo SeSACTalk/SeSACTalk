@@ -13,7 +13,6 @@ const Notice = function () {
     let username = getCookie('username')
 
     // 상태
-    // const [dataResult, setDataResult] = useState([]);
     const [readNotificationDataResult, setReadNotificationDataResult] = useState([]);
     const [notReadNotificationDataResult, setNotReadNotificationDataResult] = useState([]);
     const [recommendDataResult, setRecommendDataResult] = useState([]);

@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+
+import { setDetailPath } from "../../store/postSlice";
 
 const ExploreResult = function () {
   let { tagName } = useParams();
+  let dispatch = useDispatch();
 
   // 상태
   const [result, setResult] = useState([]);
@@ -62,9 +66,13 @@ const ExploreResult = function () {
                   <li className="relative border border-black h-80 bg-no-repeat bg-right-bottom bg-green-50 before:block before:w-full before:h-full before:bg-white before:opacity-30" style={{ backgroundImage: `url(${rand(1, 7)})` }} key={i}>
                     <Link
                       to={`/post/${element.uuid}`}
-                      className="absolute top-0 left-0 flex flex-col justify-center items-center w-full h-full">
+                      className="absolute top-0 left-0 flex flex-col justify-center items-center w-full h-full"
+                      onClick={()=>{                                                    
+                          dispatch(setDetailPath(`${element.username}/${element.id}`))
+                      }}      
+                    >
                       <span className="font-semibold text-xl">{element.content}</span>
-                      <span className="font-semibold text-sesac-green">By. {element.username}</span>
+                      <span className="font-semibold text-sesac-green">By. {element.name}({element.username})</span>
                     </Link>
                   </li>
                 )

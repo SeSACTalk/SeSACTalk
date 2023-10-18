@@ -27,19 +27,19 @@ function ProfilePosts({ user_id }) {
   let postEditModal = useSelector((state) => state.postEditModal);
 
   let dispatch = useDispatch();
-  
+
   useEffect(() => {
     axios.get(`/profile/${user_id}/post/`)
-    .then(
-      response => {
-        let copy = [...response.data]
-        setPostList(copy);
-      }
-    )
-    .catch(
-      error => console.error(error)
-    )
-  }, [])
+      .then(
+        response => {
+          let copy = [...response.data]
+          setPostList(copy);
+        }
+      )
+      .catch(
+        error => console.error(error)
+      )
+  }, [user_id])
 
 
   return (
@@ -55,11 +55,22 @@ function ProfilePosts({ user_id }) {
                   <div className='post_author'>
                     <Link className='inline-flex gap-5' to={`/profile/${element.username}`}>
                       <div className='img_wrap w-24 h-24 p-2 rounded-full overflow-hidden border border-solid border-gray-200'>
-                        <img src={`${SERVER}/media/profile/default_profile.png`} alt={element.username} />
+                        <img src={`${element.is_staff ? (process.env.PUBLIC_URL + "/img/logo.png") : (SERVER + element.profile_img_path)}`} alt={element.username} />
                       </div>
-                      <p className='flex flex-col gap-1 text_wrap justify-center'>
-                        <span className='text-base'>{element.name}</span>
-                        <span className='text-sm text-sesac-green'>{element.campusname} 캠퍼스</span>
+                      <p className={`flex flex-col gap-1 text_wrap ${element.is_staff ? "justify-start mt-4 font-semibold" : "justify-center"}`}>
+                        {
+                          element.is_staff ? (
+                            <>
+                              <span className='text-lg text-sesac-green'>{element.campusname} 캠퍼스</span>
+                            </>
+                          ) :
+                            (
+                              <>
+                                <span className='text-lg font-semibold'>{element.name}</span>
+                                <span className='text-sm text-sesac-green'>{element.campusname} 캠퍼스</span>
+                              </>
+                            )
+                        }
                       </p>
                     </Link>
                   </div>
@@ -84,7 +95,7 @@ function ProfilePosts({ user_id }) {
                         <div className="invisible">
                         </div>
                     }
-                  <UserFeedback postId = {element.id} postUuid = {element.uuid} username = {element.username} replySet = {element.reply_set} likeStatus = {element.like_status} likeCount = {element.like_set} />
+                    <UserFeedback postId={element.id} postUuid={element.uuid} username={element.username} replySet={element.reply_set} likeStatus={element.like_status} likeCount={element.like_set} />
                   </div>
                   <button className='absolute right-5 top-8' onClick={
                     async () => {
@@ -143,7 +154,7 @@ function ProfileLikes({ user_id }) {
       .catch(
         error => console.error(error)
       )
-  }, []);
+  }, [user_id]);
 
 
   return (
@@ -158,25 +169,28 @@ function ProfileLikes({ user_id }) {
                 <div className={`like_container flex gap-6 items-center p-5 h-24 ${((i + 1) != likeList.length) ? 'border-solid border-b border-gray-200' : ''}`} key={i}>
                   <Link to={`/profile/${element.post_user_username}`}>
                     <div className='img_wrap w-16 h-16 p-2 rounded-full overflow-hidden border border-solid border-gray-200'>
-                      <img src={SERVER + element.post_user_profile_img_path} alt={element.post_user_username} />
+                      <img src={`${element.post_user_is_staff ? (process.env.PUBLIC_URL + "/img/logo.png") : (SERVER + element.post_user_profile_img_path)}`} alt={element.post_user_username} />
                     </div>
                   </Link>
                   <div className="flex flex-col align-middle gap-1">
                     <div className='post_owner_info'>
                       <p className='flex items-center gap-3 text_wrap justify-center text-zinc-500'>
                         <i className="fa fa-gratipay text-rose-500" aria-hidden="true"></i>
-                        <div className='text-base'>
-                          <span className="text-sesac-green 800 font-semibold">{
-                            element.is_current_user ? '내' :  element.post_user_name + '님의'
-                          }</span>
-                          <span> 게시물</span>
-                        </div>
-                        <div className="text-xs">
-                          {element.format_date}
+                        <div className='text-base flex justify-between items-center gap-1'>
                           {
-                            element.format_date != undefined ?
-                              (!(element.format_date.includes("년")) ? " 전" : "") : ""
+                            element.is_current_user ? '내' :
+                              (
+                                element.post_user_is_staff ? (element.post_user_campusname + '캠퍼스') : (element.post_user_name)
+                              )
                           }
+                          <span> 게시물</span>
+                          <span className="text-xs ml-2">
+                            {element.format_date}
+                            {
+                              element.format_date != undefined ?
+                                (!(element.format_date.includes("년")) ? " 전" : "") : ""
+                            }
+                          </span>
                         </div>
                       </p>
                     </div>
@@ -224,7 +238,7 @@ function ProfileReplys({ user_id }) {
       .catch(
         error => console.error(error)
       )
-  }, []);
+  }, [user_id]);
 
 
   return (
@@ -239,26 +253,28 @@ function ProfileReplys({ user_id }) {
                 <div className={`reply_container flex gap-6 items-center p-3 h-24 ${((i + 1) != replyList.length) ? 'border-solid border-b border-gray-200' : ''}`} key={i}>
                   <Link to={`/profile/${element.post_user_username}`}>
                     <div className='img_wrap w-16 h-16 p-2 rounded-full overflow-hidden border border-solid border-gray-200'>
-                      <img src={SERVER + element.post_user_profile_img_path} alt={element.post_user_username} />
+                      <img src={`${element.post_user_is_staff ? (process.env.PUBLIC_URL + "/img/logo.png") : (SERVER + element.post_user_profile_img_path)}`} alt={element.post_user_username} />
                     </div>
                   </Link>
                   <div className="flex flex-col align-middle gap-1">
                     <div className='post_owner_info'>
                       <p className='flex items-center gap-3 text_wrap justify-center text-zinc-500'>
-                        <div>
-                          <i class="fa fa-reply" aria-hidden="true"></i>
-                        </div>
-                        <div className='text-base'><span className="text-sesac-green 800 font-semibold">
-                        {
-                            element.is_current_user ? '내' :  element.post_user_name + '님의'
-                          }
-                          </span><span> 게시물</span></div>
-                        <div className="text-xs">
-                          {element.format_date}
+                          <i class="fa fa-reply text-sesac-green" aria-hidden="true"></i>
+                        <div className='text-base flex justify-between items-center gap-1'>
                           {
-                            element.format_date != undefined ?
-                              (!(element.format_date.includes("년")) ? " 전" : "") : ""
+                            element.is_current_user ? '내' :
+                              (
+                                element.post_user_is_staff ? (element.post_user_campusname + '캠퍼스') : (element.post_user_name)
+                              )
                           }
+                          <span> 게시물</span>
+                          <span className="text-xs ml-2">
+                            {element.format_date}
+                            {
+                              element.format_date != undefined ?
+                                (!(element.format_date.includes("년")) ? " 전" : "") : ""
+                            }
+                          </span>
                         </div>
                       </p>
                     </div>
@@ -285,8 +301,8 @@ function ProfileReplys({ user_id }) {
 }
 
 function UserFeedback({ postId, postUuid, username, replySet, likeStatus, likeCount }) {
-  const [likestatus, setLikestatus] = useState(likeStatus);
-  const [likecount, setLikecount] = useState(likeCount);
+  const [likestatus, setLikestatus] = useState();
+  const [likecount, setLikecount] = useState();
   let emptyHeart = '-o'
   let dispatch = useDispatch();
 
@@ -294,6 +310,10 @@ function UserFeedback({ postId, postUuid, username, replySet, likeStatus, likeCo
   useEffect(() => {
     setLikestatus(likeStatus);
     setLikecount(likeCount);
+  }, []);
+
+  useEffect(() => {
+
   }, [])
 
   // 좋아요 추가
@@ -311,12 +331,13 @@ function UserFeedback({ postId, postUuid, username, replySet, likeStatus, likeCo
   let unlikePost = (e) => {
     e.preventDefault();
     axios.delete(`/post/${postId}/like/`).then((response) => {
-      setLikestatus(prevLikecount => prevLikecount - 1);
+      setLikecount(prevLikecount => prevLikecount - 1);
       setLikestatus(prevLikestatus => !prevLikestatus);
     }).catch((error) => {
       console.error(error)
     })
   }
+
   return (
     <>
       <h3 className='hidden'>좋아요, 댓글</h3>
@@ -339,16 +360,16 @@ function UserFeedback({ postId, postUuid, username, replySet, likeStatus, likeCo
             // 상세경로 저장
             dispatch(setDetailPath(`${username}/${postId}`))
           }}>
-          <span className='hidden'>댓글</span>
-          <i className="fa fa-comment-o mr-1" aria-hidden="true"></i>
-          <span className='text-sm'>{
-            replySet
-          }</span>
+            <span className='hidden'>댓글</span>
+            <i className="fa fa-comment-o mr-1" aria-hidden="true"></i>
+            <span className='text-sm'>{
+              replySet
+            }</span>
           </Link>
         </li>
       </ul>
     </>
   )
-} 
+}
 
 export { ProfilePosts, ProfileLikes, ProfileReplys }

@@ -8,44 +8,44 @@ import { setRole } from '../../../store/userSlice';
 import Navbar from './Navbar';
 import WritePost from '../post/WritePost';
 import MinNavbar from './MinNavbar';
+import AdminNavbar from '../../admin/AdminNavbar';
 
 const Main = function () {
     let navigate = useNavigate();
     let dispatch = useDispatch();;
 
     // States
+    let role = useSelector((state) => state.role);
     let writeModal = useSelector((state) => state.writeModal);
     let minNav = useSelector((state) => state.minNav);
-
 
     useEffect(() => {
         axios.get('/accounts/user/info/')
             .then(
                 response => {
-                    // dispatch(setRole(response.data.role));
-                    if (response.data.role === 'USER') {
-                        return
-                    } else {
-                        navigate('/admin')
-                    }
+                    dispatch(setRole(response.data.role));
                 }
             )
             .catch(
                 error => {
-                    console.error(error.message)
-                    navigate('/accounts/login');
+                    console.error(error.message);
+                    navigate('/account/login');
                 }
             )
     }, []);
 
     return (
         <div className='main_container flex relative'>
-            {minNav ? <MinNavbar /> : <Navbar />}
+            {
+                role === 'STAFF' ? <AdminNavbar /> : minNav ? <MinNavbar /> : <Navbar />
+            }
             <Outlet />
             {/* Modals */}
             {writeModal && <WritePost />}
         </div >
     );
+
+
 };
 
 export default Main;

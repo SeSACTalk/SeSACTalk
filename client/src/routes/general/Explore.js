@@ -101,20 +101,30 @@ const Explore = function () {
                         exploreResult.map((element, i) => {
                             if (element.campus_name) {
                                 return ( // 사용자 검색
-                                    <ul key={i}>
+                                    <ul className="overflow-x-hidden" key={i}>
                                         <li className="mb-1">
                                             <Link
                                                 to={`/profile/${element.username}`}
-                                                className="chat_user_info flex items-center h-20 p-1 gap-5">
+                                                className="chat_user_info flex items-center h-20 p-1 gap-5"
+                                            >
                                                 <div className="img_wrap w-16 h-16 rounded-full overflow-hidden border border-gray-200 p-1">
-                                                    <img src={SERVER + element.profile_img_path} alt={element.name} />
+                                                    <img src={`${element.is_staff ? (process.env.PUBLIC_URL + "/img/logo.png") : (SERVER + element.profile_img_path)}`} />
                                                 </div>
                                                 <p className="flex flex-col">
-                                                    <span>{element.name}</span>
-                                                    <span className="flex items-end gap-3 text-sm">
-                                                        <span className="text-gray-500">{element.username}</span>
-                                                        <span className="font-semibold text-sesac-green">{element.campus_name} 캠퍼스</span>
-                                                    </span>
+                                                    {
+                                                        element.is_staff ? (
+                                                            <span className="font-semibold text-sesac-green">{element.campus_name} 캠퍼스</span>
+                                                        ) :
+                                                            (
+
+                                                                <><span>{element.name}</span>
+                                                                    <span className="flex items-end gap-3 text-sm">
+                                                                        <span className="text-gray-500">{element.username}</span>
+                                                                        <span className="font-semibold text-sesac-green">{element.campus_name} 캠퍼스</span>
+                                                                    </span></>
+                                                            )
+                                                    }
+
                                                 </p>
                                             </Link>
                                         </li>
@@ -122,7 +132,7 @@ const Explore = function () {
                                 )
                             } else {
                                 return ( // 태그검색
-                                    <ul key={i}>
+                                    <ul className="overflow-x-hidden" key={i}>
                                         <li className="mb-1">
                                             <Link
                                                 to={`/explore/${element.name}`}
@@ -151,7 +161,7 @@ const Explore = function () {
                         </div>
                 }
             </div>
-        </div>
+        </div >
     )
 }
 

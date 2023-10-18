@@ -11,7 +11,6 @@ import { useDispatch, useSelector } from "react-redux";
 
 // Components
 import { changeVerifyPasswordForWithdrawModal, changeOwnFollowModal, changeOwnFollowerModal, changeOtherFollowModal, changeOtherFollowerModal, changeProfileSettingModal, changeVerifyPasswordForEditProfileModal } from "../../../store/modalSlice";
-import Navbar from '../main/Navbar';
 import { ProfilePosts, ProfileLikes, ProfileReplys } from "./ProfileNav";
 import VerifyPasswordModal from "./VerifyPasswordModal";
 import { OwnFollowerModal, OwnFollowModal, OtherFollowModal, OtherFollowerModal } from "./UserRelationshipModal";
@@ -21,11 +20,11 @@ const session_key = getCookie('session_key')
 
 function ProfileLayout() {
     return (
-            <div className="main_content_container w-4/5">
-                <div className="profile_container pt-12 px-20 text-lg">
-                    <Outlet />
-                </div>
+        <div className="main_content_container w-4/5">
+            <div className="profile_container pt-12 px-20 text-lg">
+                <Outlet />
             </div>
+        </div>
     );
 };
 
@@ -48,6 +47,7 @@ function Profile() {
     const [replyClickStatus, setReplyClickStatus] = useState(false);
     const [followerCount, setFollowerCount] = useState(0);
     const [followCount, setFollowCount] = useState(0);
+    const [isStaff, setIsStaff] = useState(false);
 
     const navStyle = "border-t-2 border-gray-600 relative -top-0.5"
 
@@ -92,7 +92,7 @@ function Profile() {
                     setFollowStatus(data.followStatus); // 팔로우 상태 설정
                     setFollowerCount(data.follower_count);
                     setFollowCount(data.follow_count);
-                    console.log(data);
+                    setIsStaff(data.user_is_staff);
                 }
             )
             .catch(
@@ -172,11 +172,11 @@ function Profile() {
 
         return (
             <>
-                <button class="inline-block px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm" onClick={() => {
+                <button className="inline-block px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm" onClick={() => {
                     dispatch(changeVerifyPasswordForEditProfileModal(verifyPasswordForEditProfileModal))
                 }}>프로필 수정
                 </button>
-                <button class="inline-block px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm" onClick={() => {
+                <button className="inline-block px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm" onClick={() => {
                     dispatch(changeProfileSettingModal(profileSettingModal))
                 }}>설정</button>
             </>
@@ -219,23 +219,33 @@ function Profile() {
                     <header className="profile_header flex justify-center items-center gap-4 mt-3 mb-5 min-h-full">
                         {/* 프로필 사진 */}
                         <div className="profile_img_container  w-1/6 h-44 ">
-                            <div className="profile_img_div w-36 TOP self-center rounded-full overflow-hidden border-4 border-solid border-sesac-green p-2">
-                                <img className="block p-2" src={`${SERVER + profileData.img_path}`} alt='프로필 이미지' />
+                            <div className={`profile_img_div w-36 TOP self-center rounded-full overflow-hidden border-4 border-solid ${isStaff ? 'border-none' : 'border-sesac-green'} p-2`}>
+                                <img className="block p-2" src={`${isStaff ? (process.env.PUBLIC_URL + "/img/logo.png") : (SERVER + profileData.img_path)}`} alt='프로필 이미지' />
                             </div>
                             {/*  */}
                         </div>
                         {/* 
-                    이름, 캠퍼스명, 수정, 설정
-                    게시물, 팔로워, 팔로우
-                    한줄소개
-                    링크
-                */}
+                            이름, 캠퍼스명, 수정, 설정
+                            게시물, 팔로워, 팔로우
+                            한줄소개
+                            링크
+                        */}
                         <section className="profile_userinfo_container flex flex-col gap-5 w-6/12 h-44 px-1 ">
                             <div className="flex flex-col gap-3">
                                 <div className="profile_userinfo flex">
                                     <div>
-                                        <h2 className="inline-block font-bold text-2xl mr-3">{profileData.user_name}</h2>
-                                        <span className="inline-block text-sesac-green font-semibold text-sm">{profileData.user_campusname} 캠퍼스</span>
+
+                                        {
+                                            isStaff ? (
+                                                <h2 className="inline-block font-bold text-sesac-green text-2xl mr-3">{profileData.user_campusname} 캠퍼스</h2>
+                                            ) : (
+                                                <>
+                                                    <h2 className="inline-block font-bold text-2xl mr-3">{profileData.user_name}</h2>
+                                                    <span className="inline-block text-sesac-green font-semibold text-sm">{profileData.user_campusname} 캠퍼스</span>
+                                                </>
+                                            )
+                                        }
+
                                     </div>
                                     <div className=" ml-auto flex gap-3">
                                         {profileData.isProfileMine ? <MyProfileBtn /> : <OtherProfileBtn target_id={profileData.user_id} followStatus={profileData.followStatus} />}
@@ -370,18 +380,18 @@ function ProfileSettingModal({ username }) {
     const handleLogout = async (e) => {
         e.preventDefault();
         await axios.delete('/accounts/logout/')
-        .then(
-            response =>  {
-                deleteCookie('session_key');
-                deleteCookie('username');
-                navigate('/accounts/login');
-            }
-        )
-        .catch(
-            error =>  {
-                console.log(error.response.data);
-            }
-        )
+            .then(
+                response => {
+                    deleteCookie('session_key');
+                    deleteCookie('username');
+                    window.location.href = '/account/login'
+                }
+            )
+            .catch(
+                error => {
+                    console.log(error.response.data);
+                }
+            )
     }
 
     return (

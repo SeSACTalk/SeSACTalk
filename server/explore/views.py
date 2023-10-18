@@ -17,7 +17,8 @@ class ExploreUsers(APIView):
         users = Profile.objects.filter(
             Q(user__name__startswith = name) &
             Q(user__is_active = True) &
-            (Q(user__is_auth = 10) | Q(user__is_auth = 11) | Q(user__is_auth = 21))
+            (Q(user__is_auth = 10) | Q(user__is_auth = 11) | Q(user__is_auth = 21)
+         )
         ).select_related(
             'user__first_course__campus',
             'user__second_course__campus'
@@ -42,7 +43,7 @@ class TagsResult(APIView):
             .prefetch_related('like_set')\
             .select_related('user')\
             .order_by('-date')\
-            .annotate(hashtag_name = F('tags__name'), username = F('user__username'))
+            .annotate(hashtag_name = F('tags__name'))
         
         serializer = HashTagExploreResultSerializer(post_queryset, many = True)
 

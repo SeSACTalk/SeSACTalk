@@ -8,6 +8,7 @@ class UserExploreSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source='user.id', read_only = True)
     name = serializers.CharField(source='user.name', read_only = True)
     username = serializers.CharField(source='user.username', read_only = True)
+    is_staff = serializers.BooleanField(source='user.is_staff', read_only = True)
 
     campus_name = serializers.SerializerMethodField()
 
@@ -16,9 +17,7 @@ class UserExploreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = (
-            'id', 'name', 'username', 'campus_name', 'profile_id', 'profile_img_path'
-        )
+        fields = '__all__'
 
     def get_campus_name(self, profile):
         # 두 번째 캠퍼스로!
@@ -49,16 +48,14 @@ class HashTagExploreSerializer(serializers.ModelSerializer):
 
 class HashTagExploreResultSerializer(serializers.ModelSerializer):
     hashtag_name = serializers.CharField(read_only=True)
-    username =  serializers.CharField(read_only=True)
+    username =  serializers.CharField(source= 'user.username', read_only=True)
+    name =  serializers.CharField(source= 'user.name', read_only=True)
 
     like_set = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
-        fields = (
-            'hashtag_name', 'id', 'content', 'date', 'img_path', 'user',
-            'tags', 'report_status', 'uuid', 'username', 'like_set'
-        )
+        fields = '__all__'
 
     def get_like_set(self, obj):
         likes = obj.like_set.all()

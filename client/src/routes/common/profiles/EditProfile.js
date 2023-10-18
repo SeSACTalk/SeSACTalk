@@ -25,6 +25,7 @@ const EditProfile = function () {
 
     // form data    
     const [name, setName] = useState('');
+    const [isStaff, setIsStaff] = useState(false);
     const [birthdate, setBirthdate] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [email, setEmail] = useState('');
@@ -50,11 +51,6 @@ const EditProfile = function () {
     const inputNotMatchStyle = "mt-1 px-3 py-2 text-gray-400 bg-white border-2 shadow-sm border-red-300 placeholder-slate-400 focus:outline-none focus:border-red-300 focus:ring-red-300 block rounded-md sm:text-sm focus:ring-1"
 
     // url
-
-    const redirectToLogin = () => {
-        navigate('/accounts/login'); // 로그인 페이지로 이동
-    };
-
     useEffect(() => {
         setIsPasswordEmpty(password == '')
         if (password == '') {
@@ -75,42 +71,43 @@ const EditProfile = function () {
 
     // 프로필 데이터 가져오기
     useEffect(() => {
-           axios.get(`/profile/${username}/edit/`)
-                .then(
-                    response => {
-                        const data = response.data;
-                        console.log(data)
-                        setName(data.profile.name)
-                        setBirthdate(data.profile.birthdate)
-                        setPhoneNumber(data.profile.phone_number)
-                        setEmail(data.profile.email)
+        axios.get(`/profile/${username}/edit/`)
+            .then(
+                response => {
+                    const data = response.data;
+                    console.log(data)
+                    setName(data.profile.name)
+                    setIsStaff(data.profile.is_staff)
+                    setBirthdate(data.profile.birthdate)
+                    setPhoneNumber(data.profile.phone_number)
+                    setEmail(data.profile.email)
 
-                        setProfileImgpath(data.profile.profile_img_path)
-                        setEditProfileImg(SERVER + data.profile.profile_img_path)
-                        setProfileContent(data.profile.profile_content)
-                        setProfileLink(data.profile.profile_link)
-                        setProfileCourseStatus(data.profile.profile_course_status)
+                    setProfileImgpath(data.profile.profile_img_path)
+                    setEditProfileImg(SERVER + data.profile.profile_img_path)
+                    setProfileContent(data.profile.profile_content)
+                    setProfileLink(data.profile.profile_link)
+                    setProfileCourseStatus(data.profile.profile_course_status)
 
-                        setFirstCourseName(data.profile.first_course__name)
-                        setFirstCampusName(data.profile.first_course__campus__name)
-                        setSecondCourseName(data.profile.second_course__name)
-                        setSecondCampusName(data.profile.second_course__campus__name)
+                    setFirstCourseName(data.profile.first_course__name)
+                    setFirstCampusName(data.profile.first_course__campus__name)
+                    setSecondCourseName(data.profile.second_course__name)
+                    setSecondCampusName(data.profile.second_course__campus__name)
 
-                        setCourseApplicationStatus(data.profile.second_course__name == "")
-                        console.log(data.profile.profile_course_status)
+                    setCourseApplicationStatus(data.profile.second_course__name == "")
+                    console.log(data.profile.profile_course_status)
 
-                        setCampusList(data.campus);
-                    }
-                )
-                .catch(
-                    error => console.error(error)
-                )
-    }, []); 
+                    setCampusList(data.campus);
+                }
+            )
+            .catch(
+                error => console.error(error)
+            )
+    }, []);
 
 
     // functions
     const requestCoursesByCampus = (selectName, campusId) => { /* 캠퍼스에 해당하는 과정 가져오기 */
-    axios.get(`/profile/${username}/edit/?campus_id=${campusId}`)
+        axios.get(`/profile/${username}/edit/?campus_id=${campusId}`)
             .then(response => {
                 setCourseList(prevCourseList => ({
                     ...prevCourseList,
@@ -209,7 +206,7 @@ const EditProfile = function () {
             })
                 .then(response => {
                     console.log(response.data);
-                    // navigate(`/profile/${username}`);
+                    navigate(`/profile/${username}`);
                 })
                 .catch(error => {
                     console.log(error.response.data);
@@ -232,37 +229,42 @@ const EditProfile = function () {
                     }
                 >
                     {/* 프로필 사진 */}
-                    <section class="flex flex-col gap-5">
-                        <div className="flex justify-between items-center h-fit">
-                            <div className='w-[25%] rounded-full overflow-hidden border border-solid border-gray-200'>
-                                <div className="block w-full h-full p-2" to={`/profile/${username}`}>
-                                    <img src={editProfileImg} alt='프로필 이미지' />
-                                </div>
-                            </div>
-                            <div className="w-[70%] flex flex-col gap-2">
-                                <h2 className="inline-block text-black-300 font-bold text-xl ml-2">{name}</h2>
-                                <label class="block">
-                                    <span class="sr-only">프로필 사진 선택</span>
-                                    <input
-                                        type="file"
-                                        class="block w-full text-sm text-slate-500
+                    {
+                        isStaff ? null :
+                            (
+                                <section class="flex flex-col gap-5">
+                                    <div className="flex justify-between items-center h-fit">
+                                        <div className='w-[25%] rounded-full overflow-hidden border border-solid border-gray-200'>
+                                            <div className="block w-full h-full p-2" to={`/profile/${username}`}>
+                                                <img src={editProfileImg} alt='프로필 이미지' />
+                                            </div>
+                                        </div>
+                                        <div className="w-[70%] flex flex-col gap-2">
+                                            <h2 className="inline-block text-black-300 font-bold text-xl ml-2">{name}</h2>
+                                            <label class="block">
+                                                <span class="sr-only">프로필 사진 선택</span>
+                                                <input
+                                                    type="file"
+                                                    class="block w-full text-sm text-slate-500
                                             file:cursor-pointer
                                             file:mr-7 file:py-2 file:px-4
                                             file:rounded-full file:border-0
                                             file:text-sm file:font-semibold
                                             file:bg-sesac-sub file:text-sesac-green
                                             hover:file:bg-green-200"
-                                        onChange={
-                                            (e) => {
-                                                setProfileImgpath(e.target.files[0]);
-                                                changeImagePreview(e);
-                                            }
-                                        }
-                                    />
-                                </label>
-                            </div>
-                        </div>
-                    </section>
+                                                    onChange={
+                                                        (e) => {
+                                                            setProfileImgpath(e.target.files[0]);
+                                                            changeImagePreview(e);
+                                                        }
+                                                    }
+                                                />
+                                            </label>
+                                        </div>
+                                    </div>
+                                </section>
+                            )
+                    }
                     <div className="flex flex-col gap-4 mt-1">
                         {/* 아이디 */}
                         <div className="flex flex-col gap-1 text-sm">

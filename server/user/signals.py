@@ -17,9 +17,12 @@ def create_notification(targeted_user, targeting_user, content_id, type_, uri):
             uri = uri,
         )
 def update_delete_status_notification(content_id):
-    notification = Notification.objects.get(content_id=content_id)
-    notification.delete_status = True
-    notification.save()
+    try:
+        notification = Notification.objects.get(content_id=content_id)
+        notification.delete_status = True
+        notification.save()
+    except Exception as e:
+        print(f'{e} : 내가 작성한 댓글과 좋아요는 notification은 생성하지 않기 때문에 예외처리')
 
 @receiver(post_save, sender = Reply) # 댓글 생성알림
 def send_fcm_on_new_reply(sender, instance, created, **kwargs):

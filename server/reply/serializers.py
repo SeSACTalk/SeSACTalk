@@ -7,13 +7,22 @@ from post.models import Reply
 class ReplySerializer(serializers.ModelSerializer):
     date = serializers.SerializerMethodField(read_only=True)
     img_path = serializers.SerializerMethodField(read_only=True)
+    is_staff = serializers.BooleanField(source = 'user.is_staff', read_only=True)
     username = serializers.CharField(source = 'user.username', read_only=True)
     name = serializers.CharField(source = 'user.name', read_only=True)
+    campusname = serializers.SerializerMethodField(read_only=True)
 
     post_id = serializers.IntegerField(source='post.id', read_only=True)
     class Meta:
         model = Reply
         fields = '__all__'
+    def get_campusname(self, reply):
+        user = reply.user
+        try:
+            campus_name = user.second_course.campus.name
+        except Exception:
+            campus_name = user.first_course.campus.name
+        return campus_name
 
     def get_date(self, reply):
         date = reply.date

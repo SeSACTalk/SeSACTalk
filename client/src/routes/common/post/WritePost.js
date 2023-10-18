@@ -18,7 +18,7 @@ const WritePost = function () {
   const [imgPath, setImgPath] = useState(null);
   const [tumbnailWrap, setTumbnailWrap] = useState('invisible');
   const [tumbnail, setTumbnail] = useState();
-  let writeModal = useSelector((state) => state.wirteModal);
+  let writeModal = useSelector((state) => state.writeModal);
 
   let dispatch = useDispatch();
 
@@ -55,7 +55,10 @@ const WritePost = function () {
     return () => { document.body.style.overflow = 'unset'; }
   }, [scroll]);
 
-  // 글자수 제한
+  /**
+   * 글자수 제한
+   * @param {Event} e 
+   */
   const limitText = (e) => {
     let text = e.target.value
     textLength.current.innerHTML = text.length;
@@ -65,7 +68,10 @@ const WritePost = function () {
     }
   };
 
-  // 검은배경 클릭시 모달창 닫기
+  /**
+  * 검은배경 클릭시 모달창 닫기
+  * @param {Event} e 
+  */
   const closeModal = (e) => {
     if (modalPopup.current === e.target) {
       dispatch(changeWriteModal(writeModal))

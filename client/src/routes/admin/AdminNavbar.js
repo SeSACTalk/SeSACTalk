@@ -8,7 +8,7 @@ import { changeWriteModal } from "../../store/modalSlice";
 const AdminNavbar = function () {
     // states
     let [info, setInfo] = useState({});
-    let writeModal = useSelector((state) => state.wirteModal);
+    let writeModal = useSelector((state) => state.writeModal);
 
     let dispatch = useDispatch();
 
@@ -33,25 +33,27 @@ const AdminNavbar = function () {
                             <img src={`${process.env.PUBLIC_URL}/img/logo.png`} alt='청년취업사관학교' />
                         </Link>
                     </div>
-                    <p className="mt-3 text-3xl text-sesac-green font-medium">{info['campus_name']} 캠퍼스</p>
+                    <Link to={`/profile/${info.username}`}>
+                        <p className="mt-3 text-3xl text-sesac-green font-medium">{info['campus_name']} 캠퍼스</p>
+                    </Link>
                 </div>
             </div>
             <h2 className="hidden">메인메뉴</h2>
             <ul className="nav mt-8 px-8 flex flex-col gap-7 text-2xl">
                 <li>
-                    <Link to='' className="block w-full h-full">
+                    <Link to='admin' className="block w-full h-full">
                         <i className="fa fa-search inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>사용자 조회</span>
                     </Link>
                 </li>
                   <li>
-                    <Link to='auth/user' className="block w-full h-full">
+                    <Link to='admin/auth/user' className="block w-full h-full">
                         <i className="fa fa-id-badge inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>권한 승인</span>
                     </Link>
                 </li>
                 <li>
-                    <Link to='user/course' className="block w-full h-full">
+                    <Link to='admin/user/course' className="block w-full h-full">
                         <i className="fa fa-user-plus inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>과정 승인</span>
                     </Link>
@@ -63,7 +65,7 @@ const AdminNavbar = function () {
                     </Link>
                 </li>
                 <li>
-                    <Link to='user/notify' className="block w-full h-full">
+                    <Link to='admin/user/notify' className="block w-full h-full">
                         <i className="fa fa-bell-o inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>알림</span>
                     </Link>

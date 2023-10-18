@@ -35,7 +35,6 @@ const Posts = function () {
   const bottom = useRef(null);
 
   let dispatch = useDispatch();
-  const navigate = useNavigate()
 
   const fetchPost = ({ pageParam = 1 }) => {
     return axios.get(`/post/${username}?page=${pageParam}`)
@@ -61,7 +60,10 @@ const Posts = function () {
     queryKey: ['post'],
     queryFn: fetchPost,
     getNextPageParam: (lastPage, pages) => {
-      return lastPage.data.page !== pages[0].totalPage ? lastPage.data.page + 1 : 1
+      if (lastPage.data.next) {
+        const next_page = Number(lastPage.data.next.slice(-1));
+        return lastPage = next_page;
+      }
     },
   })
 
@@ -79,33 +81,45 @@ const Posts = function () {
       <StaffProfile />
       <section className='post mt-8 mx-24 '>
         <h2 className='hidden'>게시글</h2>
-        {status == 'loading' &&
-          <>
+        {
+          status == 'loading' &&
+          <div className="w-full flex justify-center items-center">
             <i className="fa fa-spinner fa-pulse fa-3x fa-fw text-9xl text-sesac-sub"></i>
             <span className="sr-only">Loading...</span>
-          </>}
+          </div>
+        }
         {
           status == 'success' && data &&
           data.pages.map((group, i) => {
-            if (group && group.data.result) {
-              return group.data.result.map((element) => {
+            if (group && group.data.results) {
+              return group.data.results.map((element) => {
                 return (
                   <article className='relative post_container p-5 h-96 border-solid border-b border-gray-200' key={element.id}>
                     <div className='post_author'>
                       <Link className='inline-flex gap-5' to={`/profile/${element.username}`}>
                         <div className='img_wrap w-24 h-24 p-2 rounded-full overflow-hidden border border-solid border-gray-200'>
-                          <img src={`${SERVER}/media/profile/default_profile.png`} alt={element.username} />
+                          <img src={`${element.is_staff ? (process.env.PUBLIC_URL + "/img/logo.png") : (SERVER + element.profile_img_path)}`} alt={element.username} />
                         </div>
-                        <p className='flex flex-col gap-1 text_wrap justify-center'>
-                          <span className='text-base'>{element.name}</span>
-                          <span className='text-sm text-sesac-green'>{element.campusname} 캠퍼스</span>
+                        <p className={`flex flex-col gap-1 text_wrap ${element.is_staff? "justify-start mt-4 font-semibold" : "justify-center"}`}>
+                          {
+                            element.is_staff? (
+                            <>
+                              <span className='text-lg text-sesac-green'>{element.campusname} 캠퍼스</span>
+                            </>
+                            ) : 
+                            (
+                              <>
+                              <span className='text-lg font-semibold'>{element.name}</span>
+                              <span className='text-sm text-sesac-green'>{element.campusname} 캠퍼스</span>
+                              </>
+                            )
+                          }
                         </p>
                       </Link>
                     </div>
                     <div className="post_content_wrap h-1/2">
                       <p className='post_content mt-5 text-sm'>{element.content}</p>
                     </div>
-                    {/* TODO 데이터 바인딩 + 해시태그 클릭시 검색결과창 이동 */}
                     <div className="post_footer flex justify-between items-center">
                       <h3 className="hidden">해시태그</h3>
                       {
@@ -123,7 +137,7 @@ const Posts = function () {
                           <div className="invisible">
                           </div>
                       }
-                      <UserFeedback postId={element.id} postUuid = {element.uuid} username = {element.username} replySet={element.reply_set} likeStatus={element.like_status} likeCount={element.like_set} />
+                      <UserFeedback postId={element.id} postUuid={element.uuid} username={element.username} replySet={element.reply_set} likeStatus={element.like_status} likeCount={element.like_set} />
                     </div>
                     <button className='absolute right-5 top-8' onClick={
                       async () => {
@@ -219,11 +233,11 @@ function UserFeedback({ postId, postUuid, username, replySet, likeStatus, likeCo
             // 상세경로 저장
             dispatch(setDetailPath(`${username}/${postId}`))
           }}>
-          <span className='hidden'>댓글</span>
-          <i className="fa fa-comment-o mr-1" aria-hidden="true"></i>
-          <span className='text-sm'>{
-            replySet
-          }</span>
+            <span className='hidden'>댓글</span>
+            <i className="fa fa-comment-o mr-1" aria-hidden="true"></i>
+            <span className='text-sm'>{
+              replySet
+            }</span>
           </Link>
         </li>
       </ul>
