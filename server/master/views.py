@@ -173,7 +173,6 @@ class NotifycationReport(APIView, AccessRestrictionMixin):
             return Response({'message': ResponseMessages.REPORT_NO_POSTS_TO_DISPLAY}, status=status.HTTP_200_OK)
 
         serializer = ReportDetailSerializer(reports, many = True)
-        print(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class HandleReport(APIView, AccessRestrictionMixin):

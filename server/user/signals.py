@@ -171,6 +171,6 @@ def create_notification_on_new_report(sender, instance, created, **kwargs):
             instance.reported,
             instance.reporter,
             instance.id,
-            f'report_{instance.category}',
+            f'report_{instance.content_type}',
             None
         )

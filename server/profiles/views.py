@@ -1,4 +1,4 @@
-from django.db.models import Count, Subquery, OuterRef, F
+from django.db.models import Count, Subquery, OuterRef, F, Q
 from django.http import HttpRequest, QueryDict
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -154,7 +154,9 @@ class EditProfileView(APIView, SessionDecoderMixin):
 class ProfilePost(APIView, SessionDecoderMixin):
     def get(self, request:HttpRequest, user_pk: int) -> Response:
         login_user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
-        posts = Post.objects.filter(user = user_pk)\
+        posts = Post.objects.filter(
+                                Q(user=user_pk) & Q(report_status=False)
+                            )\
                             .select_related('user')\
                             .prefetch_related('tags')\
                             .order_by('-date')
@@ -184,7 +186,9 @@ class ProfileLike(APIView, SessionDecoderMixin):
 class ProfileReply(APIView, SessionDecoderMixin):
     def get(self, request:HttpRequest, user_pk: int) -> Response:
         # Reply 쿼리
-        replys = Reply.objects.filter(user=user_pk) \
+        replys = Reply.objects.filter(
+                Q(user=user_pk) & Q(report_status=False)
+            )\
             .select_related('user', 'post')\
             .annotate(post_user_username=F('post__user__username'), post_user_name=F('post__user__name')) \
             .order_by('-date')

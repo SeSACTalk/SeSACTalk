@@ -2,12 +2,27 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { getCookie } from "../../modules/handle_cookie";
 import { useDispatch } from "react-redux";
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import { setDetailPath } from "../../store/postSlice";
 
 const AdminNotice = function () {
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+  
+    const page = searchParams.get('page');
+
     const [isNotice, setIsNotice] = useState(true);
+
+    useEffect(()=>{
+        console.log(page)
+        console.log(!(page == 'report'))
+        if (!(page == 'report')) {
+            setIsNotice(true);
+        } else {
+            setIsNotice(false);
+        }
+    } ,[])
 
     return (
         <div className="admin_notification w-4/5 p-10">
@@ -20,15 +35,15 @@ const AdminNotice = function () {
                             let val = e.target.value;
                             switch (val) {
                                 case 'notify':
-                                    setIsNotice(true)
+                                    window.location.href = '/admin/user/notify?page=notify'
                                     break;
                                 case 'report':
-                                    setIsNotice(false);
+                                    window.location.href = '/admin/user/notify?page=report'
                                     break;
                             }
                         }}>
-                        <option value='notify'>알림</option>
-                        <option value='report'>신고 알림</option>
+                        <option value='notify' selected = {(isNotice)}>알림</option>
+                        <option value='report' selected = {!(isNotice)}>신고 알림</option>
                     </select>
                 </div>
             </div>
@@ -293,7 +308,7 @@ function ReportOption({ report }) {
                 data-id={report.id}
                 onChange={
                     (e) => {
-                        processReport(e, report.content_type, report.reported_id, report.reporter_id)
+                        processReport(e, report.content_type, report.reported, report.reporter)
                     }
                 }>
                 <option value="">선택(신규)</option>
