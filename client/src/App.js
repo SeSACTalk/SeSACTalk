@@ -24,6 +24,7 @@ import EditProfile from './routes/common/profiles/EditProfile';
 import WithdrawModal from './routes/common/profiles/WithdrawModal';
 import FindId from './routes/accounts/FindId';
 import PasswordReset from './routes/accounts/PasswordReset';
+import NotFound from './routes/common/NotFound';
 
 function App() {
   return (
@@ -59,7 +60,7 @@ function App() {
             <Route path='user/notify' element={<AdminNotice/>} />
           </Route>
         </Route>
-        <Route path='*' element={<div>없는 페이지에요</div>}></Route>
+        <Route path='*' element={<NotFound />}></Route>
       </Routes>
     </div >
   )
