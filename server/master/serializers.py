@@ -5,7 +5,6 @@ from accounts.serializers import CourseSerializer
 from profiles.serializers import ProfileSerializer
 from post.models import Report, Post, Reply
 
-
 class UserSerializer(serializers.ModelSerializer):
     first_course = CourseSerializer(read_only = True)
     second_course = CourseSerializer(read_only = True)
@@ -66,7 +65,7 @@ class UserCourseSerializer(serializers.ModelSerializer):
 
 class ReportDetailSerializer(serializers.ModelSerializer):
     date = serializers.SerializerMethodField(read_only=True)
-    content_type = serializers.SerializerMethodField(read_only=True)
+    ko_content_type = serializers.SerializerMethodField(read_only=True)
     reported_name = serializers.CharField(source='reported.name', read_only=True)
     reported_username = serializers.CharField(source='reported.username', read_only=True)
     reporter_name = serializers.CharField(source='reporter.name', read_only=True)
@@ -83,7 +82,7 @@ class ReportDetailSerializer(serializers.ModelSerializer):
     def get_date(self, report):
         return report.date.strftime('%Y-%m-%d %p %I:%M:%S')
 
-    def get_content_type(self, report):
+    def get_ko_content_type(self, report):
         content_type = report.content_type
                 
         if content_type == 'reply':

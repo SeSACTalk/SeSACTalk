@@ -25,6 +25,9 @@ class RegistreFCMTokenView(APIView, SessionDecoderMixin):
             Q(targeted_user__username=username) & Q(read_date__isnull=False) & Q(delete_status = False)
         ).order_by('-occur_date')
 
+        if read_notification == not_read_notification:
+            not_read_notification = None
+
         response_data = {
             'notRead' : NotificationSerializer(not_read_notification, many=True).data,
             'read' : NotificationSerializer(read_notification, many=True).data,

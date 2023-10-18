@@ -49,10 +49,6 @@ function Notification() {
     // 알림 불러오기
     useEffect(() => {
         getNotification();
-        return () => {
-            setReadNotificationDataResult([]);
-            setNotReadNotificationDataResult([]);
-        }
     }, [])
 
     let getNotification = () => {
@@ -225,7 +221,7 @@ function Report() {
                         return (
                             <tr className="border-b" key={i}>
                                 <td className="px-4 py-4">{element.date}</td>
-                                <td className="px-4 py-4">{element.content_type}</td>
+                                <td className="px-4 py-4">{element.ko_content_type}</td>
                                 <td className="px-4 py-4">{element.category}</td>
                                 <td className="px-4 py-4">
                                     <Link

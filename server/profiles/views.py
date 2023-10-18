@@ -153,12 +153,13 @@ class EditProfileView(APIView, SessionDecoderMixin):
 
 class ProfilePost(APIView, SessionDecoderMixin):
     def get(self, request:HttpRequest, user_pk: int) -> Response:
+        login_user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
         posts = Post.objects.filter(user = user_pk)\
                             .select_related('user')\
                             .prefetch_related('tags')\
                             .order_by('-date')
 
-        postSerializer = PostSerializer(posts, many = True, context={'login_user_id' : user_pk})
+        postSerializer = PostSerializer(posts, many = True, context={'login_user_id' : login_user_id})
 
         # QuerySet이 비어있을 경우
         if not bool(posts):
