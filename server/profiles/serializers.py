@@ -7,6 +7,8 @@ from rest_framework import serializers
 from profiles.models import Profile
 from accounts.models import Course, Campus
 
+from django.contrib.auth.hashers import make_password
+
 class ImgPathContentTypeValidator:
     """
         img의 확장자를 검사
@@ -126,25 +128,65 @@ class CourseSerializer(serializers.ModelSerializer):
         fields = '__all__'  
 
 class EditProfileSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(source='user.id')
-    username = serializers.CharField(source='user.username')
-    is_staff = serializers.BooleanField(source='user.is_staff')
-    name = serializers.CharField(source='user.name')
+    # user fields
+    id = serializers.IntegerField(source='user.id', read_only=True)
+    username = serializers.CharField(source='user.username', read_only=True)
+    is_staff = serializers.BooleanField(source='user.is_staff', read_only=True)
+    name = serializers.CharField(source='user.name', read_only=True)
+    email = serializers.EmailField(source='user.email', read_only=True)
+
+    password = serializers.CharField(source='user.password')
+    second_course = serializers.IntegerField(source='user.second_course.id', allow_null=True)
     birthdate = serializers.DateField(source='user.birthdate')
     phone_number = serializers.CharField(source='user.phone_number')
-    email = serializers.EmailField(source='user.email')
 
-    profile_img_path = serializers.SerializerMethodField(source='img_path')
-    profile_content = serializers.CharField(source='content')
-    profile_link = serializers.URLField(source='link')
-    profile_course_status = serializers.BooleanField(source='course_status')
+    # profile fields
+    img_path = serializers.ImageField()
+    response_img_path = serializers.SerializerMethodField(read_only=True)
+    content = serializers.CharField()
+    link = serializers.URLField()
+    course_status = serializers.BooleanField()
+    response_course_status = serializers.SerializerMethodField(read_only=True)
 
-    first_course__name = serializers.CharField(source='user.first_course.name')
-    first_course__campus__name = serializers.CharField(source='user.first_course.campus.name')
-    second_course__name = serializers.SerializerMethodField()
-    second_course__campus__name = serializers.SerializerMethodField()
+    # course, campus fields
+    first_course_name = serializers.CharField(source='user.first_course.name', read_only=True)
+    first_campus_name = serializers.CharField(source='user.first_course.campus.name', read_only=True)
+    second_campus_name = serializers.SerializerMethodField(read_only=True)
+    second_course_name = serializers.SerializerMethodField(read_only=True)
 
-    def get_profile_img_path(self, profile):
+    class Meta:
+        model = Profile
+        fields = '__all__'
+
+    def update_user_field(self, user_obj, validated_data, field_name)-> None:
+        try:
+            field_value = validated_data[field_name]
+            if field_name == 'password':
+                field_value = make_password(field_value)
+            if field_name == 'second_course':
+                field_value = Course.objects.get(pk = field_value['id'])
+            setattr(user_obj, field_name, field_value)
+        except KeyError:
+            return
+
+    def set_user_field(self, user_obj, validated_data)-> None:
+        user_fields = ['password', 'second_course', 'birthdate', 'phone_number']
+
+        for user_field in user_fields:
+            self.update_user_field(user_obj, validated_data, user_field)
+        user_obj.save()
+
+    def update(self, profile, validated_data):
+        # user update
+        try:
+            self.set_user_field(profile.user, validated_data.pop('user'))
+        except KeyError:
+            pass
+
+        # profile update
+        return super().update(profile, validated_data)
+
+    def get_response_img_path(self, profile):
         if profile.img_path:
             profile_img_path = profile.img_path
         else:
@@ -152,7 +194,7 @@ class EditProfileSerializer(serializers.ModelSerializer):
 
         return profile_img_path
 
-    def get_second_course__name(self, profile):
+    def get_second_course_name(self, profile):
         second_course_name = ""
         try:
             if profile.course_status:
@@ -161,7 +203,7 @@ class EditProfileSerializer(serializers.ModelSerializer):
             pass
         return second_course_name
 
-    def get_second_course__campus__name(self, profile):
+    def get_second_campus_name(self, profile):
         second_course_campus_name = ""
         try:
             if profile.course_status:
@@ -170,6 +212,16 @@ class EditProfileSerializer(serializers.ModelSerializer):
             pass
         return second_course_campus_name
 
-    class Meta:
-        model = Profile  # 시리얼라이저가 사용할 모델을 지정합니다.
-        fields = '__all__'
+    def get_response_course_status(self, profile):
+        course_status = profile.course_status
+
+        # 과정 신청하지 않음 0 / 과정 승인 == 10 / 과정 신청 중 == 20 반환
+        condition = 20
+        if course_status:
+            second_course = profile.user.second_course
+            if bool(second_course):
+                condition = 10
+            else:
+                condition = 0
+        return condition
+

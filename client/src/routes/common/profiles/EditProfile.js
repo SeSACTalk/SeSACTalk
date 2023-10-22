@@ -7,8 +7,6 @@ import { getCookie } from "../../../modules/handle_cookie";
 
 import React from 'react';
 import CryptoJS from 'crypto-js'
-import { type } from "@testing-library/user-event/dist/type";
-import { disable } from "workbox-navigation-preload";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
 const session_key = getCookie('session_key')
@@ -17,93 +15,77 @@ const EditProfile = function () {
     const navigate = useNavigate();
     const { username } = useParams();
 
-    const [contentLength, setContentLength] = useState(0);
-    const [editProfileImg, setEditProfileImg] = useState(null); // 프로필 미리보기 이미지
-    const [isSecondCourseEmpty, setIsSecondCourseEmpty] = useState(true);
-    const [isPasswordEmpty, setIsPasswordEmpty] = useState(true);
-    const [matchPasswordStatus, setMatchPasswordStatus] = useState(true) // 비밀번호 일치 상황
+    const splitStr = "%"
 
-    // form data    
-    const [name, setName] = useState('');
-    const [isStaff, setIsStaff] = useState(false);
-    const [birthdate, setBirthdate] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-
-    const [profileImgpath, setProfileImgpath] = useState('');
-    const [profileContent, setProfileContent] = useState('');
-    const [profileLink, setProfileLink] = useState('');
-    const [profileCourseStatus, setProfileCourseStatus] = useState('');
-
-    const [firstCourseName, setFirstCourseName] = useState('');
-    const [firstCampusName, setFirstCampusName] = useState('');
-    const [secondCourseName, setSecondCourseName] = useState('');
-    const [secondCampusName, setSecondCampusName] = useState('');
-    // 처음 second campus name 상태
-    const [courseApplicationStatus, setCourseApplicationStatus] = useState('');
-    const [campusList, setCampusList] = useState([])
+    // response profile data
+    const [profile, setProfile] = useState({});
+    const [campusList, setCampusList] = useState({})
     const [courseList, setCourseList] = useState({ first: [], second: [] })
 
+    // request profile (edit)data
+    const [editUser, setEditUser] = useState({});
+    const [editProfile, setEditProfile] = useState({});
+
+    // etc(validate ...)
+    const [thumbnail, setThumbnail] = useState();
+    const [contentLength, setContentLength] = useState(0);
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [matchPasswordStatus, setMatchPasswordStatus] = useState(true)
+    const [isPasswordEmpty, setIsPasswordEmpty] = useState(true);
+    const [secondCampusId, setSecondCampusId] = useState('');
+    const [secondCourseId, setSecondCourseId] = useState('');
+    const [isSecondCourseEmpty, setIsSecondCourseEmpty] = useState(true);
+
+    // css styles
     const inputStyle = "mt-1 px-3 py-2 text-gray-400 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sesac-sub focus:ring-sesac-sub block rounded-md sm:text-sm focus:ring-1"
     const inputReadOnlyStyle = "mt-1 px-3 py-2 bg-gray-100 border shadow-sm border-slate-300 text-gray-900 placeholder-slate-400 focus:outline-none focus:border-sesac-sub focus:ring-sesac-sub block w-full rounded-md sm:text-sm focus:ring-1 cursor-not-allowed"
     const inputNotMatchStyle = "mt-1 px-3 py-2 text-gray-400 bg-white border-2 shadow-sm border-red-300 placeholder-slate-400 focus:outline-none focus:border-red-300 focus:ring-red-300 block rounded-md sm:text-sm focus:ring-1"
 
-    // url
-    useEffect(() => {
-        setIsPasswordEmpty(password == '')
-        if (password == '') {
-            setConfirmPassword('');
-            setMatchPasswordStatus(true)
-        }
-        setMatchPasswordStatus(password === confirmPassword);
-    }, [password + confirmPassword])
-
-    useEffect(() => {
-        setSecondCourseName('');
-    }, [secondCampusName])
-
-    useEffect(() => {
-        setIsSecondCourseEmpty(((secondCampusName != null) && (secondCourseName == '')) && (profileCourseStatus));
-    }, [secondCourseName])
-
-
-    // 프로필 데이터 가져오기
+    // useEffect
     useEffect(() => {
         axios.get(`/profile/${username}/edit/`)
             .then(
                 response => {
-                    const data = response.data;
-                    console.log(data)
-                    setName(data.profile.name)
-                    setIsStaff(data.profile.is_staff)
-                    setBirthdate(data.profile.birthdate)
-                    setPhoneNumber(data.profile.phone_number)
-                    setEmail(data.profile.email)
+                    let data = response.data
 
-                    setProfileImgpath(data.profile.profile_img_path)
-                    setEditProfileImg(SERVER + data.profile.profile_img_path)
-                    setProfileContent(data.profile.profile_content)
-                    setProfileLink(data.profile.profile_link)
-                    setProfileCourseStatus(data.profile.profile_course_status)
-
-                    setFirstCourseName(data.profile.first_course__name)
-                    setFirstCampusName(data.profile.first_course__campus__name)
-                    setSecondCourseName(data.profile.second_course__name)
-                    setSecondCampusName(data.profile.second_course__campus__name)
-
-                    setCourseApplicationStatus(data.profile.second_course__name == "")
-                    console.log(data.profile.profile_course_status)
-
+                    setProfile(data.profile);
+                    setThumbnail((SERVER + data.profile.response_img_path));
                     setCampusList(data.campus);
                 }
             )
             .catch(
-                error => console.error(error)
-            )
-    }, []);
+                error => {
+                    console.error(error.message);
+                }
 
+            )
+    }, [username])
+
+    useEffect(() => {
+        switch (password) {
+            case '':
+                setConfirmPassword('');
+                setIsPasswordEmpty(true);
+                setMatchPasswordStatus(true);
+                return
+            default:
+                setIsPasswordEmpty(false);
+                setMatchPasswordStatus(password == confirmPassword);
+                break;
+        }
+    }, [password + confirmPassword])
+
+    useEffect(() => {
+        let condition = false;
+        if (secondCampusId == '') {
+            condition = false;
+            setIsSecondCourseEmpty(false);
+        } else if (secondCampusId != '' && secondCourseId == '') {
+            condition = true;
+        }
+        setIsSecondCourseEmpty(condition);
+    }, [secondCampusId + secondCourseId])
 
     // functions
     const requestCoursesByCampus = (selectName, campusId) => { /* 캠퍼스에 해당하는 과정 가져오기 */
@@ -125,6 +107,10 @@ const EditProfile = function () {
                 name={selectName + 'Campus'}
                 onChange={(e) => {
                     const selectedCampusId = e.target.value;
+                    setSecondCourseId('');
+                    if (editProfile['second_course'] != undefined) {
+                        delete editProfile.second_course
+                    }
 
                     switch (selectedCampusId) {
                         case '':
@@ -135,7 +121,7 @@ const EditProfile = function () {
                             break;
                         default:
                             requestCoursesByCampus(selectName, selectedCampusId);
-                            setSecondCampusName(selectedCampusId);
+                            setSecondCampusId(selectedCampusId);
                             break;
                     }
                 }}>
@@ -147,7 +133,7 @@ const EditProfile = function () {
         );
     };
 
-    const changeImagePreview = (e) => { /* 업로드 한 이미지 미리보기 처리 */
+    const PreviewThumbnail = (e) => {
         const file = e.target.files[0];
 
         if (file) {
@@ -155,48 +141,62 @@ const EditProfile = function () {
 
             reader.onload = (e) => {
                 const imageUrl = e.target.result;
-                setEditProfileImg(imageUrl);
+                setThumbnail(imageUrl);
             };
 
             reader.readAsDataURL(file);
         }
-    };
+    }
 
-    const edit = async (event) => { /* 수정 요청 */
+    let setCopyData = (key, value) => {
+        let objType = key.split(splitStr)[0]
+        let objKey = key.split(splitStr)[1]
+
+        let copyData = null
+        let setFunction = null
+
+        switch (objType) {
+            case 'user':
+                copyData = editUser
+                setFunction = setEditUser
+                break;
+            case 'profile':
+                copyData = editProfile
+                setFunction = setEditProfile
+                break;
+        }
+
+        let copy = { ...copyData }
+
+        if (!((value == '') && (value == 0))) {
+            switch (objKey) {
+                case 'password':
+                    copy[objKey] = CryptoJS.SHA256(value).toString();
+                    break;
+                case 'second_course':
+                    copy['course_status'] = false;
+                default:
+                    copy[objKey] = value;
+                    break;
+            }
+        }
+
+        setFunction(copy);
+    }
+
+    const appendFormData = (formObj, data) => {
+        Object.entries(data).forEach(([key, value]) => {
+            formObj.append(key, value);
+        });
+    }
+
+    const edit = async (event, validatedCondition) => { /* 수정 요청 */
         event.preventDefault();
 
-        if ((!matchPasswordStatus) | isSecondCourseEmpty) {
-            return
-        } else {
-            let hashedPw = '';
-            password === '' ? hashedPw = hashedPw : hashedPw = CryptoJS.SHA256(password).toString();
-
+        if (validatedCondition) {
             const formData = new FormData();
-
-            const data = {
-                'birthdate': birthdate,
-                'phone_number': phoneNumber,
-                'password': hashedPw,
-                'second_course': secondCourseName,
-                'course_status': profileCourseStatus,
-                'img_path': profileImgpath,
-                'content': profileContent,
-                'link': profileLink,
-            }
-            Object.entries(data).forEach(([key, value]) => {
-                if (!(value == '' || value == null || value == '/media/profile/default_profile.png')) {
-                    formData.append(key, value);
-                }
-            });
-
-            // userFormData.append("birthdate", birthdate);
-            // userFormData.append("phone_number", phoneNumber);
-            // userFormData.append("password", hashedPw);
-            // userFormData.append("second_course", secondCourseName);
-
-            // profileFormData.append("img_path", profileImgpath);
-            // profileFormData.append("content", profileContent);
-            // profileFormData.append("link", profileLink);
+            appendFormData(formData, editUser);
+            appendFormData(formData, editProfile);
 
             axios.put(`/profile/${username}/edit/`, formData, {
                 headers: {
@@ -206,7 +206,7 @@ const EditProfile = function () {
             })
                 .then(response => {
                     console.log(response.data);
-                    navigate(`/profile/${username}`);
+                    // navigate(`/profile/${username}`);
                 })
                 .catch(error => {
                     console.log(error.response.data);
@@ -220,7 +220,9 @@ const EditProfile = function () {
             <div className="profile_edit_container flex justify-center pb-16">
                 <form
                     className="flex flex-col gap-5 w-2/6"
-                    onSubmit={edit}
+                    onSubmit={(e) => {
+                        edit(e, (matchPasswordStatus && !isSecondCourseEmpty));
+                    }}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                             edit(e);
@@ -230,17 +232,17 @@ const EditProfile = function () {
                 >
                     {/* 프로필 사진 */}
                     {
-                        isStaff ? null :
+                        profile.is_staff ? null :
                             (
                                 <section class="flex flex-col gap-5">
                                     <div className="flex justify-between items-center h-fit">
                                         <div className='w-[25%] rounded-full overflow-hidden border border-solid border-gray-200'>
-                                            <div className="block w-full h-full p-2" to={`/profile/${username}`}>
-                                                <img src={editProfileImg} alt='프로필 이미지' />
+                                            <div className="block w-full h-full p-2" to={`/profile/${profile.username}`}>
+                                                <img src={thumbnail} alt='프로필 이미지' />
                                             </div>
                                         </div>
                                         <div className="w-[70%] flex flex-col gap-2">
-                                            <h2 className="inline-block text-black-300 font-bold text-xl ml-2">{name}</h2>
+                                            <h2 className="inline-block text-black-300 font-bold text-xl ml-2">{profile.name}</h2>
                                             <label class="block">
                                                 <span class="sr-only">프로필 사진 선택</span>
                                                 <input
@@ -254,8 +256,8 @@ const EditProfile = function () {
                                             hover:file:bg-green-200"
                                                     onChange={
                                                         (e) => {
-                                                            setProfileImgpath(e.target.files[0]);
-                                                            changeImagePreview(e);
+                                                            setCopyData(`profile${splitStr}img_path`, e.target.files[0]);
+                                                            PreviewThumbnail(e);
                                                         }
                                                     }
                                                 />
@@ -273,7 +275,7 @@ const EditProfile = function () {
                                 type="text"
                                 name="content"
                                 className={`${inputReadOnlyStyle}`}
-                                placeholder={`${username}`}
+                                placeholder={`${profile.username}`}
                                 disabled readonly
                             />
                         </div>
@@ -284,7 +286,7 @@ const EditProfile = function () {
                                 type="text"
                                 name="content"
                                 className={`${inputReadOnlyStyle}`}
-                                placeholder={`${email}`}
+                                placeholder={`${profile.email}`}
                                 disabled readonly
                             />
                         </div>
@@ -300,6 +302,7 @@ const EditProfile = function () {
                                 placeholder="변경할 비밀번호를 입력해주세요!"
                                 onChange={(e) => {
                                     setPassword((e.target.value).trim());
+                                    setCopyData(`user${splitStr}password`, (e.target.value).trim());
                                 }
                                 }
                             />
@@ -327,7 +330,7 @@ const EditProfile = function () {
                                     }
                                 }
                                 value={confirmPassword}
-                                readOnly={isPasswordEmpty ? true : false}
+                                readOnly={(isPasswordEmpty) ? true : false}
                                 disable={isPasswordEmpty ? true : false}
                             />
                         </div>
@@ -338,11 +341,11 @@ const EditProfile = function () {
                                 type="text"
                                 name="content"
                                 className={`w-full ${inputStyle}`}
-                                placeholder={`${profileContent == undefined ? '한 줄로 나를 표현해보세요!' : profileContent}`}
+                                placeholder={`${profile.content == undefined ? '한 줄로 나를 표현해보세요!' : profile.content}`}
                                 maxLength={20}
                                 onChange={(e) => {
                                     setContentLength(e.target.value.length);
-                                    setProfileContent((e.target.value).trim());
+                                    setCopyData(`profile${splitStr}content`, (e.target.value).trim())
                                 }
                                 }
                             />
@@ -354,8 +357,11 @@ const EditProfile = function () {
                                 type="url"
                                 name="link"
                                 className={`w-full ${inputStyle}`}
-                                placeholder={`${profileLink == undefined ? '나를 표현할 수 있는 링크를 연결해보세요!' : profileLink}`}
-                                onChange={(e) => setProfileLink((e.target.value).trim())}
+                                placeholder={`${profile.link == undefined ? '나를 표현할 수 있는 링크를 연결해보세요!' : profile.link}`}
+                                onChange={
+                                    (e) =>
+                                        setCopyData(`profile${splitStr}link`, (e.target.value).trim())
+                                }
                             />
                         </div>
                         {/* 생년월일 */}
@@ -365,8 +371,14 @@ const EditProfile = function () {
                                 type="date"
                                 name="birthdate"
                                 className={`w-full ${inputStyle}`}
-                                value={`${birthdate}`}
-                                onChange={(e) => setBirthdate(e.target.value)}
+                                value={`${profile.birthdate}`}
+                                onChange={(e) => {
+                                    let copy = profile
+                                    copy.birthdate = e.target.value;
+                                    setProfile(copy);
+                                    setCopyData(`user${splitStr}birthdate`, e.target.value);
+                                }
+                                }
                             />
                         </div>
                         {/* 연락처 */}
@@ -377,8 +389,9 @@ const EditProfile = function () {
                                 pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}"
                                 name="phone_number"
                                 className={`w-full ${inputStyle}`}
-                                placeholder={`${phoneNumber}`}
-                                onChange={(e) => setPhoneNumber((e.target.value).trim())}
+                                placeholder={`${profile.phone_number}`}
+                                onChange={(e) =>
+                                    setCopyData(`user${splitStr}phone_number`, (e.target.value).trim())}
                             />
                         </div>
                         {/* 과정 */}
@@ -388,42 +401,46 @@ const EditProfile = function () {
                                 type="text"
                                 name="first_course_name"
                                 className={`w-full ${inputReadOnlyStyle}`}
-                                placeholder={`${firstCampusName} 캠퍼스, ${firstCourseName}`}
+                                placeholder={`${profile.first_campus_name} 캠퍼스, ${profile.first_course_name}`}
                                 disabled readonly
                             />
                         </div>
                         <div className="text-sm">
                             <div className="font-bold text-sesac-green">캠퍼스 2</div>
-                            {profileCourseStatus ? (courseApplicationStatus ? (
-                                <div className="flex gap-3">
+                            {
+                                profile.response_course_status == 0 ? (<div className="flex gap-3">
                                     {generateCampusSelectAndOptionsElements('second')}
                                     <select
                                         className={`w-[80%] ${inputStyle}`}
                                         name="second_course__name"
-                                        // value={secondCampusName}
                                         onChange={(e) => {
-                                            setSecondCourseName(e.target.value);
+                                            setSecondCourseId(e.target.value);
+                                            setCopyData(`profile${splitStr}second_course`, e.target.value);
                                         }}
                                     >
                                         <CourseOptions courseList={courseList.second} />
                                     </select>
                                 </div>
-                            ) : (
-                                <input
-                                    type="text"
-                                    name="second_course_name"
-                                    class={`w-full ${inputReadOnlyStyle}`}
-                                    placeholder={`${secondCampusName} 캠퍼스, ${secondCourseName}`}
-                                />
-                            )) : (
-                                <input
-                                    type="text"
-                                    name="course_status"
-                                    className={`w-full ${inputReadOnlyStyle}`}
-                                    placeholder={`과정 승인을 기다리는 중입니다.`}
-                                    disabled readonly
-                                />
-                            )
+                                )
+                                    : (
+                                        profile.response_course_status == 10 ? (
+                                            <input
+                                                type="text"
+                                                name="second_course_name"
+                                                class={`w-full ${inputReadOnlyStyle}`}
+                                                placeholder={`${profile.second_campus_name} 캠퍼스, ${profile.second_course_name}`}
+                                            />
+                                        ) :
+                                            (
+                                                <input
+                                                    type="text"
+                                                    name="course_status"
+                                                    className={`w-full ${inputReadOnlyStyle}`}
+                                                    placeholder={`과정 승인을 기다리는 중입니다.`}
+                                                    disabled readonly
+                                                />
+                                            )
+                                    )
 
                             }
                         </div>
@@ -443,7 +460,7 @@ const EditProfile = function () {
                             value="수정하기"
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
-                                    edit(e);
+                                    edit(e, (matchPasswordStatus && !isSecondCourseEmpty));
                                 }
                             }
                             }
@@ -459,7 +476,7 @@ const EditProfile = function () {
 function CourseOptions({ courseList }) {
     return (
         <>
-            <option value=''>선택</option>
+            <option value="">선택</option>
             {courseList.map((course) => (
                 <option key={course.id} value={course.id}>{course.name}</option>
             ))}

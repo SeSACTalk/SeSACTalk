@@ -57,13 +57,13 @@ class ProfileView(APIView, SessionDecoderMixin):
 class EditProfileView(APIView, SessionDecoderMixin):
     def get(self, request:HttpRequest, username: str) -> Response:
         # session_key로 user_id get
-        profile_user_id = user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
+        user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
         
         # user_id와 username 값 비교(True == 내 프로필)
         if (username == User.objects.get(id = user_id).username):
             try:
                 # User, Profile, Course, and Campus 모델을 조인하여 필요한 필드들을 조회
-                profile_queryset = Profile.objects.select_related('user').filter(user__username = username).first()
+                profile_queryset = Profile.objects.select_related('user').filter(user_id = user_id).first()
                 profileSerializers = EditProfileSerializer(profile_queryset)
 
                 # 프로필 수정 폼의 캠퍼스 셀렉트 옵션을 보낸다.
@@ -71,7 +71,7 @@ class EditProfileView(APIView, SessionDecoderMixin):
                 campusSerializer = CampusSerializer(campuses, many = True)
 
                 response_data = {
-                    'profile' : profileSerializers.data,
+                     'profile' : profileSerializers.data,
                     'campus': campusSerializer.data,
                 }
 
@@ -84,70 +84,25 @@ class EditProfileView(APIView, SessionDecoderMixin):
                     response_data['course'] = courseSerializer.data
 
 
-            except Exception:
-                print(Exception)
+            except Profile.DoesNotExist as e:
+                print(f"{e}:프로필을 찾을 수 없음")
                 return Response({'error': 'EditProfile not found'}, status=status.HTTP_404_NOT_FOUND)
             return Response(data = response_data, status=status.HTTP_200_OK)
         else:
-            return Response({'error': 'EditProfile not found'}, status=status.HTTP_404_NOT_FOUND)
+            print("잘못된 접근")
+            return Response({'error': 'ERROR(forbidden): 잘못된 접근입니다.'}, status=status.HTTP_403_FORBIDDEN)
 
-    def check_second_course_request(self, data):
-        second_course_id = data.get('second_course')
-        if second_course_id:
-            try:
-                int(second_course_id)
-                print(f'두 번째 과정이 신청됨 : {second_course_id}')
-                return False
-            except:
-                print('이미 신청 처리된 두 번째 과정이 있음')
-        else:
-            print('신청된 두 번째 과정 없음')
-
-        return True
-    def copy_querydict(self, data, keys, course_status, **kwargs):
-        result = QueryDict(mutable=True)
-        for key, value in data.items():
-            if key in keys:
-                if not course_status and (key == 'second_course'):
-                    result[key] = int(value)
-                elif key == 'course_status':
-                    print(course_status)
-                    if bool(value):
-                        result[key] = course_status
-                elif key == 'img_path':
-                    result[key] = (kwargs['request']).FILES[key]
-                else:
-                    result[key] = value
-        return result
-
-    def put(self, request:HttpRequest, username: str) -> Response:
+    def put(self, request: HttpRequest, username: str) -> Response:
         # session_key로 user_id get
         user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
-        request_data = request.data
-        
-        course_status = self.check_second_course_request(request_data)
-        user_keys = ['birthdate','phone_number','password','second_course']
-        profile_keys = ['img_path','content','link', 'course_status']
-        user_querydict = self.copy_querydict(request_data, user_keys, course_status)
-        profile_querydict = self.copy_querydict(request_data, profile_keys, course_status, request = request)
-        
-        user = User.objects.get(pk=user_id)
         profile = Profile.objects.get(user_id=user_id)
-        
-        # update
-        userSerializer = UserSerializer(user, data = user_querydict, partial=True)
-        profileSerializer = ProfileSerializer(profile, data = profile_querydict, partial=True)
+        edit_profile_serializer = EditProfileSerializer(profile, data=request.data, partial=True)
 
-        if userSerializer.is_valid() and profileSerializer.is_valid():
-            userSerializer.save()
-            profileSerializer.save()
+        if edit_profile_serializer.is_valid():
+            edit_profile_serializer.save()
         else:
-            errors = {
-                'user_errors': userSerializer.errors,
-                'profile_errors': profileSerializer.errors,
-            }
-            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response(edit_profile_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
         return Response({'message': 'Data updated successfully'}, status=status.HTTP_200_OK)
 
 
