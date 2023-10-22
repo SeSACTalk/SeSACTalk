@@ -103,7 +103,7 @@ class ProfileSetSerializer(serializers.ModelSerializer):
 
     def get_img_path(self, profile):
         if profile.img_path:
-            profile_img_path = profile.img_path
+            profile_img_path = '/media/' + str(profile.img_path)
         else:
             profile_img_path = '/media/profile/default_profile.png'
 
@@ -141,11 +141,7 @@ class EditProfileSerializer(serializers.ModelSerializer):
     phone_number = serializers.CharField(source='user.phone_number')
 
     # profile fields
-    img_path = serializers.ImageField()
     response_img_path = serializers.SerializerMethodField(read_only=True)
-    content = serializers.CharField()
-    link = serializers.URLField()
-    course_status = serializers.BooleanField()
     response_course_status = serializers.SerializerMethodField(read_only=True)
 
     # course, campus fields
@@ -188,7 +184,7 @@ class EditProfileSerializer(serializers.ModelSerializer):
 
     def get_response_img_path(self, profile):
         if profile.img_path:
-            profile_img_path = profile.img_path
+            profile_img_path = '/media/' + str(profile.img_path)
         else:
             profile_img_path = '/media/profile/default_profile.png'
 

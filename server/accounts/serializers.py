@@ -81,7 +81,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
     def get_profile_set(self, user):
         profile_img = user.profile_set.first().img_path
         if profile_img:
-            profile_img_path = profile_img
+            profile_img_path = '/media/' + str(profile_img)
         else:
             profile_img_path = '/media/profile/default_profile.png'
             
@@ -96,7 +96,7 @@ class UserWithdrawInfoSerializer(serializers.ModelSerializer):
     def get_profile_img_path(self, user):
         profile_obj = user.profile_set.first()
         if profile_obj.img_path:
-            profile_img_path = profile_obj.img_path
+            profile_img_path = '/media/' + str(profile_obj.img_path)
         else:
             profile_img_path = '/media/profile/default_profile.png'
 

@@ -201,7 +201,6 @@ const EditProfile = function () {
             axios.put(`/profile/${username}/edit/`, formData, {
                 headers: {
                     'Content-Type': "multipart/form-data",
-                    'Authorization': session_key
                 }
             })
                 .then(response => {
@@ -215,8 +214,9 @@ const EditProfile = function () {
     };
 
 
+
     return (
-        <>
+        <> 
             <div className="profile_edit_container flex justify-center pb-16">
                 <form
                     className="flex flex-col gap-5 w-2/6"

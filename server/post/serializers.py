@@ -63,7 +63,7 @@ def get_date(date):
 
 def get_img_path(profileObj):
     if profileObj.img_path:
-        profile_img_path = profileObj.img_path
+        profile_img_path = '/media/' + str(profileObj.img_path)
     else:
         profile_img_path = '/media/profile/default_profile.png'
 

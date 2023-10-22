@@ -46,7 +46,7 @@ class ReplySerializer(serializers.ModelSerializer):
     def get_img_path(self, reply):
         profile = reply.user.profile_set.first()
         if profile.img_path:
-            img_path = profile.img_path
+            img_path = '/media/' + str(profile.img_path)
         else:
             img_path = '/media/profile/default_profile.png'
 

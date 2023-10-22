@@ -1,4 +1,5 @@
 from django.db.models import Count, Subquery, OuterRef, F, Q
+from django.db.models.fields.files import ImageFieldFile
 from django.http import HttpRequest, QueryDict
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -96,6 +97,7 @@ class EditProfileView(APIView, SessionDecoderMixin):
         # session_key로 user_id get
         user_id = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION', ''))
         profile = Profile.objects.get(user_id=user_id)
+
         edit_profile_serializer = EditProfileSerializer(profile, data=request.data, partial=True)
 
         if edit_profile_serializer.is_valid():
@@ -104,7 +106,6 @@ class EditProfileView(APIView, SessionDecoderMixin):
             return Response(edit_profile_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'message': 'Data updated successfully'}, status=status.HTTP_200_OK)
-
 
 class ProfilePost(APIView, SessionDecoderMixin):
     def get(self, request:HttpRequest, user_pk: int) -> Response:

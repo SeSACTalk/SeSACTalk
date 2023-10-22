@@ -28,7 +28,7 @@ class UserExploreSerializer(serializers.ModelSerializer):
 
     def get_profile_img_path(self, profile):
         if profile.img_path:
-            profile_img_path = profile.img_path
+            profile_img_path = '/media/' + str(profile.img_path)
         else:
             profile_img_path = '/media/profile/default_profile.png'
 

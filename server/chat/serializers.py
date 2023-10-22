@@ -33,7 +33,7 @@ class ChatRoomOneSerializer(serializers.ModelSerializer):
     def get_profile_img_path(self, chatroom):
         profile = Profile.objects.get(user = chatroom.user_one.id)
         if profile.img_path:
-            profile_img_path = profile.img_path
+            profile_img_path = '/media/' + str(profile.img_path)
         else:
             profile_img_path = '/media/profile/default_profile.png'
 
@@ -62,7 +62,7 @@ class ChatRoomTwoSerializer(serializers.ModelSerializer):
     def get_profile_img_path(self, chatroom):
         profile = Profile.objects.get(user = chatroom.user_two.id)
         if profile.img_path:
-            profile_img_path = profile.img_path
+            profile_img_path = '/media/' + str(profile.img_path)
         else:
             profile_img_path = '/media/profile/default_profile.png'
 
@@ -88,7 +88,7 @@ class ChatProfileSerializer(serializers.ModelSerializer):
     def get_profile_img_path(self, user):
         profile = Profile.objects.get(user = user.id)
         if profile.img_path:
-            profile_img_path = profile.img_path
+            profile_img_path = '/media/' + str(profile.img_path)
         else:
             profile_img_path = '/media/profile/default_profile.png'
 

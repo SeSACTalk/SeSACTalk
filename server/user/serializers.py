@@ -11,7 +11,7 @@ from datetime import datetime
 
 def get_img_path(obj):
     if obj.img_path:
-        profile_img_path = obj.img_path
+        profile_img_path = '/media/' + str(obj.img_path)
     else:
         profile_img_path = '/media/profile/default_profile.png'
 
