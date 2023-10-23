@@ -205,7 +205,7 @@ const EditProfile = function () {
             })
                 .then(response => {
                     console.log(response.data);
-                    // navigate(`/profile/${username}`);
+                    window.location.href = `/profile/${username}`;
                 })
                 .catch(error => {
                     console.log(error.response.data);
@@ -216,7 +216,7 @@ const EditProfile = function () {
 
 
     return (
-        <> 
+        <>
             <div className="profile_edit_container flex justify-center pb-16">
                 <form
                     className="flex flex-col gap-5 w-2/6"
