@@ -1,4 +1,5 @@
 import io
+import os
 
 from PIL import Image
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -154,7 +155,7 @@ class EditProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = '__all__'
 
-    def update_user_field(self, user_obj, validated_data, field_name)-> None:
+    def set_user_field(self, user_obj, validated_data, field_name)-> None:
         try:
             field_value = validated_data[field_name]
             if field_name == 'password':
@@ -165,21 +166,26 @@ class EditProfileSerializer(serializers.ModelSerializer):
         except KeyError:
             return
 
-    def set_user_field(self, user_obj, validated_data)-> None:
+    def update_user_field(self, user_obj, validated_data)-> None:
         user_fields = ['password', 'second_course', 'birthdate', 'phone_number']
 
         for user_field in user_fields:
-            self.update_user_field(user_obj, validated_data, user_field)
+            self.set_user_field(user_obj, validated_data, user_field)
         user_obj.save()
+
+    def remove_origin_profile_img_file(self, profile, validated_data):
+        if 'img_path' in validated_data:
+            img_path_path = profile.img_path.path
+            if os.path.isfile(img_path_path):
+                os.remove(img_path_path)
 
     def update(self, profile, validated_data):
         # user update
-        try:
-            self.set_user_field(profile.user, validated_data.pop('user'))
-        except KeyError:
-            pass
+        if 'user' in validated_data:
+            self.update_user_field(profile.user, validated_data.pop('user'))
 
         # profile update
+        self.remove_origin_profile_img_file(profile, validated_data)
         return super().update(profile, validated_data)
 
     def get_response_img_path(self, profile):

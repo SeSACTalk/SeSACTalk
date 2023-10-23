@@ -13,7 +13,6 @@ const FindId = function () {
     // DOM
     const submitButton = useRef(null);
 
-
     const findUser = async (e) => {
         e.preventDefault();
         try {

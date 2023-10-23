@@ -81,7 +81,7 @@ const Login = function () {
                 <div className='flex flex-col justify-center gap-5 w-2/5 h-full'>
                     <div className='border p-5'>
                         <div className='flex items-center place-content-center mb-10'>
-                            <div className='w-10'>
+                            <div className='w-10 overflow-hidden'>
                                 <img src={`${process.env.PUBLIC_URL}/img/logo.png`} alt='새싹톡' />
                             </div>
                             <h1 className='font-bold text-lg'>SeSAC Talk</h1>
