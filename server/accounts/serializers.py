@@ -42,62 +42,51 @@ class CourseSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'campus')
         
 class UserSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(
-        validators = [
-            UsernameRegexValidator(),
-            LengthValidator('아이디', 8, 20)
-        ]
-    )
-    name = serializers.CharField(
-        validators = [
-            NameRegexValidator(),
-            LengthValidator('이름', 2, 5)
-        ]
-    )
-    phone_number = serializers.CharField(
-        validators = [
-            PhonenumberRegexValidator(),
-            LengthValidator('전화번호', 13, 13)
-        ]
-    )
-
-    class Meta:
-        model = User
-        fields = '__all__'
-
-class UserInfoSerializer(serializers.ModelSerializer):
-    profile_set = serializers.SerializerMethodField()
+    profile_img_path = serializers.SerializerMethodField()
     campus_name = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ('id', 'name', 'username', 'campus_name', 'profile_set')
+        fields = '__all__'
+        read_only_fields = ['profile_img_path', 'campus_name']
+        extra_kwargs = {
+            'username': {
+                'validators': [
+                    UsernameRegexValidator(),
+                    LengthValidator('아이디', 8, 20)
+                ]},
+            'name': {
+                'validators': [
+                    NameRegexValidator(),
+                    LengthValidator('이름', 2, 5)
+                ]},
+            'phone_number': {
+                'validators': [
+                    PhonenumberRegexValidator(),
+                    LengthValidator('전화번호', 13, 13)
+                ]},
+        }
 
-    def get_campus_name(self, user):
-        if user.second_course:
-            return user.second_course.campus.name
-        return user.first_course.campus.name
+        # method serializer
+    def get_profile_img_path(self, instance):
+        img = instance.profile_set.first().img_path
+        img_path = '/media/profile/default_profile.png'
 
-    def get_profile_set(self, user):
-        profile_img = user.profile_set.first().img_path
-        if profile_img:
-            profile_img_path = '/media/' + str(profile_img)
-        else:
-            profile_img_path = '/media/profile/default_profile.png'
-            
-        return profile_img_path
-class UserWithdrawInfoSerializer(serializers.ModelSerializer):
-    profile_img_path = serializers.SerializerMethodField(read_only=True)
+        if img:
+            img_path = '/media/' + str(img)
 
+        return img_path
+
+    def get_campus_name(self, instance):
+        if instance.second_course:
+            return instance.second_course.campus.name
+        return instance.first_course.campus.name
+
+class UserInfoSerializer(UserSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'name', 'username', 'campus_name', 'profile_img_path']
+class UserWithdrawInfoSerializer(UserSerializer):
     class Meta:
         model = User
         fields = ['username', 'profile_img_path']
-
-    def get_profile_img_path(self, user):
-        profile_obj = user.profile_set.first()
-        if profile_obj.img_path:
-            profile_img_path = '/media/' + str(profile_obj.img_path)
-        else:
-            profile_img_path = '/media/profile/default_profile.png'
-
-        return profile_img_path

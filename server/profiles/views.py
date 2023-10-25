@@ -126,10 +126,9 @@ class ProfilePost(APIView, SessionDecoderMixin):
 
 class ProfileLike(APIView, SessionDecoderMixin):
     def get(self, request:HttpRequest, user_pk: int) -> Response:
-        # Reply 쿼리
-        likes = Like.objects.filter(user=user_pk) \
-            .select_related('user', 'post')\
-            .order_by('-date')
+        likes = Post.objects.filter(like__user=user_pk) \
+                .select_related('user')\
+                .order_by('-date')
 
         likesSetSerializer = LikesSetSerializer(likes, many=True, context={'login_user_id' : user_pk})
 
@@ -141,11 +140,11 @@ class ProfileLike(APIView, SessionDecoderMixin):
 class ProfileReply(APIView, SessionDecoderMixin):
     def get(self, request:HttpRequest, user_pk: int) -> Response:
         # Reply 쿼리
-        replys = Reply.objects.filter(
-                Q(user=user_pk) & Q(report_status=False)
-            )\
-            .select_related('user', 'post')\
-            .order_by('-date')
+        replys = Post.objects.filter(
+                    Q(reply__user=user_pk) & Q(reply__report_status=False)
+                )\
+                .select_related('user')\
+                .order_by('-date')
 
         replysSetSerializer = ReplysSetSerializer(replys, many=True, context={'login_user_id' : user_pk})
 

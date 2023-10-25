@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 
+from accounts.models import User
 from explore.serializers import UserExploreSerializer, HashTagExploreSerializer, HashTagExploreResultSerializer
 from post.models import HashTag, Post
 from profiles.models import Profile
@@ -13,15 +14,11 @@ class ExploreUsers(APIView):
     def get(self, request:HttpRequest) -> Response:
         # 사용자명
         name = request.query_params.get('name')
-
-        users = Profile.objects.filter(
-            Q(user__name__startswith = name) &
-            Q(user__is_active = True) &
-            (Q(user__is_auth = 10) | Q(user__is_auth = 11) | Q(user__is_auth = 21)
+        users = User.objects.filter(
+            Q(name__startswith = name) &
+            Q(is_active = True) &
+            (Q(is_auth = 10) | Q(is_auth = 11) | Q(is_auth = 21)
          )
-        ).select_related(
-            'user__first_course__campus',
-            'user__second_course__campus'
         ).all()
         
         serializer = UserExploreSerializer(users, many = True)

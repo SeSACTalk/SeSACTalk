@@ -1,4 +1,4 @@
-class ResponseMessages():
+class ResponseMessages:
     FORBIDDEN_ACCESS = 'ERROR(forbidden): 잘못된 접근입니다(인증되지 않은 사용자).'
     VERIFIED_SESSION_KEY = 'VERIFIED SESSION KEY: 유효한 세션 키입니다.'
     INVALID_CREDENTIALS = 'INVALID CREDENTIALS: 로그인 아이디 또는 비밀번호가 잘못되었습니다.'
