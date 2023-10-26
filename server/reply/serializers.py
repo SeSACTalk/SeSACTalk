@@ -13,19 +13,25 @@ class ReplySerializer(serializers.ModelSerializer):
     campusname = serializers.SerializerMethodField(read_only=True)
 
     post_id = serializers.IntegerField(source='post.id', read_only=True)
+
     class Meta:
         model = Reply
         fields = '__all__'
-    def get_campusname(self, reply):
-        user = reply.user
-        try:
-            campus_name = user.second_course.campus.name
-        except Exception:
-            campus_name = user.first_course.campus.name
-        return campus_name
 
-    def get_date(self, reply):
-        date = reply.date
+    def get_campusname(self, instance):
+        user = instance.user
+        second_course = user.second_course
+        return_campusname = None
+
+        if user.second_course:
+            return_campusname = second_course.campus.name
+        else:
+            return_campusname = user.first_course.campus.name
+
+        return return_campusname
+
+    def get_date(self, instance):
+        date = instance.date
         today = datetime.now(date.tzinfo)
         difference = today - date
 
@@ -43,8 +49,8 @@ class ReplySerializer(serializers.ModelSerializer):
         else:
             return date.strftime('%Y년 %m월 %d일')
 
-    def get_img_path(self, reply):
-        profile = reply.user.profile_set.first()
+    def get_img_path(self, instance):
+        profile = instance.user.profile_set.first()
         if profile.img_path:
             img_path = '/media/' + str(profile.img_path)
         else:

@@ -166,9 +166,9 @@ function ProfileLikes({ user_id }) {
             : likeList.map((element, i) => {
               return (
                 <div className={`like_container flex gap-6 items-center p-5 h-24 ${((i + 1) != likeList.length) ? 'border-solid border-b border-gray-200' : ''}`} key={i}>
-                  <Link to={`/profile/${element.post_user_username}`}>
+                  <Link to={`/profile/${element.username}`}>
                     <div className='img_wrap w-16 h-16 p-2 rounded-full overflow-hidden border border-solid border-gray-200'>
-                      <img src={`${element.post_user_is_staff ? (process.env.PUBLIC_URL + "/img/logo.png") : (SERVER + element.post_user_profile_img_path)}`} alt={element.post_user_username} />
+                      <img src={`${element.is_staff ? (process.env.PUBLIC_URL + "/img/logo.png") : (SERVER + element.profile_img_path)}`} alt={element.username} />
                     </div>
                   </Link>
                   <div className="flex flex-col align-middle gap-1">
@@ -179,28 +179,28 @@ function ProfileLikes({ user_id }) {
                           {
                             element.is_current_user ? '내' :
                               (
-                                element.post_user_is_staff ? (element.post_user_campusname + '캠퍼스') : (element.post_user_name)
+                                element.is_staff ? (element.campusname + '캠퍼스') : (element.name)
                               )
                           }
                           <span> 게시물</span>
                           <span className="text-xs ml-2">
-                            {element.format_date}
+                            {element.date}
                             {
-                              element.format_date != undefined ?
-                                (!(element.format_date.includes("년")) ? " 전" : "") : ""
+                              element.date != undefined ?
+                                (!(element.date.includes("년")) ? " 전" : "") : ""
                             }
                           </span>
                         </div>
                       </p>
                     </div>
                     <article className="like_content">
-                      <Link to={`/post/${element.post_uuid}`} onClick={() => {
+                      <Link to={`/post/${element.uuid}`} onClick={() => {
                         // 상세경로 저장
-                        dispatch(setDetailPath(`${element.post_user_username}/${element.post_id}`))
+                        dispatch(setDetailPath(`${element.username}/${element.id}`))
                       }}>
                         <p className='flex flex-col gap-1 text_wrap justify-center'>
                           <span className='text-lg'>{
-                            element.post_content.length > 20 ? element.post_content.substring(0, 20) + '...' : element.post_content
+                            element.content.length > 20 ? element.content.substring(0, 20) + '...' : element.content
                           }</span>
                         </p>
                       </Link>
@@ -250,9 +250,9 @@ function ProfileReplys({ user_id }) {
             : replyList.map((element, i) => {
               return (
                 <div className={`reply_container flex gap-6 items-center p-3 h-24 ${((i + 1) != replyList.length) ? 'border-solid border-b border-gray-200' : ''}`} key={i}>
-                  <Link to={`/profile/${element.post_user_username}`}>
+                  <Link to={`/profile/${element.username}`}>
                     <div className='img_wrap w-16 h-16 p-2 rounded-full overflow-hidden border border-solid border-gray-200'>
-                      <img src={`${element.post_user_is_staff ? (process.env.PUBLIC_URL + "/img/logo.png") : (SERVER + element.post_user_profile_img_path)}`} alt={element.post_user_username} />
+                      <img src={`${element.is_staff ? (process.env.PUBLIC_URL + "/img/logo.png") : (SERVER + element.profile_img_path)}`} alt={element.username} />
                     </div>
                   </Link>
                   <div className="flex flex-col align-middle gap-1">
@@ -263,24 +263,24 @@ function ProfileReplys({ user_id }) {
                           {
                             element.is_current_user ? '내' :
                               (
-                                element.post_user_is_staff ? (element.post_user_campusname + '캠퍼스') : (element.post_user_name)
+                                element.is_staff ? (element.campusname + '캠퍼스') : (element.name)
                               )
                           }
                           <span> 게시물</span>
                           <span className="text-xs ml-2">
-                            {element.format_date}
+                            {element.date}
                             {
-                              element.format_date != undefined ?
-                                (!(element.format_date.includes("년")) ? " 전" : "") : ""
+                              element.date != undefined ?
+                                (!(element.date.includes("년")) ? " 전" : "") : ""
                             }
                           </span>
                         </div>
                       </p>
                     </div>
                     <article className="reply_content">
-                      <Link to={`/post/${element.post_uuid}`} onClick={() => {
+                      <Link to={`/post/${element.uuid}`} onClick={() => {
                         // 상세경로 저장
-                        dispatch(setDetailPath(`${element.post_user_username}/${element.post_id}`))
+                        dispatch(setDetailPath(`${element.username}/${element.id}`))
                       }}>
                         <p className='flex flex-col gap-1 text_wrap justify-center'>
                           <span className='text-lg'>{

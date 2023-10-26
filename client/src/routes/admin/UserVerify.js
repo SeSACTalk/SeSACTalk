@@ -16,6 +16,7 @@ const UserVerify = function () {
                     // 사용자 리스트 복사
                     let list_copy = [...response.data.list]
                     setUsers(list_copy)
+                    console.log(list_copy)
 
                     // 캠퍼스 리스트 복사
                     let campus_copy = [...response.data.campus]

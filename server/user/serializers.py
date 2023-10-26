@@ -1,107 +1,43 @@
 from django.db.models import Q
 from rest_framework import serializers
 
+from accounts.serializers import UserSerializer
 from post.models import Reply, Like
-from profiles.models import Profile
-from accounts.models import User, Course, Campus
+from accounts.models import User
 from user.models import UserRelationship, Notification
 
 from datetime import datetime
 
-
-def get_img_path(obj):
-    if obj.img_path:
-        profile_img_path = '/media/' + str(obj.img_path)
-    else:
-        profile_img_path = '/media/profile/default_profile.png'
-
-    return profile_img_path
-
-def get_user_campusname(obj):
-    user = User.objects.get(pk=obj.id)
-    try:
-        campus_name = Campus.objects.get(pk=user.second_course.campus.id).name
-    except Exception as e:
-        print(e)
-        campus_name = Campus.objects.get(pk=user.first_course.campus.id).name
-    return campus_name
-
-def get_follow_status(user, login_user_id):
-    follow_status = UserRelationship.objects.filter(
-        Q(user_follow_id=user.id) & Q(user_follower_id=login_user_id)) \
-        .exists()
-    return follow_status
-
-class UserRelationshipSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserRelationship
-        fields = '__all__'
-
-class FollowSerializer(serializers.ModelSerializer):
-    follow_user_img_path = serializers.SerializerMethodField(read_only=True)
-    follow_user_id = serializers.IntegerField(source='id', read_only=True)
-    follow_user_name = serializers.CharField(source='name', read_only=True)
-    follow_user_username = serializers.CharField(source='username', read_only=True)
-    follow_user_campusname = serializers.SerializerMethodField(read_only=True)
-    follow_status = serializers.SerializerMethodField(read_only=True)
-    is_current_user = serializers.SerializerMethodField(read_only=True)
-
-
-    class Meta:
-        model = User
-        fields = '__all__'
-
-    def get_follow_user_img_path(self, user):
-        return get_img_path(user.profile_set.first())
-
-    def get_follow_user_campusname(self, user):
-        return get_user_campusname(user)
-
-    def get_follow_status(self, user):
-        login_user_id = self.context.get('login_user_id')
-        follow_status = None
-        if login_user_id:
-            follow_status = get_follow_status(user, login_user_id)
-        return follow_status
-
-    def get_is_current_user(self, user):
-        login_user_id = self.context.get('login_user_id')
-        is_current_user = None
-        if login_user_id:
-            is_current_user = (user.id == int(login_user_id))
-        return is_current_user
-
-class FollowerSerializer(serializers.ModelSerializer):
-    follower_user_img_path = serializers.SerializerMethodField(read_only=True)
-    follower_user_id = serializers.IntegerField(source='id', read_only=True)
-    follower_user_name = serializers.CharField(source='name', read_only=True)
-    follower_user_username = serializers.CharField(source='username', read_only=True)
-    follower_user_campusname = serializers.SerializerMethodField(read_only=True)
+class UserRelationshipSerializer(UserSerializer):
     follow_status = serializers.SerializerMethodField(read_only=True)
     is_current_user = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
-        fields = '__all__'
+        fields = [
+            'id', 'username', 'name',
+            'profile_img_path', 'campus_name',
+            'follow_status', 'is_current_user'
+        ]
 
-    def get_follower_user_img_path(self, user):
-        return get_img_path(user.profile_set.first())
+    def is_follow_status(self, user, login_user_id):
+        follow_status = UserRelationship.objects.filter(
+            Q(user_follow_id=user.id) & Q(user_follower_id=login_user_id)) \
+            .exists()
+        return follow_status
 
-    def get_follower_user_campusname(self, user):
-        return get_user_campusname(user)
-
-    def get_follow_status(self, user):
+    def get_follow_status(self, instance):
         login_user_id = self.context.get('login_user_id')
         follow_status = None
         if login_user_id:
-            follow_status = get_follow_status(user, login_user_id)
+            follow_status = self.is_follow_status(instance, login_user_id)
         return follow_status
 
-    def get_is_current_user(self, user):
+    def get_is_current_user(self, instance):
         login_user_id = self.context.get('login_user_id')
         is_current_user = None
         if login_user_id:
-            is_current_user = (user.id == int(login_user_id))
+            is_current_user = (instance.id == int(login_user_id))
         return is_current_user
 
 class NotificationSerializer(serializers.ModelSerializer):
@@ -134,13 +70,13 @@ class NotificationSerializer(serializers.ModelSerializer):
 
         return obj
 
-    def get_targeting_user_name(self, notification):
-        if notification.type in self.get_type_list('targeting_user_name') :
-            return notification.targeting_user.name
+    def get_targeting_user_name(self, instance):
+        if instance.type in self.get_type_list('targeting_user_name') :
+            return instance.targeting_user.name
         return None
 
-    def get_occur_date(self, notification):
-        date = notification.occur_date
+    def get_occur_date(self, instance):
+        date = instance.occur_date
         today = datetime.now(date.tzinfo)
         difference = today - date
 
@@ -158,25 +94,33 @@ class NotificationSerializer(serializers.ModelSerializer):
         else:
             return date.strftime('%Y년 %m월 %d일')
 
-    def get_profile_img_path(self, notification):
-        if notification.type in self.get_type_list('profile_img_path') :
-            return get_img_path(notification.targeting_user.profile_set.first())
+    def get_img_path(self, instance):
+        if instance.img_path:
+            profile_img_path = '/media/' + str(instance.img_path)
+        else:
+            profile_img_path = '/media/profile/default_profile.png'
+
+        return profile_img_path
+
+    def get_profile_img_path(self, instance):
+        if instance.type in self.get_type_list('profile_img_path') :
+            return self.get_img_path(instance.targeting_user.profile_set.first())
         return None
 
-    def get_post_id(self, notification):
-        type_ = notification.type
+    def get_post_id(self, instance):
+        type_ = instance.type
         post_id = None
 
         if type_ in self.get_type_list('post_id') :
-            post_id = self.get_model_obj(type_, notification.content_id).post.id
+            post_id = self.get_model_obj(type_, instance.content_id).post.id
 
         return post_id
 
-    def get_targeted_user_username(self, notification):
-        type_ = notification.type
+    def get_targeted_user_username(self, instance):
+        type_ = instance.type
         targeted_user_username = None
 
         if type_ in self.get_type_list('targeted_user_username') :
-            targeted_user_username = self.get_model_obj(type_, notification.content_id).user.username
+            targeted_user_username = self.get_model_obj(type_, instance.content_id).user.username
 
         return targeted_user_username

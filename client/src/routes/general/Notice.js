@@ -124,11 +124,11 @@ const Notice = function () {
                                         <article className="text-sm">
                                             <p>
                                                 <span className="text-lg mr-1">{element.name}</span>
-                                                <span className="text-sm text-sesac-green">{element.campus_name} 캠퍼스</span>
+                                                <span className="text-sm text-sesac-green">{element.campusname} 캠퍼스</span>
                                             </p>
                                             <p>{element.content && element.content.length > 10 ? `${element.content.slice(0, 10)} ...` : element.content}</p>
                                             <p className="text-red-300">
-                                                <i className="fa fa-heart" aria-hidden="true"></i> 좋아요 {element.like}개
+                                                <i className="fa fa-heart" aria-hidden="true"></i> 좋아요 {element.like_set}개
                                             </p>
                                         </article>
                                     </Link>

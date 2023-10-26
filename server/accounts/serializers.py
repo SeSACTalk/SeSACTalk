@@ -7,10 +7,12 @@ class UsernameRegexValidator(RegexValidator):
     regex = r'^(?=.*[a-zA-Z])(?=.*[0-9]).*$'
     message = '영문과 숫자를 포함한 아이디를 입력해주세요.'
     code = 'invalid_username'
+
 class NameRegexValidator(RegexValidator):
     regex = r'^[가-힣]*$'
     message = '한글 이름만 입력 가능합니다.'
     code = 'invalid_name'
+
 class PhonenumberRegexValidator(RegexValidator):
     regex = r'^\d{3}-\d{4}-\d{4}$'
     message = '(-)를 포함하여 입력해주세요.'
@@ -30,17 +32,6 @@ class LengthValidator:
         if not (len_val >= self.min_length and len_val <= self.max_length):
             raise serializers.ValidationError(f"""{self.type_}의 길이는 {self.min_length} 이상 또는 {self.max_length}이하의 길이어야 합니다.""")
 
-class CampusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Campus
-        fields = ('id', 'name', 'address')
-
-class CourseSerializer(serializers.ModelSerializer):
-    campus = CampusSerializer(read_only = True)
-    class Meta:
-        model = Course
-        fields = ('id', 'name', 'campus')
-        
 class UserSerializer(serializers.ModelSerializer):
     profile_img_path = serializers.SerializerMethodField()
     campus_name = serializers.SerializerMethodField()
@@ -86,7 +77,20 @@ class UserInfoSerializer(UserSerializer):
     class Meta:
         model = User
         fields = ['id', 'name', 'username', 'campus_name', 'profile_img_path']
+
 class UserWithdrawInfoSerializer(UserSerializer):
     class Meta:
         model = User
         fields = ['username', 'profile_img_path']
+
+class CampusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Campus
+        fields = ['id', 'name', 'address']
+
+class CourseSerializer(serializers.ModelSerializer):
+    campus = CampusSerializer(read_only=True)
+
+    class Meta:
+        model = Course
+        fields = ['id', 'name', 'campus']

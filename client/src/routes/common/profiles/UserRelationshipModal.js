@@ -79,20 +79,20 @@ const OwnFollowerModal = function ({ user_pk, isProfileMine, followerCount, setF
                             ? <p className="text-center mt-4 text-zinc-400 text-base">팔로워가 없습니다.</p>
                             : followerList.map((element, i) => {
                                 return (
-                                    <Link to={`/profile/${element.follower_user_username}`}>
+                                    <Link to={`/profile/${element.username}`}>
                                         <div className="flex items-center gap-3 px-4 py-2">
                                             <div className="w-[20%] rounded-full overflow-hidden border-2 border-solid border-gray-200">
-                                                <img className="w-full h-full p-2" src={`${SERVER + element.follower_user_img_path}`} />
+                                                <img className="w-full h-full p-2" src={`${SERVER + element.profile_img_path}`} />
                                             </div>
                                             <div className="w-[50%] flex flex-col">
-                                                <strong className="text-slate-900 text-lg font-medium dark:text-slate-200">{element.follower_user_name}</strong>
-                                                <span className="text-sesac-green text-sm font-medium dark:text-slate-400">{element.follower_user_campusname} 캠퍼스</span>
+                                                <strong className="text-slate-900 text-lg font-medium dark:text-slate-200">{element.name}</strong>
+                                                <span className="text-sesac-green text-sm font-medium dark:text-slate-400">{element.campus_name} 캠퍼스</span>
                                             </div>
                                             <div class="w-[30%] flex justify-end">
                                                 <button 
                                                     class="inline-block px-4 py-2 font-semibold text-sm bg-zinc-400 text-white rounded-full shadow-sm"  
                                                     onClick={(e)=>{
-                                                        deleteFollower(e, element.follower_user_id);
+                                                        deleteFollower(e, element.id);
                                                     }}>삭제</button>
                                             </div>
                                         </div>
@@ -184,20 +184,20 @@ const OwnFollowModal = function ({ user_pk, isProfileMine, followCount, setFollo
                             ? <p className="text-center mt-4 text-zinc-400 text-base">팔로우가 없습니다.</p>
                             : followList.map((element, i) => {
                                 return (
-                                    <Link to={`/profile/${element.follow_user_username}`}>
+                                    <Link to={`/profile/${element.username}`}>
                                         <div className="flex items-center gap-3 px-4 py-2">
                                             <div className="w-[20%] rounded-full overflow-hidden border-2 border-solid border-gray-200">
-                                                <img className="w-full h-full p-2" src={`${SERVER + element.follow_user_img_path}`} />
+                                                <img className="w-full h-full p-2" src={`${SERVER + element.profile_img_path}`} />
                                             </div>
                                             <div className="w-[50%] flex flex-col">
-                                                <strong className="text-slate-900 text-lg font-medium dark:text-slate-200">{element.follow_user_name}</strong>
-                                                <span className="text-sesac-green text-sm font-medium dark:text-slate-400">{element.follow_user_campusname} 캠퍼스</span>
+                                                <strong className="text-slate-900 text-lg font-medium dark:text-slate-200">{element.name}</strong>
+                                                <span className="text-sesac-green text-sm font-medium dark:text-slate-400">{element.campus_name} 캠퍼스</span>
                                             </div>
                                             <div class="w-[30%] flex justify-end">
                                                 <button 
                                                     class="inline-block px-4 py-2 font-semibold text-sm bg-zinc-400 text-white rounded-full shadow-sm"
                                                     onClick={(e)=>{
-                                                        unfollow(e, element.follow_user_id);
+                                                        unfollow(e, element.id);
                                                     }}
                                                 >취소</button>
                                             </div>
@@ -267,17 +267,17 @@ const OtherFollowerModal = function ({ user_pk, isProfileMine, followerCount, se
                             ? <p className="text-center mt-4 text-zinc-400 text-base">팔로워가 없습니다.</p>
                             : followerList.map((element, i) => {
                                 return (
-                                    <Link to={`/profile/${element.follower_user_username}`}>
+                                    <Link to={`/profile/${element.username}`}>
                                         <div className="flex items-center gap-3 px-4 py-2">
                                             <div className="w-[20%] rounded-full overflow-hidden border-2 border-solid border-gray-200">
-                                                <img className="w-full h-full p-2" src={`${SERVER + element.follower_user_img_path}`} />
+                                                <img className="w-full h-full p-2" src={`${SERVER + element.profile_img_path}`} />
                                             </div>
                                             <div className="w-[50%] flex flex-col">
-                                                <strong className="text-slate-900 text-lg font-medium dark:text-slate-200">{element.follower_user_name}</strong>
-                                                <span className="text-sesac-green text-sm font-medium dark:text-slate-400">{element.follower_user_campusname} 캠퍼스</span>
+                                                <strong className="text-slate-900 text-lg font-medium dark:text-slate-200">{element.name}</strong>
+                                                <span className="text-sesac-green text-sm font-medium dark:text-slate-400">{element.campus_name} 캠퍼스</span>
                                             </div>
                                             <div class="w-[30%] flex justify-end">
-                                                <OtherUserRelationshipBtn user_id = {element.follower_user_id} follow_status = {element.follow_status} is_current_user = {element.is_current_user}/>
+                                                <OtherUserRelationshipBtn user_id = {element.id} follow_status = {element.follow_status} is_current_user = {element.is_current_user}/>
                                             </div>
                                         </div>
                                     </Link>
@@ -351,17 +351,17 @@ const OtherFollowModal = function ({ user_pk, isProfileMine, followCount, setFol
                             ? <p className="text-center mt-4 text-zinc-400 text-base">팔로우가 없습니다.</p>
                             : followList.map((element, i) => {
                                 return (
-                                    <Link to={`/profile/${element.follow_user_username}`}>
+                                    <Link to={`/profile/${element.username}`}>
                                         <div className="flex items-center gap-3 px-4 py-2">
                                             <div className="w-[20%] rounded-full overflow-hidden border-2 border-solid border-gray-200">
-                                                <img className="w-full h-full p-2" src={`${SERVER + element.follow_user_img_path}`} />
+                                                <img className="w-full h-full p-2" src={`${SERVER + element.profile_img_path}`} />
                                             </div>
                                             <div className="w-[50%] flex flex-col">
-                                                <strong className="text-slate-900 text-lg font-medium dark:text-slate-200">{element.follow_user_name}</strong>
-                                                <span className="text-sesac-green text-sm font-medium dark:text-slate-400">{element.follow_user_campusname} 캠퍼스</span>
+                                                <strong className="text-slate-900 text-lg font-medium dark:text-slate-200">{element.name}</strong>
+                                                <span className="text-sesac-green text-sm font-medium dark:text-slate-400">{element.campus_name} 캠퍼스</span>
                                             </div>
                                             <div class="w-[30%] flex justify-end">
-                                                <OtherUserRelationshipBtn user_id = {element.follow_user_id} follow_status = {element.follow_status} is_current_user = {element.is_current_user}/>
+                                                <OtherUserRelationshipBtn user_id = {element.id} follow_status = {element.follow_status} is_current_user = {element.is_current_user}/>
                                             </div>
                                         </div>
                                     </Link>

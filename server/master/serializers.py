@@ -6,18 +6,20 @@ from profiles.serializers import ProfileSerializer
 from post.models import Report, Post, Reply
 
 class UserSerializer(serializers.ModelSerializer):
-    first_course = CourseSerializer(read_only = True)
-    second_course = CourseSerializer(read_only = True)
-    auth_approval_date = serializers.DateTimeField(format = "%Y년 %m월 %d일 %H시%M분")
-    last_login = serializers.DateTimeField(format = "%Y년 %m월 %d일 %H시%M분")
-    withdraw_date = serializers.DateTimeField(format = "%Y년 %m월 %d일 %H시%M분")
-
+    first_course = CourseSerializer(read_only=True)
+    second_course = CourseSerializer(read_only=True)
     is_auth = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        exclude = ('password', 'user_permissions', 'groups', 'signup_date')
-    
+        exclude = ['password', 'user_permissions', 'groups', 'signup_date']
+        extra_kwargs = {
+            'auth_approval_date': {'format': '%Y년 %m월 %d일 %H시%M분'},
+            'last_login': {'format': '%Y년 %m월 %d일 %H시%M분'},
+            'withdraw_date': {'format': '%Y년 %m월 %d일 %H시%M분'},
+            'signup_date': {'format': '%Y년 %m월 %d일'},
+        }
+
     def get_is_auth(self, user):
         if user.is_auth == 10:
             return '승인'
@@ -26,12 +28,9 @@ class UserSerializer(serializers.ModelSerializer):
         elif user.is_auth == 20:
             return '비밀번호 변경 대기'
 
-
 class UserAuthSerializer(serializers.ModelSerializer):
-    first_course = CourseSerializer(read_only = True)
-    second_course = CourseSerializer(read_only = True)
-    signup_date = serializers.DateTimeField(format = "%Y년 %m월 %d일")
-    auth_approval_date = serializers.DateTimeField(format = "%Y년 %m월 %d일 %H시 %M분")
+    first_course = CourseSerializer(read_only=True)
+    second_course = CourseSerializer(read_only=True)
 
     def validate(self, data):
         is_auth = data.get('is_auth')
@@ -41,7 +40,8 @@ class UserAuthSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        exclude = ('password', 'user_permissions', 'groups', 'withdraw_date', 'last_login', 'is_superuser')
+        exclude = ['password', 'user_permissions', 'groups', 'withdraw_date', 'last_login', 'is_superuser']
+        extra_kwargs = UserSerializer.Meta.extra_kwargs
 
 class UserCourseSerializer(serializers.ModelSerializer):
     campus_name = serializers.SerializerMethodField()
@@ -50,14 +50,14 @@ class UserCourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'name', 'username', 'campus_name', 'course_name', 'profile_set')
+        fields = ['id', 'name', 'username', 'campus_name', 'course_name', 'profile_set']
 
     def get_campus_name(self, user):
         return user.second_course.campus.name
-        
+
     def get_course_name(self, user):
-         return user.second_course.name
-    
+        return user.second_course.name
+
     def get_profile_set(self, user):
         profile = user.profile_set.get()
         serializer = ProfileSerializer(profile)
@@ -75,6 +75,7 @@ class ReportDetailSerializer(serializers.ModelSerializer):
     post_id = serializers.SerializerMethodField(read_only=True)
 
     uri = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Report
         fields = '__all__'
@@ -84,7 +85,7 @@ class ReportDetailSerializer(serializers.ModelSerializer):
 
     def get_ko_content_type(self, report):
         content_type = report.content_type
-                
+
         if content_type == 'reply':
             return '댓글'
         if content_type == 'post':
@@ -102,6 +103,7 @@ class ReportDetailSerializer(serializers.ModelSerializer):
         elif report.content_type == 'reply':
             reply = Reply.objects.filter(id=report.content_id).select_related('post').first()
             return reply.post.id
+
     def get_reply_id(self, report):
         reply_id = None
         if report.content_type == 'reply':
@@ -110,5 +112,5 @@ class ReportDetailSerializer(serializers.ModelSerializer):
 
     def get_uri(self, report):
         post_id = self.get_post_id(report)
-        post_uuid = Post.objects.get(pk = post_id).uuid
+        post_uuid = Post.objects.get(pk=post_id).uuid
         return f"/post/{post_uuid}"

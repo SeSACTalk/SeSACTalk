@@ -30,11 +30,11 @@ const StaffProfile = function () {
                     managerProfileList.map((element, i) => {
                         return (
                             <li className="h-full" key={i}>
-                                <Link to={`/profile/${element.manager_username}`}>
+                                <Link to={`/profile/${element.username}`}>
                                     <div className='p-2 border-4 border-double rounded-full border-gray-200'>
-                                        <img src={SERVER + element.profile_img_path} alt={element.campus} />
+                                        <img src={SERVER + element.profile_img_path} alt={element.campus_name} />
                                     </div>
-                                    <p className='mt-1 text-xs text-center'>{element.campus} 캠퍼스</p>
+                                    <p className='mt-1 text-xs text-center'>{element.campus_name} 캠퍼스</p>
                                 </Link>
                             </li>
                         )

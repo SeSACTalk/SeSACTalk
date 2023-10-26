@@ -44,11 +44,11 @@ const Navbar = function () {
                         </Link>
                     </div>
                     <div className='logo_wrap w-32 h-32 rounded-full overflow-hidden border border-solid border-gray-200'>
-                        <Link className={`block w-full h-full p-2 ${info['profile_set'] ? '' : 'animate-pulse'}`} to={`/profile/${info['username']}`}>
+                        <Link className={`block w-full h-full p-2 ${info['profile_img_path'] ? '' : 'animate-pulse'}`} to={`/profile/${info['username']}`}>
                             {
                                 // 로딩중
-                                info['profile_set'] ?
-                                    <img src={SERVER + info['profile_set']} alt={info['username']} /> :
+                                info['profile_img_path'] ?
+                                    <img src={SERVER + info['profile_img_path']} alt={info['username']} /> :
                                     <div className="w-full h-full flex justify-center items-center">
                                         <i className="fa fa-spinner fa-pulse fa-3x fa-fw text-5xl text-sesac-sub"></i>
                                         <span className="sr-only">Loading...</span>

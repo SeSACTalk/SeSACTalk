@@ -27,7 +27,9 @@ const WritePost = function () {
     e.preventDefault();
     const formData = new FormData();
     formData.append("content", content);
-    formData.append("img_path", imgPath);
+    if (imgPath != null){
+      formData.append("img_path", imgPath);
+    }
 
     try {
       const response = await axios({
