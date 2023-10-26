@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import axios from "axios"
 
 const UserVerify = function () {
+    /* States */
     const [users, setUsers] = useState([]); // 사용자 리스트
     const [campuses, setCampuses] = useState([]); // 캠퍼스필터
     const [username, setUsername] = useState(''); // 사용자명
@@ -25,9 +26,12 @@ const UserVerify = function () {
                 error => {
                     console.error(error)
                 })
-    }, [username + campusName + date + auth])
+    }, [username, campusName, date, auth])
 
-    // 사용자 승인 함수
+    /**
+     * 사용자 접근 승인
+     * @param {Event} e 
+     */
     const verifyUser = async (e) => {
         e.preventDefault();
         try {
@@ -106,8 +110,8 @@ const UserVerify = function () {
                                         <select data-id={element.id} defaultValue={element.is_auth}
                                             onChange={verifyUser}>
                                             <option value={element.is_auth}>{
-                                                element.is_auth == 0 ?
-                                                    "신규" : element.is_auth == 20 ?
+                                                element.is_auth === 0 ?
+                                                    "신규" : element.is_auth === 20 ?
                                                         '보류' : '거절'}
                                             </option>
                                             <option value="10">승인</option>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import axios from "axios";
 
 import { setDetailPath } from "../../store/postSlice";
 
@@ -9,10 +9,9 @@ const ExploreResult = function () {
   let { tagName } = useParams();
   let dispatch = useDispatch();
 
-  // 상태
+  /* States */
   const [result, setResult] = useState([]);
 
-  // 검색결과 데이터 바인딩
   useEffect(() => {
     axios.get(`/explore/tag/${tagName}/`)
       .then(
@@ -26,7 +25,7 @@ const ExploreResult = function () {
           console.error(error)
         }
       )
-  }, [])
+  }, [tagName])
 
   /**
    * 랜덤 이미지 주소 출력 함수

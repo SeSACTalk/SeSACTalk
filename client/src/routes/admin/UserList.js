@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import UserDetail from "./UserDeatil";
+import axios from "axios";
 
 const UserList = function () {
-    // 상태들
+    /* States */
     const [scroll, setScroll] = useState();
     const [users, setUsers] = useState([]); // 사용자 리스트
     const [campuses, setCampuses] = useState([]); // 캠퍼스필터
@@ -31,7 +31,7 @@ const UserList = function () {
                     console.error(error)
                 }
             )
-    }, [username + campusName + date])
+    }, [username, campusName, date])
 
     useEffect(() => {
         setScroll(window.scrollY)

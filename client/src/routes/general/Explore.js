@@ -1,25 +1,30 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom"
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 
 import { showMinNav, showExploreNav } from "../../store/navSlice";
 
-const SERVER = process.env.REACT_APP_BACK_BASE_URL;
 
 const Explore = function () {
-    // 상태
+    let dispatch = useDispatch();
+    
+    /* Server */
+    const SERVER = process.env.REACT_APP_BACK_BASE_URL;
+
+    /* States */
     const [explore, setExplore] = useState('');
     const [exploreResult, setExploreResult] = useState([]);
     let minNav = useSelector((state) => state.minNav);
     let exploreNav = useSelector((state) => state.exploreNav);
 
-    let dispatch = useDispatch();
-
-    // DOM
+    /* Refs */
     const input = useRef();
 
-    // 태그 검색
+    /**
+     * 태그를 통한 검색 요청
+     * @param {String} content 
+     */
     const exploreByTag = async (content) => {
         try {
             const response = await axios.get(`/explore/tag?name=${content}`)
@@ -31,7 +36,10 @@ const Explore = function () {
         }
     }
 
-    // 사용자 검색
+    /**
+     * 사용자를 통한 검색 요청
+     * @param {String} content 
+     */
     const exploreByUser = async (content) => {
         try {
             const response = await axios.get(`/explore/user?name=${content}`)
@@ -43,9 +51,7 @@ const Explore = function () {
     }
 
 
-    // 검색
     useEffect(() => {
-        // 공백제거
         const exploreContent = explore.replace(/\s/g, '');
         if (exploreContent.charAt(0) === '#') {
             let content = exploreContent.slice(1, exploreContent.length)
@@ -63,11 +69,11 @@ const Explore = function () {
         }
     }, [explore])
 
-    // 모달창 제어
+    /**
+     * 모달창 제어
+     */
     const handleSubNav = () => {
-        // minNav이 활성화상태일때만 닫혀야함
         minNav && dispatch(showMinNav(minNav));
-        // minNav가 true일때만 같이 보여야하고, false이면 false로
         if (minNav && exploreNav) {
             dispatch(showExploreNav(exploreNav))
         }
@@ -108,7 +114,7 @@ const Explore = function () {
                                                 className="chat_user_info flex items-center h-20 p-1 gap-5"
                                             >
                                                 <div className="img_wrap w-16 h-16 rounded-full overflow-hidden border border-gray-200 p-1">
-                                                    <img src={`${element.is_staff ? (process.env.PUBLIC_URL + "/img/logo.png") : (SERVER + element.profile_img_path)}`} />
+                                                    <img src={`${element.is_staff ? (process.env.PUBLIC_URL + "/img/logo.png") : (SERVER + element.profile_img_path)}`} alt={element.name}/>
                                                 </div>
                                                 <p className="flex flex-col">
                                                     {

@@ -1,14 +1,14 @@
-import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const StaffProfile = function () {
-    // states
-    const [managerProfileList, setManagerProfileList] = useState([]);
-
+    /* Server */
     const SERVER = process.env.REACT_APP_BACK_BASE_URL
 
-    // 관리자 프로필 받아오기
+    /* States */
+    const [managerProfileList, setManagerProfileList] = useState([]);
+
     useEffect(() => {
         axios.get('/')
             .then(

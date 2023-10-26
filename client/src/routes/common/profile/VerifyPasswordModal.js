@@ -1,35 +1,24 @@
-import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import CryptoJS from 'crypto-js'
-
-import { getCookie } from "../../../modules/handleCookie";
 
 import { changeProfileSettingModal } from "../../../store/modalSlice";
 
-const SERVER = process.env.REACT_APP_BACK_BASE_URL;
-let session_key = getCookie('session_key')
-
 const VerifyPassword = function ({ url, modal, changeModal }) {
-    /* DOM */
-    const modalPopup = useRef()
     let dispatch = useDispatch();
-    let profileSettingModal = useSelector((state) => state.profileSettingModal)
-    // let verifyPasswordModal = useSelector((state) => state.verifyPasswordModal)
+    let navigate = useNavigate()
 
-    /* states */
+    /* States */
     const [scroll, setScroll] = useState();
     const [isPasswordMatch, setIsPasswordMatch] = useState(true);
     const [password, setPassword] = useState('');
+    let profileSettingModal = useSelector((state) => state.profileSettingModal)
 
-    const navigate = useNavigate()
+    /* Refs */
+    const modalPopup = useRef()
 
-    /* SERVER */
-    const SERVER_VERIFY_PASSWORD_POST = `${SERVER}/accounts/verify/password/`
-
-    // window.scroll는 순수 자바스크립트 문법 -> setScroll로 계속 계산
-    // document.body.style.overflow = 'hidden';을 없앰
     useEffect(() => {
         setScroll(window.scrollY)
         document.body.style.overflow = 'hidden';
@@ -39,26 +28,31 @@ const VerifyPassword = function ({ url, modal, changeModal }) {
         }
     }, [scroll])
 
-    //  axios
+    /**
+     * 비밀번호 확인 요청
+     * @param {Event} e 
+     * @param {String} password 
+     */
     const requestToVerifyPassword = async (e, password) => { /* 비밀번호 확인 */
         e.preventDefault()
         const hashedPw = CryptoJS.SHA256(password).toString();
-        await axios.post(SERVER_VERIFY_PASSWORD_POST, { password: hashedPw, }, {
-            headers: {
-                'Authorization': session_key
-            },
-        })
-            .then(response => {
-                dispatch(changeModal(modal));
-                navigate(`${url}`);
-            })
+        await axios.post(`/accounts/verify/password/`, { password: hashedPw, })
+            .then(
+                response => {
+                    dispatch(changeModal(modal));
+                    navigate(`${url}`);
+                })
             .catch(error => {
                 // 잘못된 접근
                 setIsPasswordMatch(false);
-                console.log(error.response.data);
+                console.error(error.response.data);
             });
     }
 
+    /**
+     * 모달창 닫기
+     * @param {Event} e 
+     */
     const closeModal = (e) => {
         if (modalPopup.current === e.target) {
             if (profileSettingModal) {
@@ -76,9 +70,9 @@ const VerifyPassword = function ({ url, modal, changeModal }) {
                         <span className="text-gray-500 text-base font-semibold">비밀번호 확인</span>
                         <form className="flex flex-col justify-between items-center h-28">
                             <div>
-                                <input 
-                                    type="password" 
-                                    name="password" 
+                                <input
+                                    type="password"
+                                    name="password"
                                     className="mt-1 px-3 py-2 italic text-center bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sesac-sub focus:ring-sesac-sub block w-full rounded-md sm:text-sm focus:ring-1"
                                     placeholder="비밀번호를 입력해주세요"
                                     onChange={(e) => setPassword(e.target.value)}
@@ -89,10 +83,6 @@ const VerifyPassword = function ({ url, modal, changeModal }) {
                                     }
                                     }
                                 ></input>
-
-                                {/* 비밀번호를 잘못 입력했을 때
-                                  <input type="text" id="error" class="bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 dark:bg-gray-700 focus:border-red-500 block w-full p-2.5 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" placeholder="Error input">
-  <p class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oh, snapp!</span> Some error message.</p> */}
                             </div>
                             <button className="w-8/12 px-4 py-2 font-semibold text-sm bg-sesac-green text-white rounded-full shadow-sm" type="button" onClick={
                                 (e) => {
