@@ -111,7 +111,7 @@ function Profile() {
 
             )
     }
-    
+
     /**
      * 언팔로우하기
      * @param {Event} e 
@@ -205,9 +205,9 @@ function Profile() {
                 <>
                     <header className="profile_header flex justify-center items-center gap-4 mt-3 mb-5 min-h-full">
                         {/* 프로필 사진 */}
-                        <div className="profile_img_container  w-1/6 h-44 ">
-                            <div className={`profile_img_div w-36 TOP self-center rounded-full overflow-hidden border-4 border-solid ${isStaff ? 'border-none' : 'border-sesac-green'} p-2`}>
-                                <img className="block p-2" src={`${isStaff ? (process.env.PUBLIC_URL + "/img/logo.png") : (SERVER + profileData.img_path)}`} alt='프로필 이미지' />
+                        <div className="profile_img_container  w-1/6 h-44">
+                            <div className={`profile_img_div w-36 rounded-full overflow-hidden border-2 border-solid ${isStaff ? 'border-none' : 'border'} p-2`}>
+                                <img src={`${isStaff ? (process.env.PUBLIC_URL + "/img/logo.png") : (SERVER + profileData.img_path)}`} alt='프로필 이미지' />
                             </div>
                             {/*  */}
                         </div>
