@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 
-import { getCookie, deleteCookie } from "../../../modules/handle_cookie";
+import { getCookie, deleteCookie } from "../../../modules/handleCookie";
 
 import React from 'react';
 import { Link, Outlet } from 'react-router-dom'

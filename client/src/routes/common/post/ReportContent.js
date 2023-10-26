@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
-import { changeReportModal } from "../../../store/modalSlice"
 import axios from "axios";
 
-const ReportContent = function ({ contentType, contentInfo }) {
-    /* DOM */
-    const modalPopup = useRef();
+import { changeReportModal } from "../../../store/modalSlice"
 
-    /* states */
+const ReportContent = function ({ contentType, contentInfo }) {
+    /* States */
     const [scroll, setScroll] = useState()
     let reportModal = useSelector((state) => state.reportModal)
     let dispatch = useDispatch();
+
+    /* Refs */
+    const modalPopup = useRef();
 
     useEffect(() => {
         setScroll(window.scrollY)
@@ -19,15 +19,26 @@ const ReportContent = function ({ contentType, contentInfo }) {
         return () => { document.body.style.overflow = 'unset'; }
     }, [scroll])
 
-    /* Functions */
+    /**
+     * 신고 컨텐츠에 따른 url 변경
+     * @param {String} contentType 
+     * @returns {String} url 
+     */
     let getUrl = (contentType) => {
         switch (contentType) {
             case 'post':
                 return `/post/${contentInfo.id}/report/`
             case 'reply':
                 return `/reply/${contentInfo.post_id}/${contentInfo.id}/report/`
+            default:
+                return
         }
     }
+
+    /**
+     * 신고 요청
+     * @param {Event} e 
+     */
     const reportPost = async (e) => {
         e.preventDefault();
         let url = getUrl(contentType)
@@ -45,6 +56,10 @@ const ReportContent = function ({ contentType, contentInfo }) {
         }
     }
 
+    /**
+     * 모달창 닫기
+     * @param {Event} e 
+     */
     const closeModal = (e) => {
         if (modalPopup.current === e.target) {
             dispatch(changeReportModal(reportModal))
@@ -60,8 +75,8 @@ const ReportContent = function ({ contentType, contentInfo }) {
                 <h2 className="text-center text-xl font-medium p-2 border-b border-gray-400">신고</h2>
                 <h3 className="border-b border-gray-300 px-4 py-2">
                     이 {
-                        contentType == 'post' ? '게시물' :
-                            contentType == 'reply' ? '댓글' : ''
+                        contentType === 'post' ? '게시물' :
+                            contentType === 'reply' ? '댓글' : ''
                     }을 신고하는 이유</h3>
                 <ul className="flex flex-col h-2/3">
                     <li className="h-1/4">
@@ -79,7 +94,7 @@ const ReportContent = function ({ contentType, contentInfo }) {
                         <input id="check-2" className="hidden" type="checkbox" value="스팸" onClick={reportPost} />
                     </li>
                     {
-                        contentType == 'post' && (
+                        contentType === 'post' && (
                             <li className="h-1/4">
                                 <label htmlFor="check-3" className="flex justify-between cursor-pointer px-4 py-2">
                                     <span>나체 또는 성적행위 이미지</span>
@@ -87,7 +102,7 @@ const ReportContent = function ({ contentType, contentInfo }) {
                                 </label>
                                 <input id="check-3" className="hidden" type="checkbox" value="나체 또는 성적행위 이미지" onClick={reportPost} />
                             </li>
-                        ) 
+                        )
                     }
                     <li className="h-1/4">
                         <label htmlFor="check-4" className="flex justify-between cursor-pointer px-4 py-2">

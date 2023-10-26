@@ -2,7 +2,7 @@ import axios from 'axios'
 import { initializeApp } from "firebase/app";
 import { getToken, getMessaging, onMessage } from 'firebase/messaging';
 
-import { getCookie } from './modules/handle_cookie';
+import { getCookie } from './modules/handleCookie';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -20,28 +20,25 @@ const messaging = getMessaging(app);
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
 
 async function requestPermission() {
-
   const permission = await Notification.requestPermission();
+
+  // 알림 거부시
   if (permission === "denied") {
-    console.log("알림 권한 허용 안됨");
     return;
   }
-
-  console.log("알림 권한이 허용됨");
 
   const token = await getToken(messaging, {
     vapidKey: process.env.REACT_APP_VAPID_KEY,
   });
 
-  const username = getCookie('username')
-  if (username) {
-    if (token) {
-      try {
-        const response = await axios.post(`${SERVER}/user/${username}/notify/`, { token: token })
-      }
-      catch (error) {
-        console.error('Fail', error.response.data)
-      }
+  const username = getCookie('username');
+  // 알림 허용시
+  if (username && token) {
+    try {
+      await axios.post(`${SERVER}/user/${username}/notify/`, { token: token })
+    }
+    catch (error) {
+      console.error('Fail', error.response.data)
     }
   }
 

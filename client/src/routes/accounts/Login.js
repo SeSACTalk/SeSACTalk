@@ -1,19 +1,18 @@
-import React, { useState, useRef } from 'react'
+/* eslint-disable */
+import React, { useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
-import CryptoJS from 'crypto-js'
+import CryptoJS from 'crypto-js';
 
-
-import { setCookie } from '../../modules/handle_cookie';
-// 임시
-import { Link } from 'react-router-dom'
+import { setCookie } from '../../modules/handleCookie';
 
 const Login = function () {
-    // states
+    /* States */
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loginModal, setLoginModal] = useState(false);
 
-    // DOM
+    /* Refs */
     const idAlert = useRef();
     const pwAlert = useRef();
 
@@ -24,7 +23,7 @@ const Login = function () {
      */
     const idValidator = (text) => {
         if (text.length === 0) {
-            idAlert.current.innerHTML = '아이디를 입력해주세요'
+            idAlert.current.innerHTML = '아이디를 입력해주세요';
         }
 
         if (/[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/g.test(text)) {
@@ -42,7 +41,7 @@ const Login = function () {
     const pwValidator = (text) => {
         let regex = /^[a-zA-Z\d`~!@#$%^&*-_=]+$/
         if (text.length === 0) {
-            pwAlert.current.innerHTML = '비밀번호를 입력해주세요'
+            pwAlert.current.innerHTML = '비밀번호를 입력해주세요';
         }
 
         if (regex.test(text)) {
@@ -52,13 +51,13 @@ const Login = function () {
     }
 
     /**
-  * 로그인 함수
-  * @param {Event} e 
-  */
+     * 로그인 함수
+     * @param {Event} e 
+     */
     const handleLogin = async (e) => {
         e.preventDefault();
         if (idValidator(username) && pwValidator(password)) {
-            const hashedPw = CryptoJS.SHA256(password).toString()
+            const hashedPw = CryptoJS.SHA256(password).toString();
             try {
                 const response = await axios.post('/accounts/login/', { username, hashedPw })
                 // cookie 저장
@@ -67,7 +66,7 @@ const Login = function () {
 
                 window.location.href = '/';
             } catch (error) {
-                setLoginModal(!loginModal)
+                setLoginModal(!loginModal);
             }
         }
     }
@@ -139,7 +138,7 @@ const LoginModal = function ({ loginModal, setLoginModal }) {
             setLoginModal(!loginModal);
         }
     }
-    
+
     return (
         <div className="modal post_modal flex justify-center items-center absolute w-full h-screen z-50" ref={modalPopup} onClick={closeModal}>
             <div className='flex flex-col justify-center items-center w-1/3 h-52 p-5 bg-zinc-50 rounded-xl text-red-500'>

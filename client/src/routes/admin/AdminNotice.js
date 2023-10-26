@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { getCookie } from "../../modules/handle_cookie";
+import { getCookie } from "../../modules/handleCookie";
 import { useDispatch } from "react-redux";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 

@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux';
+import axios from 'axios';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import './index.css';
@@ -9,8 +10,7 @@ import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import store from './store'
-import axios from 'axios';
-import { getCookie } from './modules/handle_cookie';
+import { getCookie } from './modules/handleCookie';
 
 const queryClient = new QueryClient();
 

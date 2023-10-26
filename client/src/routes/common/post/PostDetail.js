@@ -1,19 +1,19 @@
-import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 import { changeReportModal } from "../../../store/modalSlice"
-
 import ReportContent from "../post/ReportContent";
 
-const SERVER = process.env.REACT_APP_BACK_BASE_URL;
-
 const PostDetail = function () {
-    // DOM
-    const modalPopup = useRef();
+    let navigate = useNavigate();
+    let dispatch = useDispatch();
 
-    // State
+    /* Server */
+    const SERVER = process.env.REACT_APP_BACK_BASE_URL;
+
+    /* States */
     const [scroll, setScroll] = useState();
     const [post, setPost] = useState([]);
     const [replys, setReplys] = useState([]);
@@ -22,44 +22,20 @@ const PostDetail = function () {
     const [likeCount, setLikeCount] = useState();
     const [replyInfo, setReplyInfo] = useState(false);
     const [replyContent, setReplyContent] = useState('');
-    let detailPath = useSelector((state) => state.detailPath);
     const [postId, setPostId] = useState(0);
-
-    let navigate = useNavigate();
-    let dispatch = useDispatch();
+    let detailPath = useSelector((state) => state.detailPath);
     let reportModal = useSelector((state) => state.reportModal);
 
-    let emptyHeart = '-o'
+    /* Refs */
+    const modalPopup = useRef();
 
-    // 스크롤 위치 추적
     useEffect(() => {
         setScroll(window.scrollY)
         document.body.style.overflow = 'hidden';
         return () => { document.body.style.overflow = 'unset'; }
     }, [scroll])
 
-    // 게시글 불러오기
     useEffect(() => {
-        getPost();
-        setPostId(detailPath.split('/')[1])
-        getReplys(detailPath.split('/')[1]);
-    }, [])
-
-    // 댓글 업로드 후 다시 불러오기
-    useEffect(() => {
-        getReplys(postId);
-        setReplyContent('');
-    }, [replyUploadStauts])
-
-    // 검은배경 클릭시 모달창 닫기
-    const closeModal = (e) => {
-        if (modalPopup.current === e.target) {
-            navigate(-1)
-        }
-    }
-    /* functions */
-    // 게시물 요청
-    let getPost = () => {
         axios.get(`/post/${detailPath}?request_post`).then((response) => {
             // set post
             let copy = { ...response.data.post };
@@ -71,30 +47,61 @@ const PostDetail = function () {
         }).catch((error) => {
             console.error(error)
         })
+
+        setPostId(detailPath.split('/')[1])
+        getReplys(detailPath.split('/')[1]);
+    }, [detailPath])
+
+    // 댓글 업로드 후 다시 불러오기
+    useEffect(() => {
+        getReplys(postId);
+        setReplyContent('');
+    }, [replyUploadStauts, postId])
+
+    /**
+     * 모달창 닫기
+     * @param {Event} e 
+     */
+    const closeModal = (e) => {
+        if (modalPopup.current === e.target) {
+            navigate(-1)
+        }
     }
-    // 댓글 요청
+
+    /**
+     * 댓글 요청
+     * @param {String} postId 
+     */
     let getReplys = (postId) => {
         axios.get(`/reply/${postId}/`).then((response) => {
             let copy = [...response.data]
             setReplys(copy)
-            console.log(response.data)
         }).catch((error) => {
             console.error(error)
         })
     }
-    // 댓글 쓰기
+
+    /**
+     * 댓글 작성
+     * @param {Event} e 
+     * @param {String} replyContent 
+     */
     let uploadReply = (e, replyContent) => {
         e.preventDefault();
         axios.post(`/reply/${postId}/`, {
             'content': replyContent.trim()
         }).then((response) => {
             setReplyUploadStauts(!replyUploadStauts);
-            console.log(response.data)
         }).catch((error) => {
             console.error(error)
         })
     }
-    // 댓글 삭제
+
+    /**
+     * 댓글 삭제
+     * @param {String} e 
+     * @param {String} replyId 
+     */
     let deleteReply = (e, replyId) => {
         e.preventDefault();
         axios.delete(`/reply/${postId}/${replyId}/`).then((response) => {
@@ -105,7 +112,11 @@ const PostDetail = function () {
         })
     }
 
-    // 좋아요 추가
+    /**
+     * 좋아요 요청
+     * @param {Event} e 
+     * @param {String} postId 
+     */
     let likePost = (e, postId) => {
         e.preventDefault();
         axios.post(`/post/${postId}/like/`).then((response) => {
@@ -116,7 +127,11 @@ const PostDetail = function () {
         })
     }
 
-    // 좋아요 삭제
+    /**
+     * 좋아요 삭제
+     * @param {Event} e 
+     * @param {String} postId 
+     */
     let unlikePost = (e, postId) => {
         e.preventDefault();
         axios.delete(`/post/${postId}/like/`).then((response) => {
@@ -150,7 +165,6 @@ const PostDetail = function () {
                         }
                     </div>
                 </div>
-                {/* 여기까지가 */}
                 <div className="reply_container flex flex-col justify-between w-1/2 h-full mt-1">
                     {/* 게시물 주인 & 댓글 영역 */}
                     <div className="flex flex-col h-[90%]">
@@ -171,7 +185,7 @@ const PostDetail = function () {
                                                 <span className='flex text-sm font-semibold gap-3 text-sesac-green'>{post.campusname} 캠퍼스</span>}
                                         <span className="text-slate-400 text-xs font-medium">{post.date}
                                             {
-                                                post.date != undefined ?
+                                                post.date !== undefined ?
                                                     !(post.date.includes("년")) ? " 전" : "" : ""
                                             }</span>
                                     </p>
@@ -183,7 +197,7 @@ const PostDetail = function () {
                                     <li className='flex flex-row items-center'>
                                         <span className='hidden'>좋아요</span>
                                         <i
-                                            class={`fa fa-heart${likeStatus ? '' : emptyHeart} mr-[0.3rem] text-rose-500 cursor-pointer`}
+                                            className={`fa fa-heart${likeStatus ? '' : '-o'} mr-[0.3rem] text-rose-500 cursor-pointer`}
                                             aria-hidden="true"
                                             onClick={(e) => {
                                                 likeStatus ? unlikePost(e, post.id) : likePost(e, post.id);
@@ -197,7 +211,7 @@ const PostDetail = function () {
                                         <span className='hidden'>댓글</span>
                                         <i className="fa fa-comment-o mr-1" aria-hidden="true"></i>
                                         <span className='text-sm'>{
-                                            replys != undefined ? replys.length : 0
+                                            replys !== undefined ? replys.length : 0
                                         }</span>
                                     </li>
                                 </ul>
@@ -206,7 +220,6 @@ const PostDetail = function () {
                         <div className="overflow-y-auto py-3 px-2 h-[77%] mt-2">
                             {/* 댓글 */}
                             <div className='reply_container flex flex-col gap-2'>
-                                {/* start for statement */}
                                 {
                                     replys.map((element, i) => (
                                         <div key={i} className=" bg-[#e9f3d8] py-3 rounded-lg relative">
@@ -223,7 +236,7 @@ const PostDetail = function () {
                                                             <span className="text-slate-400 text-[0.6rem] font-light">
                                                                 {element.reply.date}
                                                                 {
-                                                                    element.reply.date != undefined ?
+                                                                    element.reply.date !== undefined ?
                                                                         !(element.reply.date.includes("년")) ? " 전" : "" : ""
                                                                 }
                                                             </span>
@@ -257,7 +270,6 @@ const PostDetail = function () {
                                         </div>
                                     ))
                                 }
-                                {/* end for statement */}
                             </div>
                         </div>
                         {reportModal && <ReportContent contentType={'reply'} contentInfo={replyInfo} />}

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import CryptoJS from 'crypto-js'
 
-import { getCookie } from "../../../modules/handle_cookie";
+import { getCookie } from "../../../modules/handleCookie";
 
 import { changeProfileSettingModal } from "../../../store/modalSlice";
 

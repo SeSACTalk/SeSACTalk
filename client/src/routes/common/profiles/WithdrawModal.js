@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 import { changeProfileSettingModal } from "../../../store/modalSlice";
 
-import { getCookie, deleteCookie } from "../../../modules/handle_cookie";
+import { getCookie, deleteCookie } from "../../../modules/handleCookie";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
 let session_key = getCookie('session_key');

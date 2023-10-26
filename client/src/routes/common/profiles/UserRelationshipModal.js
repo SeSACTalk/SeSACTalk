@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from 'react-router-dom'
 
 import { changeOwnFollowerModal, changeOwnFollowModal, changeOtherFollowerModal, changeOtherFollowModal } from "../../../store/modalSlice";
-import { getCookie } from "../../../modules/handle_cookie";
+import { getCookie } from "../../../modules/handleCookie";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
 let session_key = getCookie('session_key')

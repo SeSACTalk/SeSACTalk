@@ -1,18 +1,17 @@
-import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 
 import { changeWriteModal } from "../../../store/modalSlice";
-import { getCookie } from "../../../modules/handle_cookie";
+import { getCookie } from "../../../modules/handleCookie";
+
+/* Cookies */
+let username = getCookie('username');
 
 const WritePost = function () {
-  let username = getCookie('username');
+  let dispatch = useDispatch();
 
-  // DOM
-  const textLength = useRef();
-  const modalPopup = useRef();
-
-  // State
+  /* States */
   const [scroll, setScroll] = useState();
   const [content, setContent] = useState([]);
   const [imgPath, setImgPath] = useState(null);
@@ -20,9 +19,21 @@ const WritePost = function () {
   const [tumbnail, setTumbnail] = useState();
   let writeModal = useSelector((state) => state.writeModal);
 
-  let dispatch = useDispatch();
+  /* Refs */
+  const textLength = useRef();
+  const modalPopup = useRef();
 
-  // 게시글 작성
+  useEffect(() => {
+    setScroll(window.scrollY)
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = 'unset'; }
+  }, [scroll]);
+
+
+  /**
+   * 게시글 작성
+   * @param {Event} e 
+   */
   const uploadPost = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -48,13 +59,6 @@ const WritePost = function () {
     }
   };
 
-  // 스크롤 위치 추적
-  useEffect(() => {
-    setScroll(window.scrollY)
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = 'unset'; }
-  }, [scroll]);
-
   /**
    * 글자수 제한
    * @param {Event} e 
@@ -78,7 +82,10 @@ const WritePost = function () {
     }
   }
 
-  // 이미지 미리보기
+  /**
+   * 이미지 미리보기
+   * @param {Event} e 
+   */
   const PreviewTumbnail = (e) => {
     const reader = new FileReader();
 

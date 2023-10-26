@@ -6,7 +6,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from PIL import Image
 import io
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from accounts.models import User, Campus
 from post.models import Post, Like, View, Reply, HashTag, Report
@@ -43,6 +43,7 @@ def get_campus_name(user_obj):
     except Exception:
         campus_name = user_obj.first_course.campus.name
     return campus_name
+
 def get_date(date):
     today = datetime.now(date.tzinfo)
     difference = today - date

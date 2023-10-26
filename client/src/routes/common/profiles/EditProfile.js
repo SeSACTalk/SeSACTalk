@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 
-import { getCookie } from "../../../modules/handle_cookie";
+import { getCookie } from "../../../modules/handleCookie";
 
 import React from 'react';
 import CryptoJS from 'crypto-js'
@@ -205,7 +205,7 @@ const EditProfile = function () {
             })
                 .then(response => {
                     console.log(response.data);
-                    navigate(`/profile/${username}`);
+                    // navigate(`/profile/${username}`);
                 })
                 .catch(error => {
                     console.log(error.response.data);
@@ -234,7 +234,7 @@ const EditProfile = function () {
                     {
                         profile.is_staff ? null :
                             (
-                                <section class="flex flex-col gap-5">
+                                <section className="flex flex-col gap-5">
                                     <div className="flex justify-between items-center h-fit">
                                         <div className='w-[25%] rounded-full overflow-hidden border border-solid border-gray-200'>
                                             <div className="block w-full h-full p-2" to={`/profile/${profile.username}`}>
@@ -247,7 +247,7 @@ const EditProfile = function () {
                                                 <span class="sr-only">프로필 사진 선택</span>
                                                 <input
                                                     type="file"
-                                                    class="block w-full text-sm text-slate-500
+                                                    className="block w-full text-sm text-slate-500
                                             file:cursor-pointer
                                             file:mr-7 file:py-2 file:px-4
                                             file:rounded-full file:border-0
@@ -446,7 +446,7 @@ const EditProfile = function () {
                         </div>
                     </div>
                     <div className="flex mt-5 justify-end gap-2">
-                        <button class="cursor-pointer px-6 py-2 font-semibold text-sm bg-sesac-sub text-white rounded-full shadow-sm" onClick={
+                        <button className="cursor-pointer px-6 py-2 font-semibold text-sm bg-sesac-sub text-white rounded-full shadow-sm" onClick={
                             (e) => {
                                 e.preventDefault();
                                 navigate(`/profile/${username}`);
@@ -464,7 +464,7 @@ const EditProfile = function () {
                                 }
                             }
                             }
-                            disable={`${!matchPasswordStatus | isSecondCourseEmpty ? true : false}`}
+                            disabled={!matchPasswordStatus | isSecondCourseEmpty ? true : false}
                         />
                     </div>
                 </form>

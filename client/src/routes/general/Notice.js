@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 
 import { setDetailPath } from "../../store/postSlice";
-import { getCookie } from "../../modules/handle_cookie";
+import { getCookie } from "../../modules/handleCookie";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
 

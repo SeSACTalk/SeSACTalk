@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { getCookie } from "../../../modules/handle_cookie";
+import { getCookie } from "../../../modules/handleCookie";
 import { setDetailPath } from "../../../store/postSlice";
 import { changeOptionModal } from "../../../store/modalSlice";
 
