@@ -3,20 +3,19 @@ import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 
-import { getCookie, deleteCookie } from "../../../modules/handle_cookie";
+import { deleteCookie } from "../../../modules/handleCookie";
 
 import React from 'react';
 import { Link, Outlet } from 'react-router-dom'
 import { useDispatch, useSelector } from "react-redux";
 
-// Components
-import { changeVerifyPasswordForWithdrawModal, changeOwnFollowModal, changeOwnFollowerModal, changeOtherFollowModal, changeOtherFollowerModal, changeProfileSettingModal, changeVerifyPasswordForEditProfileModal } from "../../../store/modalSlice";
+/* Components */
 import { ProfilePosts, ProfileLikes, ProfileReplys } from "./ProfileNav";
 import VerifyPasswordModal from "./VerifyPasswordModal";
 import { OwnFollowerModal, OwnFollowModal, OtherFollowModal, OtherFollowerModal } from "./UserRelationshipModal";
+import { changeVerifyPasswordForWithdrawModal, changeOwnFollowModal, changeOwnFollowerModal, changeOtherFollowModal, changeOtherFollowerModal, changeProfileSettingModal, changeVerifyPasswordForEditProfileModal } from "../../../store/modalSlice";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL
-const session_key = getCookie('session_key')
 
 function ProfileLayout() {
     return (
@@ -30,32 +29,43 @@ function ProfileLayout() {
 
 function Profile() {
     const { username } = useParams()
-    const SERVER_USER_PROFILE = `${SERVER}/profile/${username}`
-
     let navigate = useNavigate();
     let dispatch = useDispatch();
-    let verifyPasswordForEditProfileModal = useSelector((state) => state.verifyPasswordForEditProfileModal)
-    let ownFollowModal = useSelector((state) => state.ownFollowModal)
-    let ownFollowerModal = useSelector((state) => state.ownFollowerModal)
-    let otherFollowModal = useSelector((state) => state.otherFollowModal)
-    let otherFollowerModal = useSelector((state) => state.otherFollowerModal)
-    let profileSettingModal = useSelector((state) => state.profileSettingModal)
 
-    // state 
+    /* States */
     const [postClickStatus, setPostClickStatus] = useState(true);
     const [likeClickStatus, setLikeClickStatus] = useState(false);
     const [replyClickStatus, setReplyClickStatus] = useState(false);
     const [followerCount, setFollowerCount] = useState(0);
     const [followCount, setFollowCount] = useState(0);
     const [isStaff, setIsStaff] = useState(false);
-
-    const navStyle = "border-t-2 border-gray-600 relative -top-0.5"
-
     const [profileData, setProfileData] = useState(null);
     const [followStatus, setFollowStatus] = useState(null);
+    let verifyPasswordForEditProfileModal = useSelector((state) => state.verifyPasswordForEditProfileModal);
+    let ownFollowModal = useSelector((state) => state.ownFollowModal);
+    let ownFollowerModal = useSelector((state) => state.ownFollowerModal);
+    let otherFollowModal = useSelector((state) => state.otherFollowModal);
+    let otherFollowerModal = useSelector((state) => state.otherFollowerModal);
+    let profileSettingModal = useSelector((state) => state.profileSettingModal);
 
     useEffect(() => {
-        fetchData();
+        axios.get(`/profile/${username}`)
+            .then(
+                response => {
+                    const data = response.data;
+                    setProfileData(data); // profileData 설정
+                    setFollowStatus(data.followStatus); // 팔로우 상태 설정
+                    setFollowerCount(data.follower_count);
+                    setFollowCount(data.follow_count);
+                    setIsStaff(data.user_is_staff);
+                }
+            )
+            .catch(
+                error => {
+                    console.error(error.message);
+                }
+
+            )
         // 팔로우, 팔로워 창, 설정 창에서 프로필 페이지로 이동했을 때 모달창을 닫기
         if (ownFollowModal) {
             dispatch(changeOwnFollowModal(ownFollowModal));
@@ -75,45 +85,19 @@ function Profile() {
     }, [username]); // username을 종속성 배열에 추가
 
     useEffect(() => {
-        fetchData();
-    }, [followStatus]);
-
-    useEffect(() => {
         setFollowerCount(followerCount)
     }, [followerCount]);
 
-    // 프로필 데이터 가져오기
-    const fetchData = async () => {
-        await axios.get(`/profile/${username}`)
-            .then(
-                response => {
-                    const data = response.data;
-                    setProfileData(data); // profileData 설정
-                    setFollowStatus(data.followStatus); // 팔로우 상태 설정
-                    setFollowerCount(data.follower_count);
-                    setFollowCount(data.follow_count);
-                    setIsStaff(data.user_is_staff);
-                }
-            )
-            .catch(
-                error => {
-                    console.error(error.message);
-                }
-
-            )
-    }
-
-    // 팔로우하기
+    /**
+     * 팔로우하기
+     * @param {Event} e 
+     * @param {String} target_id 
+     */
     const follow = async (e, target_id) => {
         e.preventDefault();
-        await axios.post(`${SERVER}/user/${target_id}/follow/`, null, {
-            headers: {
-                'Authorization': `${session_key}`
-            }
-        })
+        await axios.post(`/user/${target_id}/follow/`, null,)
             .then(
                 response => {
-                    console.log(response.data);
                     let copy = { ...profileData };
                     copy.followStatus = true;
                     setProfileData(copy);
@@ -127,17 +111,17 @@ function Profile() {
 
             )
     }
-    // 언팔로우하기
+
+    /**
+     * 언팔로우하기
+     * @param {Event} e 
+     * @param {String} target_id 
+     */
     const unfollow = async (e, target_id) => {
         e.preventDefault();
-        await axios.delete(`${SERVER}/user/${target_id}/follow/`, {
-            headers: {
-                'Authorization': session_key
-            },
-        })
+        await axios.delete(`/user/${target_id}/follow/`)
             .then(
                 response => {
-                    console.log(response.data);
                     let copy = { ...profileData };
                     copy.followStatus = false;
                     setProfileData(copy);
@@ -151,14 +135,16 @@ function Profile() {
             );
     }
 
-    // 채팅하기
+    /**
+     * 채팅하기
+     * @param {Event} e 
+     * @param {String} target_id 
+     */
     const createChat = async (e, target_id) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`${SERVER}/chat/`, {
+            const response = await axios.post(`/chat`, {
                 'user': target_id
-            }, {
-                'Authorization': session_key
             })
             navigate(`/chat/${response.data.id}`)
         }
@@ -182,6 +168,7 @@ function Profile() {
             </>
         )
     }
+
     function OtherProfileBtn({ target_id, followStatus }) {
         return (
             <>
@@ -218,9 +205,9 @@ function Profile() {
                 <>
                     <header className="profile_header flex justify-center items-center gap-4 mt-3 mb-5 min-h-full">
                         {/* 프로필 사진 */}
-                        <div className="profile_img_container  w-1/6 h-44 ">
-                            <div className={`profile_img_div w-36 TOP self-center rounded-full overflow-hidden border-4 border-solid ${isStaff ? 'border-none' : 'border-sesac-green'} p-2`}>
-                                <img className="block p-2" src={`${isStaff ? (process.env.PUBLIC_URL + "/img/logo.png") : (SERVER + profileData.img_path)}`} alt='프로필 이미지' />
+                        <div className="profile_img_container  w-1/6 h-44">
+                            <div className={`profile_img_div w-36 rounded-full overflow-hidden border-2 border-solid ${isStaff ? 'border-none' : 'border'} p-2`}>
+                                <img src={`${isStaff ? (process.env.PUBLIC_URL + "/img/logo.png") : (SERVER + profileData.img_path)}`} alt='프로필 이미지' />
                             </div>
                             {/*  */}
                         </div>
@@ -299,21 +286,21 @@ function Profile() {
                 게시물, 좋아요, 댓글
             */}
                     <div className="profile_nav flex gap-32 align-middle justify-center border-t-2 border-gray-300 text-base">
-                        <Link to='' className={`p-3 ${postClickStatus ? navStyle : ''}`} onClick={
+                        <Link to='' className={`p-3 ${postClickStatus ? 'border-t-2 border-gray-600 relative -top-0.5' : ''}`} onClick={
                             () => {
                                 setPostClickStatus(true); setLikeClickStatus(false); setReplyClickStatus(false);
                             }
                         }>
                             <span>게시물</span>
                         </Link>
-                        <Link to='' className={`p-3 ${likeClickStatus ? navStyle : ''}`} onClick={
+                        <Link to='' className={`p-3 ${likeClickStatus ? 'border-t-2 border-gray-600 relative -top-0.5' : ''}`} onClick={
                             () => {
                                 setPostClickStatus(false); setLikeClickStatus(true); setReplyClickStatus(false);
                             }
                         }>
                             <span>좋아요</span>
                         </Link>
-                        <Link to='' className={`p-3 ${replyClickStatus ? navStyle : ''}`} onClick={
+                        <Link to='' className={`p-3 ${replyClickStatus ? 'border-t-2 border-gray-600 relative -top-0.5' : ''}`} onClick={
                             () => {
                                 setPostClickStatus(false); setLikeClickStatus(false); setReplyClickStatus(true);
                             }
@@ -347,17 +334,15 @@ function Profile() {
 }
 
 function ProfileSettingModal({ username }) {
-    /* DOM */
-    const modalPopup = useRef()
     let dispatch = useDispatch();
-    let profileSettingModal = useSelector((state) => state.profileSettingModal)
-    let verifyPasswordForWithdrawModal = useSelector((state) => state.verifyPasswordForWithdrawModal)
 
-    /* states */
+    /* States */
     const [scroll, setScroll] = useState();
+    let profileSettingModal = useSelector((state) => state.profileSettingModal);
+    let verifyPasswordForWithdrawModal = useSelector((state) => state.verifyPasswordForWithdrawModal);
 
-    /* etc */
-    const navigate = useNavigate()
+    /* Refs */
+    const modalPopup = useRef()
 
     useEffect(() => {
         setScroll(window.scrollY)
@@ -368,15 +353,20 @@ function ProfileSettingModal({ username }) {
         }
     }, [scroll])
 
-    /* functions */
-    // 모달창 닫기
+    /**
+     * 모달창 닫기
+     * @param {Event} e 
+     */
     const closeModal = (e) => {
         if (modalPopup.current === e.target) {
             dispatch(changeProfileSettingModal(profileSettingModal))
         }
     }
 
-    // 로그아웃
+    /**
+     * 로그아웃 요청
+     * @param {Event} e 
+     */
     const handleLogout = async (e) => {
         e.preventDefault();
         await axios.delete('/accounts/logout/')
@@ -408,7 +398,6 @@ function ProfileSettingModal({ username }) {
                         <button className="block w-full h-full text-red-500" type="button" onClick={(e) => {
                             closeModal(e);
                             dispatch(changeVerifyPasswordForWithdrawModal(verifyPasswordForWithdrawModal));
-                            // navigate(`/profile/${username}/withdraw`);
                         }}>회원탈퇴</button>
                     </li>
                 </ul>

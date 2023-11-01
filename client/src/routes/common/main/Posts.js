@@ -1,41 +1,47 @@
-import axios from "axios";
+/* eslint-disable */
 import React, { useState, useEffect, useRef } from "react";
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 
-import { getCookie } from "../../../modules/handle_cookie";
+import { getCookie } from "../../../modules/handleCookie";
+import { useObserver } from "../../../modules/useObserver";
 import { setDetailPath } from "../../../store/postSlice";
 import { changeOptionModal } from "../../../store/modalSlice";
 
-import { useObserver } from "../../../modules/useObserver";
-
-/* components */
+/* Components */
 import StaffProfile from "../../general/StaffProfile";
 import PostOption from "../post/PostOption";
 import ReportContent from "../post/ReportContent";
 import PostEdit from "../post/PostEdit";
 
-// cookie
+/* Cookies */
 let username = getCookie('username')
 let session_key = getCookie('session_key')
 
-const SERVER = process.env.REACT_APP_BACK_BASE_URL
-
 const Posts = function () {
-  // states
+  let dispatch = useDispatch();
+
+  /* Server */
+  const SERVER = process.env.REACT_APP_BACK_BASE_URL;
+
+  /* States */
   const [postInfo, setPostInfo] = useState({});
   const [isPostMine, setIsPostMine] = useState(false);
-
   let optionModal = useSelector((state) => state.optionModal);
   let reportModal = useSelector((state) => state.reportModal);
   let postEditModal = useSelector((state) => state.postEditModal);
 
-  // DOM
+  /* Refs */
   const bottom = useRef(null);
 
-  let dispatch = useDispatch();
 
+  /**
+   * page Param을 통한 axios 요청
+   * @param {Number} pageParam  
+   * @returns {Object}
+   */
   const fetchPost = ({ pageParam = 1 }) => {
     return axios.get(`/post/${username}?page=${pageParam}`)
       .then(
@@ -82,14 +88,14 @@ const Posts = function () {
       <section className='post mt-8 mx-24 '>
         <h2 className='hidden'>게시글</h2>
         {
-          status == 'loading' &&
+          status === 'loading' &&
           <div className="w-full flex justify-center items-center">
             <i className="fa fa-spinner fa-pulse fa-3x fa-fw text-9xl text-sesac-sub"></i>
             <span className="sr-only">Loading...</span>
           </div>
         }
         {
-          status == 'success' && data &&
+          status === 'success' && data &&
           data.pages.map((group, i) => {
             if (group && group.data.results) {
               return group.data.results.map((element) => {
@@ -100,19 +106,19 @@ const Posts = function () {
                         <div className='img_wrap w-24 h-24 p-2 rounded-full overflow-hidden border border-solid border-gray-200'>
                           <img src={`${element.is_staff ? (process.env.PUBLIC_URL + "/img/logo.png") : (SERVER + element.profile_img_path)}`} alt={element.username} />
                         </div>
-                        <p className={`flex flex-col gap-1 text_wrap ${element.is_staff? "justify-start mt-4 font-semibold" : "justify-center"}`}>
+                        <p className={`flex flex-col gap-1 text_wrap ${element.is_staff ? "justify-start mt-4 font-semibold" : "justify-center"}`}>
                           {
-                            element.is_staff? (
-                            <>
-                              <span className='text-lg text-sesac-green'>{element.campusname} 캠퍼스</span>
-                            </>
-                            ) : 
-                            (
+                            element.is_staff ? (
                               <>
-                              <span className='text-lg font-semibold'>{element.name}</span>
-                              <span className='text-sm text-sesac-green'>{element.campusname} 캠퍼스</span>
+                                <span className='text-lg text-sesac-green'>{element.campusname} 캠퍼스</span>
                               </>
-                            )
+                            ) :
+                              (
+                                <>
+                                  <span className='text-lg font-semibold'>{element.name}</span>
+                                  <span className='text-sm text-sesac-green'>{element.campusname} 캠퍼스</span>
+                                </>
+                              )
                           }
                         </p>
                       </Link>
@@ -188,7 +194,7 @@ function UserFeedback({ postId, postUuid, username, replySet, likeStatus, likeCo
   useEffect(() => {
     setLikestatus(likeStatus);
     setLikecount(likeCount);
-  }, [])
+  }, [likeStatus, likeCount])
 
   // 좋아요 추가
   let likePost = (e) => {

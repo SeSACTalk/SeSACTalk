@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 
 const CourseApproval = function () {
+    /* States */
     const [users, setUsers] = useState([]); // 사용자 리스트
     const [campuses, setCampuses] = useState([]); // 캠퍼스필터
     const [username, setUsername] = useState(''); // 사용자명
@@ -27,7 +28,10 @@ const CourseApproval = function () {
             )
     }, [username, campusName])
 
-    // 과정 추가 승인 함수
+    /**
+     * 과정 추가 승인 함수
+     * @param {Event} e 
+     */
     const approvalCoruse = async (e) => {
         e.preventDefault();
         e.target.value = Number(e.target.value)
@@ -38,7 +42,7 @@ const CourseApproval = function () {
             status = false;
         }
         try {
-            const response = await axios.put('/admin/user/course/', {
+            await axios.put('/admin/user/course/', {
                 id: e.target.dataset.id,
                 course_status: true,
                 status: status

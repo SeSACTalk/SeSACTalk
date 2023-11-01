@@ -4,7 +4,8 @@ import { useSelector, useDispatch } from "react-redux";
 import axios from 'axios';
 
 import { setRole } from '../../../store/userSlice';
-// Components
+
+/* Components */
 import Navbar from './Navbar';
 import WritePost from '../post/WritePost';
 import MinNavbar from './MinNavbar';
@@ -12,9 +13,9 @@ import AdminNavbar from '../../admin/AdminNavbar';
 
 const Main = function () {
     let navigate = useNavigate();
-    let dispatch = useDispatch();;
+    let dispatch = useDispatch();
 
-    // States
+    /* States */
     let role = useSelector((state) => state.role);
     let writeModal = useSelector((state) => state.writeModal);
     let minNav = useSelector((state) => state.minNav);
@@ -32,7 +33,7 @@ const Main = function () {
                     navigate('/account/login');
                 }
             )
-    }, []);
+    }, [dispatch, navigate]);
 
     return (
         <div className='main_container flex relative'>

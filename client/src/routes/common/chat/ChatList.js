@@ -3,14 +3,18 @@ import React, { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 import { useSelector } from "react-redux";
 
-import { getCookie } from "../../../modules/handle_cookie";
+import { getCookie } from "../../../modules/handleCookie";
+
 import ChatExplore from "./ChatExplore";
 
-const SERVER = process.env.REACT_APP_BACK_BASE_URL
-const username = getCookie('username')
+/* Cookies */
+const username = getCookie('username');
 
 const ChatList = function () {
-    // states
+    /* Server */
+    const SERVER = process.env.REACT_APP_BACK_BASE_URL;
+
+    /* States */
     const [target, setTarget] = useState([]);
     const [chatExploreModal, setChatExplore] = useState(false);
     let chatStatus = useSelector((state) => state.chatStatus);
@@ -34,10 +38,12 @@ const ChatList = function () {
         <div className="main_content_container w-1/4 border-r border-gray-300">
             <div className="user_info_wrap relative px-5 mt-14">
                 <h4 className="text-2xl font-medium">메시지</h4>
-                <div className="img_wrap w-1/4 h-1/4">
-                    <img src={`${SERVER}/media/profile/default_profile.png`} alt={username} />
-                </div>
-                <p>{username}</p>
+                <Link to={`/profile/${username}`}>
+                    <div className="img_wrap w-1/4 h-1/4">
+                        <img src={`${SERVER}/media/profile/default_profile.png`} alt={username} />
+                    </div>
+                    <p>{username}</p>
+                </Link>
                 <button className="absolute top-0 right-5" type="button" onClick={() => { setChatExplore(!chatExploreModal) }}>
                     <span className="hidden">대화하기</span>
                     <i className="fa fa-plus-square-o text-3xl" aria-hidden="true"></i>

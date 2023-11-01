@@ -1,58 +1,55 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 
 import { setDetailPath } from "../../store/postSlice";
-import { getCookie } from "../../modules/handle_cookie";
+import { getCookie } from "../../modules/handleCookie";
 
-const SERVER = process.env.REACT_APP_BACK_BASE_URL
+const SERVER = process.env.REACT_APP_BACK_BASE_URL;
+
+/* Cookies */
+let username = getCookie('username')
 
 const Notice = function () {
-    // cookie
-    let username = getCookie('username')
+    let dispatch = useDispatch();
 
-    // 상태
+    /* States */
     const [readNotificationDataResult, setReadNotificationDataResult] = useState([]);
     const [notReadNotificationDataResult, setNotReadNotificationDataResult] = useState([]);
     const [recommendDataResult, setRecommendDataResult] = useState([]);
     const [isNotice, setIsNotice] = useState(true);
     let noticeNav = useSelector((state) => state.noticeNav);
 
-    let dispatch = useDispatch();
 
     useEffect(() => {
         if (isNotice) {
-          getNotification();
+            axios.get(`/user/${username}/notify/`)
+                .then(response => {
+                    let copy = { ...response.data };
+                    setNotReadNotificationDataResult([...copy.notRead]);
+                    setReadNotificationDataResult([...copy.read]);
+                    requestReadNotification();
+                })
+                .catch(error => console.error(error));
         } else {
-          axios.get(`/post/recommend/`)
+            axios.get(`/post/recommend/`)
+                .then(response => {
+                    let copy = [...response.data];
+                    setRecommendDataResult(copy);
+                })
+                .catch(error => console.error(error));
+        }
+    }, [isNotice]);
+
+    let requestReadNotification = () => {
+        axios.put(`/user/${username}/notify/`)
             .then(response => {
-              let copy = [...response.data];
-              setRecommendDataResult(copy);
+                console.log('읽음 처리');
             })
             .catch(error => console.error(error));
-        }
-      }, [isNotice]);
-      
-      let getNotification = () => {
-        axios.get(`/user/${username}/notify/`)
-          .then(response => {
-            let copy = { ...response.data };
-            setNotReadNotificationDataResult([...copy.notRead]);
-            setReadNotificationDataResult([...copy.read]);
-            requestReadNotification();
-          })
-          .catch(error => console.error(error));
-      }
-      
-      let requestReadNotification = () => {
-        axios.put(`/user/${username}/notify/`)
-          .then(response => {
-            console.log('읽음 처리');
-          })
-          .catch(error => console.error(error));
-      }
-      
+    }
+
     return (
         <div className={`w-[350%] h-screen absolute z-20 left-full top-0 border border-gray-300 p-5 rounded-r-2xl bg-white shadow-min-nav ${noticeNav ? 'animate-intro' : 'hidden'}`}>
             <h2 className="text-2xl my-5">알림</h2>
@@ -141,16 +138,18 @@ const Notice = function () {
     );
 
 }
+
 function Notification({ element, i }) {
     let dispatch = useDispatch();
+
     return (
         <li className="mb-3 flex items-center justify-center" key={i}>
             <Link to={element.uri} className="flex items-center gap-3" onClick={() => {
-                if (!(element.type == 'follow')) {
+                if (!(element.type === 'follow')) {
                     dispatch(setDetailPath(`${element.targeted_user_username}/${element.post_id}`));
                 }
             }}>
-                {element.type.split('_')[0] == 'report' ? (
+                {element.type.split('_')[0] === 'report' ? (
                     <Report notification={element} />
                 ) : (
                     <>
@@ -161,7 +160,7 @@ function Notification({ element, i }) {
                             <p>
                                 <span className="text-xs text-gray-500">
                                     {element.occur_date}
-                                    {element.occur_date != undefined ? (!(element.occur_date.includes("년")) ? " 전" : "") : ""}
+                                    {element.occur_date !== undefined ? (!(element.occur_date.includes("년")) ? " 전" : "") : ""}
                                 </span>
                             </p>
                             <div className="chat_info flex gap-2">
@@ -178,15 +177,22 @@ function Notification({ element, i }) {
     )
 }
 function Report({ notification }) {
+    /**
+     * 카테고리에 따른 분류
+     * @param {String} category 
+     * @returns 
+     */
     let getKoCategory = (category) => {
         switch (category.split('_')[1]) {
             case 'reply':
                 return '댓글';
             case 'post':
                 return '게시물';
+            default:
+                return;
         }
     }
-    
+
     return (
         <>
             <div className="w-1/5 h-1/5 flex justify-center items-center rounded-full border border-gray-200 overflow-hidden p-1.5">
@@ -197,7 +203,7 @@ function Report({ notification }) {
                     <span className="text-xs text-gray-500">
                         {notification.occur_date}
                         {
-                            notification.occur_date != undefined ?
+                            notification.occur_date !== undefined ?
                                 (!(notification.occur_date.includes("년")) ? " 전" : "") : ""
                         }
                     </span>
@@ -226,6 +232,8 @@ function NotifycationContent({ type }) {
             return (
                 <>을 <span className="text-blue-600">팔로우</span>하기 시작했습니다.</>
             )
+        default:
+            return;
     }
 }
 

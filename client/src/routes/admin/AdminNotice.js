@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
-import { getCookie } from "../../modules/handle_cookie";
+import { getCookie } from "../../modules/handleCookie";
 import { useDispatch } from "react-redux";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios'
 
 import { setDetailPath } from "../../store/postSlice";
+
+/* Cookies */
+let username = getCookie('username')
 
 const AdminNotice = function () {
     let navigate = useNavigate();
@@ -12,11 +15,12 @@ const AdminNotice = function () {
     const searchParams = new URLSearchParams(location.search);
     let page = searchParams.get('page');
 
+    /* States */
     const [isNotice, setIsNotice] = useState(true);
 
-    useEffect(()=>{
-        setIsNotice(!(page == 'report'));
-    } ,[page])
+    useEffect(() => {
+        setIsNotice(!(page === 'report'));
+    }, [page])
 
     return (
         <div className="admin_notification w-4/5 p-10">
@@ -28,8 +32,8 @@ const AdminNotice = function () {
                         onChange={(e) => {
                             navigate(`?page=${e.target.value}`)
                         }}>
-                        <option value='notify' selected = {(isNotice)}>알림</option>
-                        <option value='report' selected = {!(isNotice)}>신고 알림</option>
+                        <option value='notify' selected={(isNotice)}>알림</option>
+                        <option value='report' selected={!(isNotice)}>신고 알림</option>
                     </select>
                 </div>
             </div>
@@ -39,9 +43,8 @@ const AdminNotice = function () {
         </div>
     )
 }
+
 function Notification() {
-    // cookie
-    let username = getCookie('username')
 
     //states
     const [readNotificationDataResult, setReadNotificationDataResult] = useState([]);
@@ -49,10 +52,6 @@ function Notification() {
 
     // 알림 불러오기
     useEffect(() => {
-        getNotification();
-    }, [])
-
-    let getNotification = () => {
         axios.get(`/user/${username}/notify/`)
             .then(
                 response => {
@@ -61,27 +60,24 @@ function Notification() {
                     setNotReadNotificationDataResult([...copy.notRead])
                     setReadNotificationDataResult([...copy.read])
                     // get요청 뒤 read_date update
-                    requestReadNotification();
+                    if (readNotificationDataResult.length !== 0) {
+                        axios.put(`/user/${username}/notify/`)
+                            .then(
+                                response => {
+                                    console.log('읽음 처리')
+                                }
+                            )
+                            .catch(
+                                error => console.error(error)
+                            )
+                    }
                 }
             )
             .catch(
                 error => console.error(error)
             )
-    }
+    }, [readNotificationDataResult.length])
 
-    let requestReadNotification = () => {
-        if (readNotificationDataResult.length != 0){
-            axios.put(`/user/${username}/notify/`)
-                .then(
-                    response => {
-                        console.log('읽음 처리')
-                    }
-                )
-                .catch(
-                    error => console.error(error)
-                )
-        }
-    }
     return (
         <table className="admin_notification_notification w-full mt-5 text-sm text-center text-gray-500">
             <thead>
@@ -126,7 +122,15 @@ function Notification() {
         </table>
     )
 }
+
 function NotificationTd({ element, readStatus }) {
+    let dispatch = useDispatch();
+
+    /**
+     * 신고유형에 따른 분류
+     * @param {String} type 
+     * @returns 
+     */
     let getNotificationType = (type) => {
         switch (type) {
             case 'reply':
@@ -137,20 +141,21 @@ function NotificationTd({ element, readStatus }) {
                 return '팔로우'
             case 'report':
                 return '신고'
+            default:
+                return;
         }
     }
-    let dispatch = useDispatch();
     return (
         <tr className="border-b">
             <td className="px-6 py-4">
                 {element.occur_date}
-                {element.occur_date != undefined ? (!(element.occur_date.includes("년")) ? " 전" : "") : ""}
+                {element.occur_date !== undefined ? (!(element.occur_date.includes("년")) ? " 전" : "") : ""}
             </td>
             <td className="px-6 py-4">{readStatus}</td>
             <td className="px-6 py-4">{element.targeting_user_name}</td>
             <td className="px-6 py-4">{getNotificationType(element.type)}</td>
             <td className="px-6 py-4">{
-                (!(element.type == 'follow')) ?
+                (!(element.type === 'follow')) ?
                     (
                         <Link
                             to={element.uri}
@@ -174,12 +179,11 @@ function NotificationTd({ element, readStatus }) {
 
 function Report() {
     let dispatch = useDispatch();
-    
-    // states
+
+    /* States */
     const [reportDataResult, setReportDataResult] = useState([]);
     const [reportUpdateStatus, setReportUpdateStatus] = useState(false);
 
-    // 알림 불러오기
     useEffect(() => {
         getReport();
         return () => {
@@ -200,6 +204,7 @@ function Report() {
                 error => console.error(error)
             )
     }
+
     return (
         <table className="admin_notification_report w-full mt-5 text-sm text-center text-gray-500">
             <thead>
@@ -253,7 +258,7 @@ function Report() {
                                 </td>
                                 <td className="px-4 py-4">
                                     {/* 신고 처리  */}
-                                    <ReportOption report={element} setReportUpdateStatus = {setReportUpdateStatus} key={i} />
+                                    <ReportOption report={element} setReportUpdateStatus={setReportUpdateStatus} key={i} />
                                 </td>
                             </tr>
                         )
@@ -265,24 +270,25 @@ function Report() {
 }
 
 function ReportOption({ report, setReportUpdateStatus }) {
-    let navigate = useNavigate();
-
-    useEffect(()=>{
-        console.log(report)
-    }, []
-    )
-    // 신고 처리 함수
+    /**
+     * 신고 처리 함수
+     * @param {Event} e 
+     * @param {String} content_type 
+     * @param {String} reported_id 
+     * @param {String} reporter_id 
+     * @returns 
+     */
     const processReport = async (e, content_type, reported_id, reporter_id) => {
         e.preventDefault();
         var report_status = e.target.value
-        if (report_status != '') {
+        if (report_status !== '') {
             report_status = Number(report_status);
             try {
-                const response = await axios.put(`/admin/report/${content_type}/${reported_id}/${reporter_id}/`, {
+                await axios.put(`/admin/report/${content_type}/${reported_id}/${reporter_id}/`, {
                     id: e.target.dataset.id,
                     report_status: report_status,
                 });
-                setReportUpdateStatus((prevReportUpdateStatus) => !prevReportUpdateStatus); 
+                setReportUpdateStatus((prevReportUpdateStatus) => !prevReportUpdateStatus);
             }
             catch (error) {
                 console.error(error)
@@ -293,8 +299,7 @@ function ReportOption({ report, setReportUpdateStatus }) {
     }
 
     return (
-        // 신규 일 때
-        report.report_status == 0 ? (
+        report.report_status === 0 ? (
             <select
                 defaultValue=""
                 data-id={report.id}
@@ -309,7 +314,7 @@ function ReportOption({ report, setReportUpdateStatus }) {
                 <option value="30">거절</option>
             </select>
         ) : (
-            report.report_status == 20 ?
+            report.report_status === 20 ?
                 (
                     <select
                         defaultValue=""

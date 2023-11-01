@@ -4,22 +4,24 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { changeWriteModal } from "../../../store/modalSlice";
 import { showMinNav, showExploreNav, showNoticeNav } from "../../../store/navSlice";
+
 /* Components */
 import Explore from "../../general/Explore";
 import Notice from "../../general/Notice";
 
 const MinNavbar = function () {
     const location = useLocation();
+    let dispatch = useDispatch();
 
-    // states
+    /* States */
     let writeModal = useSelector((state) => state.writeModal);
     let minNav = useSelector((state) => state.minNav);
     let exploreNav = useSelector((state) => state.exploreNav);
     let noticeNav = useSelector((state) => state.noticeNav);
 
-    let dispatch = useDispatch();
-
-    // 모달창 제어
+    /**
+     * 모달창 제어
+     */
     const handleSubNav = () => {
         // minNav이 활성화상태일때만 닫혀야함
         minNav && dispatch(showMinNav(minNav));
@@ -34,8 +36,8 @@ const MinNavbar = function () {
 
     return (
         <div className={location.pathname.includes('chat') ? '' : 'w-1/5'}>
-            <nav className={`nav_wrap w-24 px-3 py-14 sticky top-0 z-10 h-screen border-x border-gray-300 ${location.pathname.includes('chat') ? '' : minNav ? 'animate-intro' : 'hidden'}`}>
-                <div className='logo_wrap w-10 mx-auto'>
+            <nav className={`w-24 px-3 py-14 sticky top-0 z-10 h-screen border-x border-gray-300 ${location.pathname.includes('chat') ? '' : minNav ? 'animate-intro' : 'hidden'}`}>
+                <div className='w-10 mx-auto'>
                     <Link to='/' onClick={(e) => {
                         handleSubNav()
                     }}>
@@ -43,7 +45,7 @@ const MinNavbar = function () {
                     </Link>
                 </div>
                 <h2 className="hidden">서브메뉴</h2>
-                <ul className="nav mt-8 flex flex-col items-center gap-7 text-2xl">
+                <ul className="mt-8 flex flex-col items-center gap-7 text-2xl">
                     <li>
                         <Link to='/' onClick={(e) => {
                             handleSubNav()

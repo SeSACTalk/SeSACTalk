@@ -1,8 +1,8 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 
-/* components */
-import ChatList from '../chat/ChatList'
+/* Components */
+import ChatList from '../chat/ChatList';
 
 const Chat = function () {
     return (

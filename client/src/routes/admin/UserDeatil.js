@@ -2,13 +2,16 @@ import React, { useEffect, useRef, useState, memo } from "react";
 import axios from "axios";
 
 const UserDetail = memo(function ({ userId, detail, scroll, setDetail }) {
-    // DOM
-    const modalPopup = useRef()
-
-    // State
+    /* States */
     const [user, setUser] = useState({});
 
-    // 검은배경 클릭시 모달창 닫기
+    /* Refs */
+    const modalPopup = useRef()
+
+    /**
+     * 모달창 닫기
+     * @param {Event} e 
+     */
     const closeModal = (e) => {
         if (modalPopup.current === e.target) {
             setDetail(!detail)
@@ -28,7 +31,7 @@ const UserDetail = memo(function ({ userId, detail, scroll, setDetail }) {
                     console.error(error)
                 }
             )
-    }, [])
+    }, [userId])
 
     if (user.first_course) {
         return (

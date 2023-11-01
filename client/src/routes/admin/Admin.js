@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 function Admin() {
     let navigate = useNavigate();
 
-    // States
+    /* States */
     let role = useSelector((state) => state.role)
 
     useEffect(() => {
@@ -14,7 +14,7 @@ function Admin() {
         } else {
             navigate('/')
         }
-    }, [])
+    }, [role, navigate])
 
     if (role === 'STAFF') {
         return (

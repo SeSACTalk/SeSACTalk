@@ -1,27 +1,21 @@
-import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 
 import { changeStatus } from "../../../store";
 
 const ChatDetail = function () {
-    // DOM
-    const chatInput = useRef();
-    const chatSubmit = useRef();
-    const scrollRef = useRef();
-
-    // 서버 주소
-    const SERVER = process.env.REACT_APP_BACK_BASE_URL
+    let dispatch = useDispatch();
     const { chatRoom } = useParams();
 
-    // 웹 소켓 주소
+    /* Server */
+    const SERVER = process.env.REACT_APP_BACK_BASE_URL;
     const SERVER_WEB_SOCKET = process.env.REACT_APP_BACK_SOCKET_URL
     const SERVER_CHAT = `${SERVER_WEB_SOCKET}/ws/chat/${chatRoom}`
 
-    let ws = useRef(null);
 
-    // 상태 선언
+    /* States */
     const [socketConnected, setSocketConnected] = useState(true);
     const [sendMsg, setSendMsg] = useState(false);
     const [chat, setChat] = useState('');
@@ -30,9 +24,12 @@ const ChatDetail = function () {
     const [profile, setProfile] = useState({})
     let chatStatus = useSelector((state) => state.chatStatus);
 
-    let dispatch = useDispatch();
+    /* Refs */
+    let ws = useRef(null);
+    const chatInput = useRef();
+    const chatSubmit = useRef();
+    const scrollRef = useRef();
 
-    // 이전 대화내용 DB로부터 가져오기
     useEffect(() => {
         axios.get(`/chat/${chatRoom}`)
             .then(
@@ -48,7 +45,7 @@ const ChatDetail = function () {
                     console.error(error)
                 }
             )
-    }, [sendMsg + chatRoom])
+    }, [sendMsg, chatRoom])
 
     // 소켓 객체 생성
     useEffect(() => {
@@ -60,9 +57,7 @@ const ChatDetail = function () {
             }
 
             ws.current.onclose = (error) => {
-                console.log("Disconnected from " + SERVER_CHAT);
                 setSocketConnected(false)
-                console.log(error);
             };
         }
 
@@ -71,19 +66,27 @@ const ChatDetail = function () {
                 setSocketConnected(false)
             }
         }
-    }, [chatRoom])
+    }, [chatRoom, socketConnected, SERVER_CHAT])
 
     // send 후에 onmessage로 데이터 가져오기
     useEffect(() => {
         if (sendMsg) {
             ws.current.onmessage = (evt) => {
-                const data = JSON.parse(evt.data);
                 setSendMsg(!sendMsg)
             }
         }
     }, [sendMsg]);
 
-    // 메시지 전송
+    // 스크롤 가장아래로
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+    }, [chatDetail]);
+
+    /**
+     * 메시지 전송
+     */
     const handleChat = () => {
         if (socketConnected) {
             ws.current.send(
@@ -97,32 +100,27 @@ const ChatDetail = function () {
         }
     }
 
-    // 스크롤 가장아래로
-    useEffect(() => {
-        if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-        }
-    }, [chatDetail]);
-
     return (
         <div className="w-3/4 h-screen">
             <h4 className="hidden">상세채팅</h4>
             {
-                profile && <div className="chat_user_info flex items-center h-20 p-1 gap-5 border-b border-gray-200">
-                    <div className="img_wrap w-16 h-16 rounded-full overflow-hidden border border-solid border-gray-200 p-1">
-                        <img src={SERVER + profile.profile_img_path} alt={profile.name} />
-                    </div>
-                    <p className="flex flex-col">
-                        <span>{profile.name}</span>
-                        <span className="flex items-end gap-3 text-sm">
-                            <span className="text-gray-500">{profile.username}</span>
-                            {
-                                profile.second_campus_name ?
-                                    <span className="font-semibold text-sesac-green">{profile.second_campus_name} 캠퍼스</span> :
-                                    <span className="font-semibold text-sesac-green">{profile.first_campus_name} 캠퍼스</span>
-                            }
-                        </span>
-                    </p>
+                profile && <div className="h-20 p-1 border-b border-gray-200">
+                    <Link to={`/profile/${profile.username}`} className="flex items-center gap-5">
+                        <div className="img_wrap w-16 h-16 rounded-full overflow-hidden border border-solid border-gray-200 p-1">
+                            <img src={SERVER + profile.profile_img_path} alt={profile.name} />
+                        </div>
+                        <p className="flex flex-col">
+                            <span>{profile.name}</span>
+                            <span className="flex items-end gap-3 text-sm">
+                                <span className="text-gray-500">{profile.username}</span>
+                                {
+                                    profile.second_campus_name ?
+                                        <span className="font-semibold text-sesac-green">{profile.second_campus_name} 캠퍼스</span> :
+                                        <span className="font-semibold text-sesac-green">{profile.first_campus_name} 캠퍼스</span>
+                                }
+                            </span>
+                        </p>
+                    </Link>
                 </div>
             }
             <div className="h-[calc(100%-9rem)] overflow-y-scroll px-6" ref={scrollRef}>
@@ -160,7 +158,7 @@ const ChatDetail = function () {
                             (e) => setChat(e.target.value)
                         }
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !e.nativeEvent.isComposing) { // 엔터키 입력시 입력된 값에 setChat 적용 -> 비동기로 변경하면 가능할듯? 프로미스처럼
+                            if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
                                 chatSubmit.current.click()
                                 setChat('')
                             }

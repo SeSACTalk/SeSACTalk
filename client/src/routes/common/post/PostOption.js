@@ -1,28 +1,28 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-
-import { changeOptionModal, changeReportModal, changePostEditModal } from "../../../store/modalSlice";
 import axios from "axios";
 
-const PostOption = function ({ isPostMine, postInfo }) {
-    /* DOM */
-    const modalPopup = useRef()
+import { changeOptionModal, changeReportModal, changePostEditModal } from "../../../store/modalSlice";
 
-    /* states */
+const PostOption = function ({ isPostMine, postInfo }) {
+    let dispatch = useDispatch();
+
+    /* States */
     const [scroll, setScroll] = useState()
     let optionModal = useSelector((state) => state.optionModal)
     let reportModal = useSelector((state) => state.reportModal)
     let postEditModal = useSelector((state) => state.postEditModal)
     let detailPath = useSelector((state) => state.detailPath);
 
-    let dispatch = useDispatch();
+    /* Refs */
+    const modalPopup = useRef()
 
     useEffect(() => {
         if (optionModal) {
             dispatch(changeOptionModal(optionModal))
         }
-    }, [])
+    }, [dispatch, optionModal])
 
     useEffect(() => {
         setScroll(window.scrollY)
@@ -30,6 +30,10 @@ const PostOption = function ({ isPostMine, postInfo }) {
         return () => { document.body.style.overflow = 'unset'; }
     }, [scroll])
 
+    /**
+     * 모달창 닫기
+     * @param {Event} e 
+     */
     const closeModal = (e) => {
         if (modalPopup.current === e.target) {
             dispatch(changeOptionModal(optionModal))
@@ -56,8 +60,8 @@ const PostOption = function ({ isPostMine, postInfo }) {
                             <button className="block w-full h-full" type="button" onClick={async (e) => {
                                 e.preventDefault();
                                 try {
-                                    const response = await axios.delete(`/post/${detailPath}`);
-                                    dispatch(changeOptionModal(optionModal))
+                                    await axios.delete(`/post/${detailPath}`);
+                                    dispatch(changeOptionModal(optionModal));
                                     window.location.reload();
                                 } catch (error) {
                                     console.error(error)

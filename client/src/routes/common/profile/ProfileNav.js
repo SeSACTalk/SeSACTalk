@@ -3,29 +3,24 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { getCookie } from "../../../modules/handle_cookie";
 import { setDetailPath } from "../../../store/postSlice";
 import { changeOptionModal } from "../../../store/modalSlice";
 
-/* components */
+/* Components */
 import PostOption from "../post/PostOption";
 import PostEdit from "../post/PostEdit";
 
-// cookie
-let session_key = getCookie('session_key')
-
-const SERVER = process.env.REACT_APP_BACK_BASE_URL
+const SERVER = process.env.REACT_APP_BACK_BASE_URL;
 
 function ProfilePosts({ user_id }) {
-  // states
+  let dispatch = useDispatch();
+
+  /* States */
   const [postList, setPostList] = useState([]);
   const [postInfo, setPostInfo] = useState({});
   const [isPostMine, setIsPostMine] = useState(false);
-
   let optionModal = useSelector((state) => state.optionModal);
   let postEditModal = useSelector((state) => state.postEditModal);
-
-  let dispatch = useDispatch();
 
   useEffect(() => {
     axios.get(`/profile/${user_id}/post/`)
@@ -39,7 +34,6 @@ function ProfilePosts({ user_id }) {
         error => console.error(error)
       )
   }, [user_id])
-
 
   return (
     <div className='main_content_container w-[90%]'>
@@ -76,7 +70,6 @@ function ProfilePosts({ user_id }) {
                   <div className="post_content_wrap h-1/2">
                     <p className='post_content mt-5 text-sm'>{element.content}</p>
                   </div>
-                  {/* TODO 데이터 바인딩 + 해시태그 클릭시 검색결과창 이동 */}
                   <div className="post_footer flex justify-between items-center">
                     <h3 className="hidden">해시태그</h3>
                     {
@@ -99,11 +92,7 @@ function ProfilePosts({ user_id }) {
                   <button className='absolute right-5 top-8' onClick={
                     async () => {
                       try {
-                        const response = await axios.get(`${SERVER}/post/${element.username}/${element.id}`, {
-                          headers: {
-                            'Authorization': session_key
-                          }
-                        })
+                        const response = await axios.get(`/post/${element.username}/${element.id}`)
                         setIsPostMine(response.data.isPostMine)
                       } catch (error) {
                         console.error(error)
@@ -132,16 +121,13 @@ function ProfilePosts({ user_id }) {
 }
 
 function ProfileLikes({ user_id }) {
-  const [likeList, setLikeList] = useState([]);
-  const SERVER_PROFILE_LIKES = `${SERVER}/profile/${user_id}/like/`;
   let dispatch = useDispatch();
 
+  /* States */
+  const [likeList, setLikeList] = useState([]);
+
   useEffect(() => {
-    axios.get(SERVER_PROFILE_LIKES, {
-      headers: {
-        'Authorization': session_key
-      }
-    })
+    axios.get(`/profile/${user_id}/like/`)
       .then(
         response => {
           if (response.data && typeof response.data.message == 'undefined') {
@@ -173,7 +159,7 @@ function ProfileLikes({ user_id }) {
                   </Link>
                   <div className="flex flex-col align-middle gap-1">
                     <div className='post_owner_info'>
-                      <p className='flex items-center gap-3 text_wrap justify-center text-zinc-500'>
+                      <div className='flex items-center gap-3 text_wrap justify-center text-zinc-500'>
                         <i className="fa fa-gratipay text-rose-500" aria-hidden="true"></i>
                         <div className='text-base flex justify-between items-center gap-1'>
                           {
@@ -191,7 +177,7 @@ function ProfileLikes({ user_id }) {
                             }
                           </span>
                         </div>
-                      </p>
+                      </div>
                     </div>
                     <article className="like_content">
                       <Link to={`/post/${element.uuid}`} onClick={() => {
@@ -216,16 +202,13 @@ function ProfileLikes({ user_id }) {
 }
 
 function ProfileReplys({ user_id }) {
-  const [replyList, setReplyList] = useState([]);
-  const SERVER_PROFILE_REPLYS = `${SERVER}/profile/${user_id}/reply/`;
   let dispatch = useDispatch();
 
+  /* States */
+  const [replyList, setReplyList] = useState([]);
+
   useEffect(() => {
-    axios.get(SERVER_PROFILE_REPLYS, {
-      headers: {
-        'Authorization': session_key
-      }
-    })
+    axios.get(`/profile/${user_id}/reply/`)
       .then(
         response => {
           if (response.data && typeof response.data.message == 'undefined') {
@@ -258,7 +241,7 @@ function ProfileReplys({ user_id }) {
                   <div className="flex flex-col align-middle gap-1">
                     <div className='post_owner_info'>
                       <p className='flex items-center gap-3 text_wrap justify-center text-zinc-500'>
-                          <i class="fa fa-reply text-sesac-green" aria-hidden="true"></i>
+                        <i class="fa fa-reply text-sesac-green" aria-hidden="true"></i>
                         <div className='text-base flex justify-between items-center gap-1'>
                           {
                             element.is_current_user ? '내' :
@@ -300,22 +283,21 @@ function ProfileReplys({ user_id }) {
 }
 
 function UserFeedback({ postId, postUuid, username, replySet, likeStatus, likeCount }) {
-  const [likestatus, setLikestatus] = useState();
-  const [likecount, setLikecount] = useState();
-  let emptyHeart = '-o'
   let dispatch = useDispatch();
 
-  // 게시글 불러오기
+  /* States */
+  const [likestatus, setLikestatus] = useState();
+  const [likecount, setLikecount] = useState();
+
   useEffect(() => {
     setLikestatus(likeStatus);
     setLikecount(likeCount);
-  }, []);
+  }, [likeCount, likeStatus]);
 
-  useEffect(() => {
-
-  }, [])
-
-  // 좋아요 추가
+  /**
+   * 좋아요 요청
+   * @param {Event} e 
+   */
   let likePost = (e) => {
     e.preventDefault();
     axios.post(`/post/${postId}/like/`).then((response) => {
@@ -326,7 +308,10 @@ function UserFeedback({ postId, postUuid, username, replySet, likeStatus, likeCo
     })
   }
 
-  // 좋아요 삭제
+  /**
+   * 좋아요 삭제
+   * @param {Event} e 
+   */
   let unlikePost = (e) => {
     e.preventDefault();
     axios.delete(`/post/${postId}/like/`).then((response) => {
@@ -344,7 +329,7 @@ function UserFeedback({ postId, postUuid, username, replySet, likeStatus, likeCo
         <li className='flex flex-row items-center'>
           <span className='hidden'>좋아요</span>
           <i
-            className={`fa fa-heart${likestatus ? '' : emptyHeart} mr-[0.3rem] text-rose-500 cursor-pointer`}
+            className={`fa fa-heart${likestatus ? '' : '-o'} mr-[0.3rem] text-rose-500 cursor-pointer`}
             aria-hidden="true"
             onClick={(e) => {
               likestatus ? unlikePost(e) : likePost(e);

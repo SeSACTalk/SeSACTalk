@@ -1,31 +1,17 @@
-import { React, useState, useRef, useEffect } from 'react'
-import axios from 'axios'
-import { Link } from 'react-router-dom'
+import { React, useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const FindId = function () {
-    // States
+    /* States */
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [findIdModal, setFindIdModal] = useState(false);
     const [isWriting, setIsWriting] = useState(false);
 
-    // DOM
+    /* Refs */
     const submitButton = useRef(null);
-
-    const findUser = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post('/accounts/find/user/id/', { name, email })
-            setUsername(response.data.result[0].username);
-        }
-        catch (error) {
-
-        }
-        finally {
-            setFindIdModal(!findIdModal);
-        }
-    }
 
     useEffect(() => {
         if (name.length === 0 || email.length === 0) {
@@ -36,13 +22,27 @@ const FindId = function () {
             submitButton.current.removeAttribute('disabled')
         }
     }, [name, email])
+    
+    /**
+     * 아이디 찾기 함수
+     * @param {Event} e 
+     */
+    const findUser = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post('/accounts/find/user/id/', { name, email })
+            setUsername(response.data.result[0].username);
+        } finally {
+            setFindIdModal(!findIdModal);
+        }
+    }
 
     return (
         <div className='w-full h-screen flex flex-col justify-center items-center'>
             <div className='w-1/3 border'>
                 <div className='p-5'>
                     <div className='w-32 h-32 border-[3px] border-black rounded-full p-5 mx-auto mt-10'>
-                        <img src={`${process.env.PUBLIC_URL}/img/lock.png`} />
+                        <img src={`${process.env.PUBLIC_URL}/img/lock.png`} alt='아이디 찾기' />
                     </div>
                     <div className='text-center mt-4'>
                         <p className='text-xl font-bold'>로그인에 문제가 있나요?</p>
@@ -79,6 +79,7 @@ const FindIdModal = function ({ findIdModal, setFindIdModal, username }) {
             setFindIdModal(!findIdModal);
         }
     }
+
     if (username) {
         return (
             <div className="modal post_modal flex justify-center items-center absolute w-full h-screen z-50" ref={modalPopup}>

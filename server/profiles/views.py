@@ -1,9 +1,12 @@
 from django.db.models import Count, Subquery, OuterRef, F, Q
 from django.db.models.fields.files import ImageFieldFile
 from django.http import HttpRequest, QueryDict
+from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from PIL import Image
+import os
 
 from post.constants import ResponseMessages
 from post.models import Post, Reply, Like
@@ -15,7 +18,6 @@ from accounts.serializers import UserSerializer, CampusSerializer, CourseSeriali
 from sesactalk.mixins import SessionDecoderMixin
 from user.models import UserRelationship
 
-# Create your views here.
 class ProfileView(APIView, SessionDecoderMixin):
     def get(self, request:HttpRequest, username: str) -> Response:
         # session_key로 user_id get

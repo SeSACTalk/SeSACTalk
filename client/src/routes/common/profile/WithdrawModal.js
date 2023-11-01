@@ -1,36 +1,30 @@
-import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 import { changeProfileSettingModal } from "../../../store/modalSlice";
 
-import { getCookie, deleteCookie } from "../../../modules/handle_cookie";
+import { deleteCookie } from "../../../modules/handleCookie";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
-let session_key = getCookie('session_key');
 
 function WithdrawModal() {
-    /* etc */
     const { username } = useParams();
     const navigate = useNavigate();
-
-    /* DOM */
-    const modalPopup = useRef()
     let dispatch = useDispatch();
-    let profileSettingModal = useSelector((state) => state.profileSettingModal);
 
     /* states */
     const [scroll, setScroll] = useState();
     const [userInfoForWithdrawStatus, setUserInfoForWithdrawStatus] = useState(true);
     const [withdrawalConfirmationStatus, setWithdrawalConfirmationStatus] = useState(false);
     const [withdrawalCompleteStatus, setWithdrawalCompleteStatus] = useState(false);
+    let profileSettingModal = useSelector((state) => state.profileSettingModal);
 
-    /* SERVER */
-    const SERVER_WITHDRAW = `${SERVER}/accounts/${username}/withdraw/`
+    /* Refs */
+    const modalPopup = useRef()
 
-    /* useEffect */
     useEffect(() => {
         setScroll(window.scrollY)
         document.body.style.overflow = 'hidden';
@@ -40,19 +34,28 @@ function WithdrawModal() {
         }
     }, [scroll])
 
-    /* functions */
-    const closeProfileSettingModal = () => { // profileSettingModal상태가 true면 닫기
+    /**
+     * profileSettingModal상태가 true면 닫기
+     */
+    const closeProfileSettingModal = () => {
         if (profileSettingModal) {
             dispatch(changeProfileSettingModal(profileSettingModal));
         }
     }
 
-    const cancelWithdrawal = () => { // 회원 탈퇴 취소(모달창 닫기)
+    /**
+     * 회원 탈퇴 취소(모달창 닫기)
+     */
+    const cancelWithdrawal = () => {
         closeProfileSettingModal();
         navigate(`/profile/${username}`);
     }
 
-    const closeModal = (e) => { // 모달창 닫기
+    /**
+     * 모달창 닫기
+     * @param {Event} e 
+     */
+    const closeModal = (e) => {
         if (modalPopup.current === e.target) {
             cancelWithdrawal();
         }
@@ -64,8 +67,8 @@ function WithdrawModal() {
                 <div className="w-5/6">
                     <div className="flex flex-col gap-1 h-[88%] justify-between items-center text-sm">
                         <span className="text-gray-500 text-base font-semibold">회원 탈퇴</span>
-                        {userInfoForWithdrawStatus && <UserInfoForWithdrawModal SERVER_WITHDRAW={SERVER_WITHDRAW} setUserInfoForWithdrawStatus={setUserInfoForWithdrawStatus} setWithdrawalConfirmationStatus={setWithdrawalConfirmationStatus} />}
-                        {withdrawalConfirmationStatus && <WithdrawalConfirmationModal SERVER_WITHDRAW={SERVER_WITHDRAW} setWithdrawalConfirmationStatus={setWithdrawalConfirmationStatus} setWithdrawalCompleteStatus={setWithdrawalCompleteStatus} cancelWithdrawal={cancelWithdrawal} />}
+                        {userInfoForWithdrawStatus && <UserInfoForWithdrawModal setUserInfoForWithdrawStatus={setUserInfoForWithdrawStatus} setWithdrawalConfirmationStatus={setWithdrawalConfirmationStatus} />}
+                        {withdrawalConfirmationStatus && <WithdrawalConfirmationModal setWithdrawalConfirmationStatus={setWithdrawalConfirmationStatus} setWithdrawalCompleteStatus={setWithdrawalCompleteStatus} cancelWithdrawal={cancelWithdrawal} />}
                         {withdrawalCompleteStatus && <WithdrawalCompleteModal setWithdrawalCompleteStatus={setWithdrawalCompleteStatus} closeProfileSettingModal={closeProfileSettingModal} />}
                     </div>
                 </div>
@@ -74,26 +77,20 @@ function WithdrawModal() {
     )
 }
 
-function UserInfoForWithdrawModal({ SERVER_WITHDRAW, setUserInfoForWithdrawStatus, setWithdrawalConfirmationStatus }) {
+function UserInfoForWithdrawModal({ setUserInfoForWithdrawStatus, setWithdrawalConfirmationStatus }) {
+    const { username } = useParams();
+
     /* states */
     const [user, setUser] = useState({});
 
-    // user 정보 get
     useEffect(() => {
-        axios.get(SERVER_WITHDRAW, {
-            headers: {
-                'Authorization': session_key
-            }
-        }).then((response) => {
+        axios.get(`/accounts/${username}/withdraw/`).then((response) => {
             let copy = { ...response.data }
             setUser(copy)
         }).catch((error) => {
             console.error(error)
         })
-    }, [])
-
-    // function 
-
+    }, [username])
 
     return (
         <>
@@ -117,23 +114,18 @@ function UserInfoForWithdrawModal({ SERVER_WITHDRAW, setUserInfoForWithdrawStatu
     )
 }
 
-function WithdrawalConfirmationModal({ SERVER_WITHDRAW, setWithdrawalConfirmationStatus, setWithdrawalCompleteStatus, cancelWithdrawal }) {
-    /* SERVER */
-    const SERVER_ACCOUNTS_LOGOUT = `${SERVER}/accounts/logout/`
-
+function WithdrawalConfirmationModal({ setWithdrawalConfirmationStatus, setWithdrawalCompleteStatus, cancelWithdrawal }) {
     const navigate = useNavigate();
     const { username } = useParams();
 
-    {/* functions */ }
+    /**
+     * 회원탈퇴 요청
+     * @param {Event} e 
+     */
     const handleWithdraw = async (e) => { // 회원 탈퇴
         e.preventDefault();
-        await axios.delete(SERVER_WITHDRAW, {
-            headers: {
-                'Authorization': session_key
-            },
-        })
+        await axios.delete(`/accounts/${username}/withdraw/`)
             .then(response => {
-                console.log(response.data);
                 console.log('회원 탈퇴 완료');
                 handleLogout(e);
             })
@@ -143,24 +135,26 @@ function WithdrawalConfirmationModal({ SERVER_WITHDRAW, setWithdrawalConfirmatio
             });
     }
 
-    // 로그아웃
+    /**
+     * 로그아웃
+     * @param {Event} e 
+     */
     const handleLogout = async (e) => {
         e.preventDefault();
         await axios.delete('/accounts/logout/')
-        .then(
-            response =>  {
-                deleteCookie('session_key');
-                deleteCookie('username');
-                navigate('/accounts/login');
-            }
-        )
-        .catch(
-            error =>  {
-                console.log(error.response.data);
-            }
-        )
+            .then(
+                response => {
+                    deleteCookie('session_key');
+                    deleteCookie('username');
+                    navigate('/accounts/login');
+                }
+            )
+            .catch(
+                error => {
+                    console.log(error.response.data);
+                }
+            )
     }
-    // 로그인 페이지로 이동 : navigate('/accounts/login');
 
     return (
         <>
@@ -186,8 +180,7 @@ function WithdrawalConfirmationModal({ SERVER_WITHDRAW, setWithdrawalConfirmatio
     )
 
 }
-function WithdrawalCompleteModal({ setWithdrawalCompleteStatus, closeProfileSettingModal }) {
-    // 회원 탈퇴 == 아이디, 이메일을 제외한 모든 
+function WithdrawalCompleteModal({ closeProfileSettingModal }) {
     const navigate = useNavigate();
     return (
         <>

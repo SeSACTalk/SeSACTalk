@@ -4,23 +4,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from 'react-router-dom'
 
 import { changeOwnFollowerModal, changeOwnFollowModal, changeOtherFollowerModal, changeOtherFollowModal } from "../../../store/modalSlice";
-import { getCookie } from "../../../modules/handle_cookie";
 
 const SERVER = process.env.REACT_APP_BACK_BASE_URL;
-let session_key = getCookie('session_key')
 
 const OwnFollowerModal = function ({ user_pk, isProfileMine, followerCount, setFollowerCount }) {
-    /* DOM */
-    const modalPopup = useRef()
     let dispatch = useDispatch();
-    let ownFollowerModal = useSelector((state) => state.ownFollowerModal)
 
     /* states */
     const [scroll, setScroll] = useState();
     const [followerList, setFollowerList] = useState([]);
 
-    // window.scroll는 순수 자바스크립트 문법 -> setScroll로 계속 계산
-    // document.body.style.overflow = 'hidden';을 없앰
+    /* Refs */
+    const modalPopup = useRef()
+    let ownFollowerModal = useSelector((state) => state.ownFollowerModal)
+
     useEffect(() => {
         setScroll(window.scrollY)
         document.body.style.overflow = 'hidden';
@@ -31,26 +28,23 @@ const OwnFollowerModal = function ({ user_pk, isProfileMine, followerCount, setF
     }, [scroll])
 
     useEffect(() => {
-        getFollowerList();
-    }, [followerCount])
-
-    /* functions */
-    // follower가져오기 
-    const getFollowerList = async () => {
         axios.get(`/user/${user_pk}/follower/`).then((response) => {
-            console.log(response.data);
             setFollowerList(response.data)
         }).catch((error) => {
             console.error(error)
         })
-    }
-    // 삭제하기
+    }, [user_pk, followerCount])
+
+    /**
+     * 팔로워 삭제하기
+     * @param {Event} e 
+     * @param {String} target_id 
+     */
     const deleteFollower = async (e, target_id) => {
         e.preventDefault();
         await axios.delete(`/user/${target_id}/follower/`)
             .then(
                 response => {
-                    console.log(response.data);
                     setFollowerCount(followerCount - 1);
                 }
             )
@@ -61,6 +55,10 @@ const OwnFollowerModal = function ({ user_pk, isProfileMine, followerCount, setF
             );
     }
 
+    /**
+     * 모달창 닫기
+     * @param {Event} e 
+     */
     const closeModal = (e) => {
         if (modalPopup.current === e.target) {
             dispatch(changeOwnFollowerModal(ownFollowerModal))
@@ -109,14 +107,15 @@ const OwnFollowerModal = function ({ user_pk, isProfileMine, followerCount, setF
 }
 
 const OwnFollowModal = function ({ user_pk, isProfileMine, followCount, setFollowCount }) {
-    /* DOM */
-    const modalPopup = useRef()
     let dispatch = useDispatch();
-    let ownFollowModal = useSelector((state) => state.ownFollowModal)
 
-    /* states */
+    /* States */
     const [scroll, setScroll] = useState();
     const [followList, setFollowList] = useState([]);
+    let ownFollowModal = useSelector((state) => state.ownFollowModal)
+
+    /* Refs */
+    const modalPopup = useRef()
 
     useEffect(() => {
         setScroll(window.scrollY)
@@ -128,34 +127,26 @@ const OwnFollowModal = function ({ user_pk, isProfileMine, followCount, setFollo
     }, [scroll])
 
     useEffect(() => {
-        getFollowList();
-    }, [followCount])
-    
-    // follow가져오기 
-    const getFollowList = async () => {
         axios.get(`/user/${user_pk}/follow/`)
-        .then((response) => {
-            console.log(response.data);
-            setFollowList(response.data);
-        })
-        .catch((error) => {
-            console.error(error);
-        });
-    }
-    
+            .then((response) => {
+                console.log(response.data);
+                setFollowList(response.data);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }, [user_pk, followCount])
 
-    // follow가져오기
-    useEffect(() => {
-        getFollowList();
-    }, [])
-
-    // 언팔로우하기
+    /**
+     * 언팔로우 요청
+     * @param {Event} e 
+     * @param {String} target_id 
+     */
     const unfollow = async (e, target_id) => {
         e.preventDefault();
         await axios.delete(`/user/${target_id}/follow/`)
             .then(
                 response => {
-                    console.log(response.data);
                     setFollowCount(followCount - 1);
                 }
             )
@@ -166,6 +157,10 @@ const OwnFollowModal = function ({ user_pk, isProfileMine, followCount, setFollo
             );
     }
 
+    /**
+     * 모달창 닫기
+     * @param {Event} e 
+     */
     const closeModal = (e) => {
         if (modalPopup.current === e.target) {
             dispatch(changeOwnFollowModal(ownFollowModal))
@@ -194,7 +189,7 @@ const OwnFollowModal = function ({ user_pk, isProfileMine, followCount, setFollo
                                                 <span className="text-sesac-green text-sm font-medium dark:text-slate-400">{element.campus_name} 캠퍼스</span>
                                             </div>
                                             <div class="w-[30%] flex justify-end">
-                                                <button 
+                                                <button
                                                     class="inline-block px-4 py-2 font-semibold text-sm bg-zinc-400 text-white rounded-full shadow-sm"
                                                     onClick={(e)=>{
                                                         unfollow(e, element.id);
@@ -214,17 +209,16 @@ const OwnFollowModal = function ({ user_pk, isProfileMine, followCount, setFollo
 }
 
 const OtherFollowerModal = function ({ user_pk, isProfileMine, followerCount, setFollowerCount }) {
-    /* DOM */
-    const modalPopup = useRef()
     let dispatch = useDispatch();
-    let otherFollowerModal = useSelector((state) => state.otherFollowerModal)
 
-    /* states */
+    /* States */
     const [scroll, setScroll] = useState();
     const [followerList, setFollowerList] = useState([]);
+    let otherFollowerModal = useSelector((state) => state.otherFollowerModal);
 
-    // window.scroll는 순수 자바스크립트 문법 -> setScroll로 계속 계산
-    // document.body.style.overflow = 'hidden';을 없앰
+    /* Refs */
+    const modalPopup = useRef();
+
     useEffect(() => {
         setScroll(window.scrollY)
         document.body.style.overflow = 'hidden';
@@ -235,20 +229,17 @@ const OtherFollowerModal = function ({ user_pk, isProfileMine, followerCount, se
     }, [scroll])
 
     useEffect(() => {
-        getFollowerList();
-    }, [followerCount])
-
-    /* functions */
-    // follower가져오기 
-    const getFollowerList = async () => {
         axios.get(`/user/${user_pk}/follower/`).then((response) => {
-            console.log(response.data);
             setFollowerList(response.data)
         }).catch((error) => {
             console.error(error)
         })
-    }
+    }, [user_pk, followerCount])
 
+    /**
+     * 모달창 닫기
+     * @param {Event} e 
+     */
     const closeModal = (e) => {
         if (modalPopup.current === e.target) {
             dispatch(changeOtherFollowerModal(otherFollowerModal))
@@ -293,14 +284,15 @@ const OtherFollowerModal = function ({ user_pk, isProfileMine, followerCount, se
 }
 
 const OtherFollowModal = function ({ user_pk, isProfileMine, followCount, setFollowCount }) {
-    /* DOM */
-    const modalPopup = useRef()
     let dispatch = useDispatch();
-    let otherFollowModal = useSelector((state) => state.otherFollowModal)
 
-    /* states */
+    /* States */
     const [scroll, setScroll] = useState();
     const [followList, setFollowList] = useState([]);
+    let otherFollowModal = useSelector((state) => state.otherFollowModal);
+
+    /* Refs */
+    const modalPopup = useRef();
 
     useEffect(() => {
         setScroll(window.scrollY)
@@ -312,27 +304,20 @@ const OtherFollowModal = function ({ user_pk, isProfileMine, followCount, setFol
     }, [scroll])
 
     useEffect(() => {
-        getFollowList();
-    }, [followCount])
-    
-    // follow가져오기 
-    const getFollowList = async () => {
         axios.get(`/user/${user_pk}/follow/`)
-        .then((response) => {
-            console.log(response.data);
-            setFollowList(response.data);
-        })
-        .catch((error) => {
-            console.error(error);
-        });
-    }
-    
+            .then((response) => {
+                setFollowList(response.data);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }, [user_pk, followCount])
 
-    // follow가져오기
-    useEffect(() => {
-        getFollowList();
-    }, [])
 
+    /**
+     * 모달창 닫기
+     * @param {Event} e 
+     */
     const closeModal = (e) => {
         if (modalPopup.current === e.target) {
             dispatch(changeOtherFollowModal(otherFollowModal))
@@ -375,13 +360,13 @@ const OtherFollowModal = function ({ user_pk, isProfileMine, followCount, setFol
     )
 }
 
-function OtherUserRelationshipBtn({user_id, follow_status, is_current_user}) {
+function OtherUserRelationshipBtn({ user_id, follow_status, is_current_user }) {
     /* states */
     const [followClickStatus, setFollowClickStatus] = useState(follow_status)
 
     /* functions */
     let getBtnStyle = (btnColor) => {
-        return `inline-block w-16 px-3 py-2 font-semibold text-sm bg-${btnColor} text-white rounded-full shadow-sm`    
+        return `inline-block w-16 px-3 py-2 font-semibold text-sm bg-${btnColor} text-white rounded-full shadow-sm`
     }
     let followStyle = getBtnStyle('sesac-green');
     let unfollowStyle = getBtnStyle('zinc-400');
@@ -420,25 +405,25 @@ function OtherUserRelationshipBtn({user_id, follow_status, is_current_user}) {
 
     return (
         // 첫 번째 조건(해당 팔로워 / 팔로우가 로그인 유저와 같은지)
-        is_current_user ? null : 
+        is_current_user ? null :
             // 두 번째 조건(로그인 유저가 팔로우하고 있는지)
             followClickStatus ? (
-                <button 
-                    class= {unfollowStyle}
-                    onClick={(e)=>{
+                <button
+                    class={unfollowStyle}
+                    onClick={(e) => {
                         setFollowClickStatus(false);
                         unfollow(e, user_id);
                     }}
                 >취소</button>
-        ) : (
-                <button 
-                    class= {followStyle}
-                    onClick={(e)=>{
+            ) : (
+                <button
+                    class={followStyle}
+                    onClick={(e) => {
                         setFollowClickStatus(true);
                         follow(e, user_id);
                     }}
                 >팔로우</button>
-        )
+            )
     )
 }
 

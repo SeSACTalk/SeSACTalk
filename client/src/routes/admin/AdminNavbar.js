@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 
 import { changeWriteModal } from "../../store/modalSlice";
 
 const AdminNavbar = function () {
-    // states
+    let dispatch = useDispatch();
+
+    /* States */
     let [info, setInfo] = useState({});
     let writeModal = useSelector((state) => state.writeModal);
-
-    let dispatch = useDispatch();
 
     useEffect(() => {
         axios.get('/')
@@ -24,6 +24,7 @@ const AdminNavbar = function () {
                 error => console.error(error)
             )
     }, []);
+
     return (
         <nav className="w-1/5 p-3 h-screen sticky top-0 border-solid border-x border-gray-300}">
             <div className="nav_profile flex justify-center">
@@ -46,7 +47,7 @@ const AdminNavbar = function () {
                         <span>사용자 조회</span>
                     </Link>
                 </li>
-                  <li>
+                <li>
                     <Link to='admin/auth/user' className="block w-full h-full">
                         <i className="fa fa-id-badge inline-block w-7 mr-3" aria-hidden="true"></i>
                         <span>권한 승인</span>
