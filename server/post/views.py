@@ -2,7 +2,8 @@ from django.db.models import Q, Count
 from django.http import HttpRequest
 from datetime import date
 from environ import Env
-import requests
+import http.client
+import json
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -50,14 +51,19 @@ class Main(APIView, SessionDecoderMixin):
 
         return Response(response_data, status = status.HTTP_200_OK)
 
-class RecruitView(APIView, SessionDecoderMixin):
+class RecruitView(APIView):
     def get(self, request: HttpRequest) -> Response:
-        user_exist = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION'))
+        env = Env()
+        access_key = env('SARAMIN_ACCESS_KEY')
+        headers = {'Accept': 'application/json'}
+        
+        conn = http.client.HTTPSConnection(f'oapi.saramin.co.kr')
+        conn.request('GET', f'/job-search?access-key={access_key}&job_type=&loc_cd=101000&job_mid_cd=2', headers = headers)
+        response = conn.getresponse()
+        data = response.read().decode('utf-8')
+        response_data = json.loads(data)
 
-        if not user_exist:
-            return Response(status = status.HTTP_401_UNAUTHORIZED)
-
-        return Response(status = status.HTTP_200_OK)
+        return Response(data = response_data, status = status.HTTP_200_OK)
 
 class CustomPagination(PageNumberPagination):
     page_size = 10
