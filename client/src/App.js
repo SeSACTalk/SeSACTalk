@@ -2,7 +2,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 import './style.css'
-import './firebase-messaging-sw'
+// import './firebase-messaging-sw'
 
 /* Components */
 import Accounts from './routes/accounts/Accounts';

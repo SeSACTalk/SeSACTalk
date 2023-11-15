@@ -153,4 +153,4 @@ migrations/
 .*.jpg
 img
 favicon
-.env.promotion
+.env.production
