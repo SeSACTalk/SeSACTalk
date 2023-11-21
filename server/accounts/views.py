@@ -101,8 +101,10 @@ class SignUpView(APIView):
             profile = Profile.objects.create(user = user)
             profile.save()
             return Response({'message': ResponseMessages.CREATE_SUCCESS}, status = status.HTTP_201_CREATED)
+        else:
+            print(userSerializer.errors)
 
-        return Response({'error': userSerializer.errors}, status.HTTP_400_BAD_REQUEST)
+        return Response({'error': userSerializer.errors.keys()}, status.HTTP_400_BAD_REQUEST)
 
 class IdCheckView(APIView):
     def post(self, request) -> Response:

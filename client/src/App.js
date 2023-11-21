@@ -17,6 +17,8 @@ import ExploreResult from './routes/general/ExploreResult';
 import Chat from './routes/common/chat/Chat'
 import ChatDetail from './routes/common/chat/ChatDetail';
 import Admin from './routes/admin/Admin';
+import Signup from './routes/accounts/Signup';
+import Recruit from './routes/general/Recruit';
 
 function App() {
   return (
@@ -25,6 +27,7 @@ function App() {
         {/* 계정관련 */}
         <Route path='/accounts' element={<Accounts />}>
           <Route path='login' element={<Login />} />
+          <Route path='signup' element={<Signup />} />
         </Route>
         {/* 일반 사용자 */}
         <Route path='/' element={<Main />}>
@@ -38,6 +41,8 @@ function App() {
         {/* 관리자 */}
         <Route path='/admin' element={<Admin />}></Route>
         <Route path='*' element={<div>없는 페이지에요</div>}></Route>
+        {/* saramin api */}
+        <Route path='/recruit' element={<div>saramin api 호출<Recruit></Recruit></div>}></Route>
       </Routes>
     </div >
   )

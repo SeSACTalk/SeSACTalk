@@ -1,6 +1,8 @@
 from django.db.models import Q, Count
 from django.http import HttpRequest
 from datetime import date
+from environ import Env
+import requests
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -35,6 +37,37 @@ class Main(APIView):
         # pk리스트
         managerProfileSerializer = ManagerProfileSerializer(manager_users, many = True)
         return Response(managerProfileSerializer.data, status = status.HTTP_200_OK)
+
+class RecruitView(APIView, SessionDecoderMixin):
+    def get(self, request: HttpRequest) -> Response:
+        # user_exist = self.extract_user_id_from_session(request.META.get('HTTP_AUTHORIZATION'))
+        
+        # if not user_exist:
+        #     return Response(status = status.HTTP_401_UNAUTHORIZED)
+        
+        # sramin api
+        env=Env()
+        try:
+            primary_key=env('SARAMIN_ACCKESS_KEY')
+            SW='개발'
+            DT='기획'
+
+            api_url = f"https://oapi.saramin.co.kr/job-search?access-key={primary_key}&keyword={SW}"
+            response = requests.get(api_url, headers={"Accept": "application/json"})
+
+            if response.status_code == 200:  # 정상 호출
+                data = response.json()  # JSON 응답을 파싱
+                print(data)
+                return Response(data=data, status = status.HTTP_200_OK)
+            elif response.status_code == 307:
+                print('307')
+                return Response(status = status.HTTP_307_TEMPORARY_REDIRECT)
+            else:  # 에러 발생
+                print(f"에러 발생 - 상태 코드: {response.status_code}")
+                return Response(status = status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+        return Response(status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class Post(APIView, OwnerPermissionMixin):
