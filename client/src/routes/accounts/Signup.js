@@ -7,13 +7,6 @@ const SERVER = process.env.REACT_APP_BACK_BASE_URL
 const SERVER_ACCOUNTS_SIGNUP = SERVER + '/accounts/signup/'
 
 const Signup = function () {
-    {/* 
-        TODO: 프론트 전달 사항
-        - 프론트의 유효성 검사 필요 (first_course를 선택하지 않았는데, second_course만 한다던지..)
-        - 아이디가 중복 검사 ajax 호출 함수 == checkId
-        - 비밀번호가 비밀번호 확인과 다를 경우 경고 모달 노출은 프론트 영역이므로 처리 안 함
-    */}
-
     {/* variables */ }
     let navigate = useNavigate()
     const [campusList, setCampusList] = useState([]);
@@ -68,7 +61,6 @@ const Signup = function () {
     }
     const SecondPageValidator = () => {
         let validate=true
-        // idAlert.current.innerHTML='이미 존재하는 아이디입니다.'
 
         if(!formatEmail(email)){
             emailAlert.current.innerHTML='이메일을 올바른 형식으로 입력해 주세요.'
@@ -117,7 +109,6 @@ const Signup = function () {
         setIsModalOpen(false);
     };
 
-    
 
     {/* functions */ }
     useEffect(() => { /* 캠퍼스 목록 바운딩 시 가져오기 */
@@ -370,12 +361,6 @@ const Signup = function () {
                             <input type='submit' disabled={username == '' || password == '' || checkPassword == '' || email == ''} className={`text-white ${ username == '' || password == '' || checkPassword == '' || email == '' ? 'bg-gray-400' : 'bg-sesac-green hover:bg-sesac-dark-green focus:ring-4'}  focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 m-1 w-full dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800`} value="회원가입" />
                         </div>
                     </div>
-                    
-                    {/* <tr> : TODO: front
-                        비밀번호 확인: 입력한 비밀번호와 일치여부 
-                        <td colSpan={2}>비밀번호 확인</td>
-                        <td colSpan={2}><input type="password" name='confirm_password' placeholder='비밀번호를 재입력하세요'/></td>
-                    </tr>   */}
                 </form>
             </div>
             {isModalOpen && (
