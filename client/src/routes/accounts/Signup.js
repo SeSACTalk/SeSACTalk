@@ -287,15 +287,20 @@ const Signup = function () {
                     })
                     .catch(error => {
                         console.log(error.response.data.error);
-                        setModalContents(['오류가 발생했습니다. 잠시후 다시 시도해 주세요.'])
+
+                        if (error.response.data.error.includes('email')) {
+                            setModalContents('이미 가입한 이메일입니다.')
+                        }
+
                         openModal()
+                        
                     });
             }else if(isIdAvailable === false){
                 console.log("sign fail")
-                setModalContents(['이미 가입한 아이디입니다.'])
+                setModalContents('이미 가입한 아이디입니다.')
                 openModal()
             }else{
-                setModalContents(['오류가 발생했습니다. 잠시후 다시 시도해 주세요.'])
+                setModalContents('오류가 발생했습니다. 잠시후 다시 시도해 주세요.')
                 openModal()
             }
         }
