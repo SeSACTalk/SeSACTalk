@@ -7,6 +7,9 @@ import './style.css'
 /* Components */
 import Accounts from './routes/accounts/Accounts';
 import Login from './routes/accounts/Login';
+import Signup from './routes/accounts/Signup';
+import FindId from './routes/accounts/FindId';
+import PasswordReset from './routes/accounts/PasswordReset';
 import Main from './routes/common/main/Main';
 import Posts from './routes/common/main/Posts';
 import PostDetail from './routes/common/post/PostDetail';
@@ -21,8 +24,6 @@ import CourseApproval from './routes/admin/CourseApproval';
 import { ProfileLayout, Profile } from './routes/common/profile/Profile';
 import EditProfile from './routes/common/profile/EditProfile';
 import WithdrawModal from './routes/common/profile/WithdrawModal';
-import FindId from './routes/accounts/FindId';
-import PasswordReset from './routes/accounts/PasswordReset';
 import NotFound from './routes/common/NotFound';
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
         {/* 계정관련 */}
         <Route path='/account' element={<Accounts />}>
           <Route path='login' element={<Login />} />
+          <Route path='signup' element={<Signup />} />
           <Route path='find/id' element={<FindId />} />
           <Route path='password/reset' element={<PasswordReset />} />
         </Route>
